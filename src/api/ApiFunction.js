@@ -19,15 +19,15 @@ export const createApiFunction = async(type,api, params, data)=>{
 }
 
 export const apiFunction = async(type,api, params, data)=>{
-    const header= {Authorization: `Bearer ${localStorage.getItem("token")}`};
+    const headers= {Authorization: `Bearer ${localStorage.getItem("token")}`};
     let response
     switch (type){
         case "get":{
-            response = await axios.get(`${api}${params ? `/${params}`: ""}`, {header});
+            response = await axios.get(`${api}${params ? `/${params}`: ""}`,{ headers });
             break;
         }
         case "post": {
-             response = await axios.post(`${api}${params ? `/${params}`: ""}`, data, {header});
+             response = await axios.post(`${api}${params ? `/${params}`: ""}`, data, {headers});
              break;
         }
     }

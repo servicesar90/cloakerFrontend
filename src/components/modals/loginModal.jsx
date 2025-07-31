@@ -4,9 +4,12 @@ import SigninModal from "./signinModal";
 import { useForm } from "react-hook-form";
 import { createApiFunction } from "../../api/ApiFunction";
 import { logInApi } from "../../api/Apis";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginModal({ open, onClose }) {
   const [registerModalOpen, setRegisterOpenModal] = useState(false);
+
+  const navigate= useNavigate();
 
   const {register, handleSubmit } = useForm({
     defaultValues:{
@@ -21,7 +24,7 @@ export default function LoginModal({ open, onClose }) {
     if(response){
       console.log(response);
       localStorage.setItem("token", response.data.token);
-      onClose()
+      navigate("/dashboard")
     }
   }
 

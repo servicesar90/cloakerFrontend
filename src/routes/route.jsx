@@ -5,11 +5,19 @@ import {
   Route,
   BrowserRouter as Router,
 } from "react-router-dom";
+
+import LandingPage from "../pages/home.jsx/landingPage";
 import Dashboard from "../pages/dashboard";
-import SigninModal from "../components/modals/signinModal";
+import Campaign from "../pages/campaign";
 
 const Layout = () => {
-  return <Outlet />;
+  return (
+    <div className="w-[100vw] h-[100vh]">
+
+      <Outlet />
+    </div>
+
+  )
 };
 
 export default function Routess() {
@@ -17,9 +25,12 @@ export default function Routess() {
     <Router>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
+          <Route index element={<LandingPage />} />
           
         </Route>
+        <Route path="/Dashboard" element={<Dashboard />} >
+            <Route index element={<Campaign />} />
+          </Route>
       </Routes>
     </Router>
   );

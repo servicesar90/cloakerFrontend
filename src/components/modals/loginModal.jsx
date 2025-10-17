@@ -19,10 +19,11 @@ export default function LoginModal({ open, onClose }) {
   }) 
 
   const onSubmit = async(data) =>{
-    console.log(data);
+   
     const response = await createApiFunction("post", logInApi, null, data);
     if(response){
-      console.log(response);
+      console.log(response)  
+      localStorage.setItem("user", JSON.stringify(response.data.data) )
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard")
     }
@@ -43,7 +44,7 @@ export default function LoginModal({ open, onClose }) {
             <Input variant="outline" {...register("email")}  placeholder="Enter Email" size="sm" color="primary" />
             <Input variant="outline" {...register("password")}  placeholder="Enter Password" size="sm" color="primary" />
             
-            <Input variant="solid" placeholder="Enter Email" size="sm" color="primary" type="submit" />
+            <Input variant="solid"  size="sm" color="primary" type="submit" />
           </FormControl>
           </form>
           <button onClick={() => setRegisterOpenModal(!registerModalOpen)}>

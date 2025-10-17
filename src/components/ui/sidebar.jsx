@@ -31,22 +31,22 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       icon: <Building size={20} color="#0784C9" />,
       route: "/employerHome/Jobs",
     },
-    { label: "Campaign", icon: <Database size={20} color="#0784C9" /> },
+    { label: "Campaign", icon: <Database size={20} color="#0784C9" /> ,route:"/Dashboard/Campaign"},
     
     {
       label: "IP Listing",
       icon: <HandCoins size={20} color="#0784C9" />,
-      route: "/employerHome/credits",
+      route: "/Dashboard/IpListings",
     },
     {
-      label: "Analytics",
+      label: "Ana   lytics",
       icon: <HandCoins size={20} color="#0784C9" />,
-      route: "/employerHome/credits",
+      route: "/Dashboard/analytics",
     },
     {
       label: "Report",
       icon: <NotepadText size={20} color="#0784C9" />,
-      route: "/employerHome/billings",
+      
     },
     {
       label: "Pricing",
@@ -57,18 +57,31 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
 
   const databaseSubItems = [
     {
-      label: "Search Candidates",
-      icon: <UserSearch size={18} color="#0784C9" />,
+      label: "Click Logs",
       route: "/employerHome/SearchCandidates",
     },
-    // {
-    //   label: "Saved Searches",
-    //   icon: <Save size={18} color="#0784C9" />,
-    //   route: "/employerHome/SavedSearch",
-    // },
     {
-      label: "Unlocked Candidates",
-      icon: <Unlock size={18} color="#0784C9" />,
+      label: "Stats Overview", 
+      route: "/employerHome/SavedSearch",
+    },
+    {
+      label: "Tracking",
+      route: "/employerHome/UnlockedCandidates",
+    },
+    {
+      label: "Group By Stats",
+      route: "/employerHome/UnlockedCandidates",
+    },
+    {
+      label: "Cost Management",
+      route: "/employerHome/UnlockedCandidates",
+    },
+    {
+      label: "Campaign Timeline",
+      route: "/employerHome/UnlockedCandidates",
+    },
+    {
+      label: "Delete Campaigns",
       route: "/employerHome/UnlockedCandidates",
     },
   ];
@@ -90,7 +103,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
 
   return (
     <div
-      className={`h-full flex flex-col py-4 px-2 ${
+      className={`h-full flex flex-col py-4 px-2 bg-[#0F172B] ${
         isCollapsed ? "w-16" : "w-60"
       } transition-all duration-500 ease-in-out`}
     >
@@ -119,10 +132,10 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-1">
+      <nav className="flex flex-col gap-1 ">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.route;
-          const isDatabase = item.label === "Databases";
+          const isDatabase = item.label === "Report";
           const isItemActive = isActive || (isDatabase && isDatabaseActive);
 
           return (
@@ -136,10 +149,10 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
                     handleNavigate(item.route);
                   }
                 }}
-                className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition-colors ${
+                className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition-colors  ${
                   isItemActive
                     ? "bg-light text-gray-700"
-                    : "text-gray-700 hover:bg-gray-100"
+                    : "text-white-700 hover:bg-gray-100"
                 }`}
               >
                 <div className="flex items-center gap-3">

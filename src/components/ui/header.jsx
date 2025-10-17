@@ -32,19 +32,20 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <>
-      <header className="w-full flex items-center justify-between px-6 py-3 bg-white shadow-sm">
+      <header className="w-full flex items-center justify-between bg-black px-6 py-3  shadow-sm">
         {/* Left: Logo and Menu */}
         <div className="flex items-center gap-4">
           <Menu
-            className="w-6 h-6 text-gray-700 cursor-pointer"
+            className="w-6 h-6 text-gray-700 cursor-pointer text-white"
             onClick={onMenuClick}
           />
-          <img
+          {/* <img
             id="image"
             src="/unigrowLogo.png"
             alt="Unigrow"
             className="w-20 h-8"
-          />
+          /> */}
+          <span className="text-white">Cloaker</span>
         </div>
 
         {/* Right: Actions */}
@@ -54,12 +55,12 @@ const Header = ({ onMenuClick }) => {
             className="flex items-center md:gap-3 gap-1 text-sm text-gray-700 font-medium cursor-pointer"
           >
             <div className="flex flex-row md:gap-2 gap-1">
-              <HandCoins className="w-5 h-5 text-gray-600" />
+              <HandCoins className="w-5 h-5 text-gray-600 text-white" />
               
             </div>
 
             <div className="flex flex-row md:gap-2 gap-1">
-              <DatabaseIcon className="w-5 h-5 text-gray-600" />
+              <DatabaseIcon className="w-5 h-5 text-gray-600 text-white" />
              
             </div>
           </div>
@@ -67,8 +68,8 @@ const Header = ({ onMenuClick }) => {
             onClick={() => navigate("/contact-us")}
             className="flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer"
           >
-            <HelpCircle className="w-5 h-5 text-gray-600" />
-            <span className="hidden md:flex">Support</span>
+            <HelpCircle className="w-5 h-5 text-gray-600 text-white" />
+            <span className="hidden md:flex text-white">Support</span>
           </div>
           {/* Avatar circle */}
           <div

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-
+//without header
 export const createApiFunction = async(type,api, params, data)=>{
     let response
     switch (type){
@@ -18,6 +18,8 @@ export const createApiFunction = async(type,api, params, data)=>{
     return response;
 }
 
+
+//with header
 export const apiFunction = async(type,api, params, data)=>{
     const headers= {Authorization: `Bearer ${localStorage.getItem("token")}`};
     let response

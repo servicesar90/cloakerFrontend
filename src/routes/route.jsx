@@ -13,6 +13,7 @@ import IpListings from "../pages/IpListings";
 import Analytics from "../pages/Analytics";
 import {LoginProtector, RoutesProtector} from "./routesProtector";
 import Test from '../pages/test'
+import ClickLogs from '../pages/clickLogs'
 
 const Layout = () => {
   return (
@@ -34,7 +35,8 @@ export default function Routess() {
             <Route path="campaign" index element={<Campaign/>} />
             <Route path="ipListings" element={<IpListings/>} />
             <Route path="analytics" element={<Analytics/>} />
-            <Route path="test" element={<Test/>} />
+            <Route path="test" element={<Test/>} /> 
+            <Route path='clickLogs' element={<ClickLogs/>}/>
           </Route>
       </Routes>
     </Router>

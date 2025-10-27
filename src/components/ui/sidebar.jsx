@@ -58,7 +58,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   const databaseSubItems = [
     {
       label: "Click Logs",
-      route: "/employerHome/SearchCandidates",
+      route: "/Dashboard/clickLogs",
     },
     {
       label: "Stats Overview", 

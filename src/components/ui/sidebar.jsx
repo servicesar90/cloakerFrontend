@@ -13,7 +13,9 @@ import {
   Power,
   HandCoins,
   NotepadText,
+  LayoutDashboard,
 } from "lucide-react";
+
 import { useSelector } from "react-redux";
 
 const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
@@ -28,7 +30,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   const navItems = [
     {
       label: "Dashboard",
-      icon: <Building size={20} color="#0784C9" />,
+      icon: <LayoutDashboard size={20} color="#0784C9" />,
       route: "/employerHome/Jobs",
     },
     { label: "Campaign", icon: <Database size={20} color="#0784C9" /> ,route:"/Dashboard/Campaign"},
@@ -39,7 +41,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       route: "/Dashboard/IpListings",
     },
     {
-      label: "Ana   lytics",
+      label: "Analytics",
       icon: <HandCoins size={20} color="#0784C9" />,
       route: "/Dashboard/analytics",
     },

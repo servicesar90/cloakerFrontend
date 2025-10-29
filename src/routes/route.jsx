@@ -14,6 +14,7 @@ import Analytics from "../pages/Analytics";
 import {LoginProtector, RoutesProtector} from "./routesProtector";
 import Test from '../pages/test'
 import ClickLogs from '../pages/clickLogs'
+import AllCampaignsDashboard from "../pages/AllCampaign";
 
 const Layout = () => {
   return (
@@ -38,6 +39,7 @@ export default function Routess() {
             <Route path="test" element={<Test/>} /> 
             <Route path='clickLogs' element={<ClickLogs/>}/>
           </Route>
+          <Route path='/allCampaign' element={<AllCampaignsDashboard/>}/>
       </Routes>
     </Router>
   );

@@ -33,7 +33,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       icon: <LayoutDashboard size={20} color="#0784C9" />,
       route: "/employerHome/Jobs",
     },
-    { label: "Campaign", icon: <Database size={20} color="#0784C9" /> ,route:"/Dashboard/Campaign"},
+    { label: "Campaign", icon: <Database size={20} color="#0784C9" /> ,route:"/Dashboard/allCampaign"},
     
     {
       label: "IP Listing",

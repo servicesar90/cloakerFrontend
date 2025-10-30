@@ -250,7 +250,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-       <Box
+       {/* <Box
         sx={{
           position: "fixed",
           right: "5vw",
@@ -271,7 +271,7 @@ const Dashboard = () => {
         >
           <PhoneCall color= "white" />
         </motion.div>
-      </Box>
+      </Box> */}
 
     </>
   );

@@ -79,7 +79,7 @@ const BlacklistedIPsPage = ({
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
     return (
-        <div className="min-h-screen bg-[#0F172B] text-gray-100 p-8 font-sans">
+        <div className="min-h-screen bg-[#0F172B  ] text-gray-100 p-8 font-sans">
             <div className="container mx-auto max-w-7xl">
                 {/* --- Header Section --- */}
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

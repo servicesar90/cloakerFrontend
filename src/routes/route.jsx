@@ -12,6 +12,8 @@ import Campaign from "../pages/campaignCreation";
 import IpListings from "../pages/IpListings";
 import Analytics from "../pages/Analytics";
 import { LoginProtector, RoutesProtector } from "./routesProtector";
+import SignupPage from "../auth/SignUpForm";
+import LoginPage from "../auth/SignInForm";
 import Test from "../pages/test";
 import ClickLogs from "../pages/clickLogs";
 import AllCampaignsDashboard from "../pages/AllCampaign";
@@ -27,7 +29,10 @@ const Layout = () => {
 export default function Routess() {
   return (
     <Router>
+      
       <Routes>
+        <Route path='/signup' element={<SignupPage/>}/>
+        <Route path='/login' element={<LoginPage/>}/>
         <Route
           path="/"
           element={

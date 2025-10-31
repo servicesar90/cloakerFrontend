@@ -3,7 +3,7 @@ import React, { useState } from "react";
 // npm install react-hook-form
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Delete } from "lucide-react";
-import { createApiFunction } from "../api/ApiFunction";
+import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -527,7 +527,7 @@ const NewCampaignScreen = () => {
     try {
       console.log("Form data:", data);
 
-      const response = await createApiFunction(
+      const response = await apiFunction(
         "post", // type
         createCampaignApi, // api url
         null, // params (id/slug agar ho toh)
@@ -535,8 +535,6 @@ const NewCampaignScreen = () => {
       );
 
       console.log("API Response:", response.data);
-
-      // agar successful ho toh aap redirect / toast kar sakte ho
       alert("Campaign created successfully!");
     } catch (error) {
       console.error("Error creating campaign:", error);

@@ -246,9 +246,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT / FORM */}
-      <div className="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
+      <div className="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12 ">
        
 
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">Sign Up</h1>
@@ -256,7 +256,7 @@ export default function SignupPage() {
 
         {/* Social Buttons */}
         <div className="flex justify-center items-center gap-4 mb-6">
-          <button className="flex items-center justify-center w-1/2 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+          <button className="flex items-center justify-center w-1/2 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer">
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               alt="Google"
@@ -346,7 +346,7 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                 aria-label="toggle password"
               >
                 {showPassword ? "🙈" : "👁️"}
@@ -371,7 +371,7 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirm((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                 aria-label="toggle confirm password"
               >
                 {showConfirm ? "🙈" : "👁️"}
@@ -401,7 +401,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-lg font-medium text-white transition
+              className={`w-full py-3 rounded-lg font-medium text-white transition cursor-pointer
                 ${loading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`}
             >
               {loading ? "Creating account..." : "Create account"}
@@ -410,7 +410,7 @@ export default function SignupPage() {
 
           <p className="text-sm text-gray-600 mt-3 text-center">
             Already have an account?{" "}
-            <Link to="/" className="text-indigo-600 hover:underline">Sign in</Link>
+            <Link to="/login" className="text-indigo-600 hover:underline">Sign in</Link>
           </p>
         </form>
       </div>
@@ -447,11 +447,11 @@ export default function SignupPage() {
         </div>
 
         {/* floating control */}
-        <div className="absolute bottom-6 right-6 bg-indigo-600 p-3 rounded-full shadow-lg">
+        {/* <div className="absolute bottom-6 right-6 bg-indigo-600 p-3 rounded-full shadow-lg">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
-        </div>
+        </div> */}
       </div>
     </div>
   );

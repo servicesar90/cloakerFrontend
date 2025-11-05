@@ -786,7 +786,7 @@ const NewCampaignScreen = () => {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-200 flex items-center shadow-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md cursor-pointer transition-colors duration-200 flex items-center shadow-lg"
                   >
                     Proceed{" "}
                     <span className="ml-2 font-mono text-xl">&rarr;</span>
@@ -797,10 +797,10 @@ const NewCampaignScreen = () => {
           )}
           {step === 2 && (
             <>
-              <div className="p-4 sm:p-6 md:p-8 bg-slate-900 text-white min-h-screen font-sans">
+              <div className="p-4 sm:p-6 md:p-8 bg-slate-900 text-white min-h-screen font-sans -mt-10">
                 <div className="max-w-7xl mx-auto">
                   {/* Append URL Section */}
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 mb-5">
                     <div className="flex items-center justify-between mb-4">
                       <label
                         htmlFor="append-url"
@@ -837,7 +837,7 @@ const NewCampaignScreen = () => {
                   </div>
 
                   {/* Money Pages Section */}
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 mb-5">
                     <h3 className="text-lg font-bold text-white mb-4">
                       Where do we send legit visitors (money page)?
                     </h3>
@@ -884,7 +884,7 @@ const NewCampaignScreen = () => {
                             <button
                               type="button"
                               onClick={() => removeMoneyPage(index)}
-                              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                              className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2rounded-lg transition-colors duration-200 flex items-center"
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -893,7 +893,7 @@ const NewCampaignScreen = () => {
                             <button
                               type="button"
                               onClick={addMoneyPage}
-                              className="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                              className="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-lg transition-colors duration-200 flex items-center"
                             >
                               <Plus className="w-5 h-5 mr-1" /> Add more
                             </button>
@@ -943,7 +943,7 @@ const NewCampaignScreen = () => {
                           <button
                             type="button"
                             onClick={() => removeDynamicVariable(index)}
-                            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                            className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 cursor-pointer rounded-lg transition-colors duration-200 flex items-center"
                           >
                             <X className="w-5 h-5" />
                           </button>
@@ -953,7 +953,7 @@ const NewCampaignScreen = () => {
                     <button
                       type="button"
                       onClick={addDynamicVariable}
-                      className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                      className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2 cursor-pointer rounded-lg transition-colors duration-200 flex items-center"
                     >
                       <Plus className="w-5 h-5 mr-1" />
                       Add variables
@@ -964,13 +964,14 @@ const NewCampaignScreen = () => {
                     <button
                       type="button"
                       onClick={prevStep} // Go back to Campaign Info
-                      className="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center"
+                      className="bg-slate-700 hover:bg-slate-600 text-white font-bold cursor-pointer py-1 px-2 rounded-lg transition-colors duration-200 flex items-center"
                     >
                       &lt; Previous
                     </button>
                     <button
                       onClick={handleNext}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold 
+                       cursor-pointer py-1 px-2 rounded-lg transition-colors duration-200 flex items-center"
                     >
                       Next <span className="ml-2 font-mono">&gt;</span>
                     </button>

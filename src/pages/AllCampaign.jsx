@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {getAllCampaign} from '../api/Apis';
-import { createApiFunction } from '../api/ApiFunction';
+import { apiFunction, createApiFunction } from '../api/ApiFunction';
 import {useNavigate} from "react-router-dom";
 import {showInfoToast} from "../components/toast/toast"
 
@@ -36,7 +36,9 @@ function AllCampaignsDashboard() {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await createApiFunction('get', getAllCampaign);
+            const response = await createApiFunction('get', getAllCampaign,null,null);
+            console.log(response.data);
+            
             
             // Assume total items is available in response.data.total or we use array length
             const dataRows = response.data.rows || [];
@@ -58,22 +60,21 @@ function AllCampaignsDashboard() {
 
 
 
-    // ⭐ useEffect Hook for API call on component mount
+    
     useEffect(() => {
         fetchCampaigns();
     }, [fetchCampaigns]); 
 
-    // ⭐ NEW useEffect: बाहर क्लिक होने पर ड्रॉपडाउन को बंद करने के लिए
+  
     useEffect(() => {
         function handleClickOutside(event) {
-            // यदि क्लिक कंपोनेंट के बाहर हुआ है और कोई ड्रॉपडाउन खुला है, तो उसे बंद करें
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setOpenDropdownId(null);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            // Cleanup function: इवेंट लिसनर को हटाना
+           
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []); // Empty dependency array means this runs once
@@ -180,7 +181,7 @@ function AllCampaignsDashboard() {
         // ... (Loading/Error/Empty Data checks)
         if (isLoading) { /* ... loading JSX ... */ return (<div className="text-center py-10 text-xl text-blue-400"><div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-500 rounded-full" role="status"></div><p className="mt-4">Loading Campaigns...</p></div>);}
         if (error) { /* ... error JSX ... */ return (<div className="text-center py-10 text-red-500 text-xl">Error: {error}</div>);}
-        if (campaigns.length === 0) { /* ... empty JSX ... */ return (<div className="text-center py-10 text-gray-500 text-xl">No campaigns found.</div>);}
+        if (campaigns.length === 0) { /* ... empty JSX ... */ return (<span className='flex justify-center items-center'><div className=" py-10 text-gray-500 text-md">No campaigns found.</div></span>);}
         
         // --- Actual Table Body Rendering ---
         return (

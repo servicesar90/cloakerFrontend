@@ -43,7 +43,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Summer Sale 2025",
     reason: "Expired",
     comment: "Completed target",
-    dateTime: "2025-October-20 09:00:00am",
+    dateTime: "2025-October-20 ",
   },
   {
     sNo: 2,
@@ -51,7 +51,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Winter Blast Ad",
     reason: "Budget exceeded",
     comment: "Manual Stop",
-    dateTime: "2025-November-15 02:30:00pm",
+    dateTime: "2025-November-15 ",
   },
   {
     sNo: 3,
@@ -59,7 +59,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "New Product Launch",
     reason: "Low performance",
     comment: "Testing phase fail",
-    dateTime: "2025-September-01 11:45:00am",
+    dateTime: "2025-September-01 ",
   },
   {
     sNo: 4,
@@ -67,7 +67,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Q1 Branding",
     reason: "Not configured",
     comment: "Template issue",
-    dateTime: "2025-January-10 07:00:00pm",
+    dateTime: "2025-January-10 ",
   },
   {
     sNo: 5,
@@ -75,7 +75,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Affiliate Campaign Z",
     reason: "Compliance issue",
     comment: "Policy violation",
-    dateTime: "2025-March-28 01:20:00pm",
+    dateTime: "2025-March-28 ",
   },
   {
     sNo: 6,
@@ -83,7 +83,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Recipe Blog Traffic",
     reason: "Expired",
     comment: "End of season",
-    dateTime: "2025-August-12 04:50:00pm",
+    dateTime: "2025-August-12 ",
   },
   {
     sNo: 7,
@@ -91,7 +91,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Feeld Dating",
     reason: "Not configured",
     comment: "N/A",
-    dateTime: "2024-August-26 04:33:33pm",
+    dateTime: "2024-August-26 ",
   },
   {
     sNo: 8,
@@ -99,7 +99,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Sizzlespicekitchen",
     reason: "Not configured",
     comment: "N/A",
-    dateTime: "2025-March-24 03:55:47pm",
+    dateTime: "2025-March-24 ",
   },
   {
     sNo: 9,
@@ -107,7 +107,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "asdsd Campaign Long Name For Testing",
     reason: "Not configured",
     comment: "test",
-    dateTime: "2025-March-25 02:40:07pm",
+    dateTime: "2025-March-25 ",
   },
   {
     sNo: 10,
@@ -115,7 +115,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Recipes- Copy",
     reason: "Others",
     comment: "not",
-    dateTime: "2025-April-23 04:34:31pm",
+    dateTime: "2025-April-23",
   },
   {
     sNo: 11,
@@ -123,7 +123,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Foodie",
     reason: "Not configured",
     comment: "N/A",
-    dateTime: "2025-May-12 12:58:07pm",
+    dateTime: "2025-May-12 ",
   },
   {
     sNo: 12,
@@ -131,7 +131,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Recipes- link- Copy",
     reason: "Others",
     comment: "N/A",
-    dateTime: "2025-May-21 05:40:30pm",
+    dateTime: "2025-May-21",
   },
   {
     sNo: 13,
@@ -139,7 +139,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Recipes- Copy",
     reason: "Not configured",
     comment: "N/A",
-    dateTime: "2025-May-30 09:05:02pm",
+    dateTime: "2025-May-30",
   },
   {
     sNo: 14,
@@ -147,7 +147,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Recipes- link- Copy",
     reason: "Not configured",
     comment: "not",
-    dateTime: "2025-June-26 04:12:40pm",
+    dateTime: "2025-June-26",
   },
   {
     sNo: 15,
@@ -155,7 +155,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "test",
     reason: "Not configured",
     comment: "wanna create another one",
-    dateTime: "2025-September-19 11:49:32am",
+    dateTime: "2025-September-19",
   },
   {
     sNo: 16,
@@ -163,7 +163,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Recipes- link- Copy",
     reason: "Not configured",
     comment: "not",
-    dateTime: "2025-September-23 02:56:41pm",
+    dateTime: "2025-September-23",
   },
   {
     sNo: 17,
@@ -171,7 +171,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Test Overflow 1",
     reason: "Testing",
     comment: "Scroll check data",
-    dateTime: "2025-September-23 03:00:00pm",
+    dateTime: "2025-September-23",
   },
   {
     sNo: 18,
@@ -179,7 +179,7 @@ const DELETED_CAMPAIGNS_DATA = [
     campaignName: "Test Overflow 2",
     reason: "Testing",
     comment: "Scroll check data",
-    dateTime: "2025-September-23 03:01:00pm",
+    dateTime: "2025-September-23",
   },
 ];
 

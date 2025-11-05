@@ -17,11 +17,13 @@ import LoginPage from "../auth/SignInForm";
 import Test from "../pages/test";
 import ClickLogs from "../pages/clickLogs";
 import AllCampaignsDashboard from "../pages/AllCampaign";
+import { Toaster } from "react-hot-toast";
 
 const Layout = () => {
   return (
     <div className="w-[100vw] h-[100vh]">
       <Outlet />
+      
     </div>
   );
 };
@@ -53,6 +55,14 @@ export default function Routess() {
           <Route path="clickLogs" element={<ClickLogs />} />
         </Route>
       </Routes>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            zIndex: 99999,
+          },
+        }}
+      />
     </Router>
   );
 }

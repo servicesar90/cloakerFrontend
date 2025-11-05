@@ -15,27 +15,21 @@ import {apiFunction} from "../../api/ApiFunction";
 
 const Header = ({ onMenuClick }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const avatarRef = useRef(null);
 
-  const { profile } = useSelector((state) => state.getDataReducer);
+const user = JSON.parse(localStorage.getItem('user') || "{}");
 
-  useEffect(() => {
-    dispatch(fetchProfile());
-  }, [dispatch]);
 
-const onSubmit = async(data) =>{
-   
-    const response = await createApiFunction("post", logInApi, null, data);
-    if(response){
-      console.log(response)  
-      localStorage.setItem("user", JSON.stringify(response.data.data) )
-      localStorage.setItem("token", response.data.token);
-      navigate("/dashboard")
-    }
-  }
+  // const { profile } = useSelector((state) => state.getDataReducer);
+
+  // useEffect(() => {
+  //   dispatch(fetchProfile());
+  // }, [dispatch]);
+
+
 
 
   // ✅ Close dropdown when clicking outside
@@ -93,22 +87,23 @@ const onSubmit = async(data) =>{
 
           {/* Profile Avatar */}
           <div className="relative" ref={avatarRef}>
-            <div
-              onClick={() => setShowProfileModal(!showProfileModal)}
-              className="cursor-pointer"
-            >
-              {profile?.image ? (
-                <img
-                  src={profile.image}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold text-sm">
-                  {profile?.name ? profile.name.charAt(0).toUpperCase() : ""}
-                </div>
-              )}
-            </div>
+          <div
+            onClick={() => setShowProfileModal(!showProfileModal)}
+            className="cursor-pointer"
+          >
+            {user?.image ? (
+              <img
+                src={user.image}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold text-sm">
+                {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
+                
+              </div>
+            )}
+          </div>
 
             {/* Profile Dropdown */}
             {showProfileModal && (

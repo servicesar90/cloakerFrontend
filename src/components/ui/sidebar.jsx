@@ -16,15 +16,15 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   const location = useLocation();
   const [databaseOpen, setDatabaseOpen] = useState(false);
   const showFull = !isCollapsed;
 
-
-  const { employer } = useSelector((state) => state.getDataReducer);
+const user = JSON.parse(localStorage.getItem('user') || "{}");
+  // const { employer } = useSelector((state) => state.getDataReducer);
   const navigate = useNavigate();
 
   const navItems = [
@@ -115,7 +115,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
           showFull ? "gap-3" : "justify-center"
         }`}
       >
-        {employer?.company?.logoUrl ? (
+        {user?.company?.logoUrl ? (
           <img
             src={employer?.company.logoUrl}
             alt="Logo"
@@ -123,12 +123,12 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
           />
         ) : (
           <div className="w-8 h-8 rounded-[8px] bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
-            {employer?.company?.companyName.charAt(0).toUpperCase()}
+            {user?.name.charAt(0).toUpperCase()}
           </div>
         )}
         {showFull && (
           <h1 className="text-14 font-semibold">
-            {employer?.company?.companyName}
+            {user?.name}
           </h1>
         )}
       </div>

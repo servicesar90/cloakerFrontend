@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 
 export const showSuccessToast = (message) =>
   toast.success(message, {
-    duration: 4000,
+    duration: 2000,
     style: {
       background: "linear-gradient(135deg, #0784c9 0%, #065a94 100%)",
       color: "#ffffff",
@@ -26,7 +26,7 @@ export const showSuccessToast = (message) =>
 
 export const showErrorToast = (message) =>
   toast.error(message, {
-    duration: 4000,
+    duration: 2000,
     style: {
       background: "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)",
       color: "#ffffff",
@@ -50,7 +50,7 @@ export const showErrorToast = (message) =>
 
 export const showWarningToast = (message) =>
   toast(message, {
-    duration: 4000,
+    duration: 2000,
     icon: "⚠️",
     style: {
       background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
@@ -71,7 +71,7 @@ export const showWarningToast = (message) =>
 
 export const showInfoToast = (message) =>
   toast(message, {
-    duration: 4000,
+    duration: 2000,
     icon: "ℹ️",
     style: {
       background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",

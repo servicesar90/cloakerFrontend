@@ -169,14 +169,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useNavigate, Link } from "react-router-dom";
+import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 import { createApiFunction } from "../api/ApiFunction";
 import { signupApi } from "../api/Apis";
 
-/*
-  Validation schema (Yup) - preserved and extended
-  - name -> split to firstName / lastName in form
-  - password & confirmPassword rules kept as you had
-*/
+// ✅ Validation Schema
 const validationSchema = Yup.object().shape({
   firstName: Yup.string()
     .required("First name is required")
@@ -208,21 +205,16 @@ export default function SignupPage() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      terms: false,
-    },
   });
 
+  // ✅ Submit
   const onSubmit = async (data) => {
-    // data matches schema: { firstName, lastName, email, password, confirmPassword, terms }
-    // adapt payload if your backend expects different keys (e.g., "name")
+    if (loading) return;
+
+    setLoading(true);
     const payload = {
       name: `${data.firstName} ${data.lastName}`,
       email: data.email,
@@ -230,16 +222,23 @@ export default function SignupPage() {
     };
 
     try {
-      setLoading(true);
       const response = await createApiFunction("post", signupApi, null, payload);
-      if (response) {
-        console.log("Signup success:", response);
-        // navigate to dashboard or login page depending on your flow
-        navigate("/");
+      console.log(response);
+      
+
+      if (response?.status === 201 || response?.success) {
+        showSuccessToast("Account created successfully!");
+        reset();
+        navigate("/login");
+      } else {
+        showErrorToast(response?.message || "Something went wrong. Please try again.");
       }
     } catch (err) {
-      console.error("Signup failed:", err);
-      // optionally show UI toast / error message here
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Signup failed. Please try again later.";
+      showErrorToast(message);
     } finally {
       setLoading(false);
     }
@@ -247,40 +246,14 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
-      {/* LEFT / FORM */}
-      <div className="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12 ">
-       
-
+      {/* LEFT PANEL */}
+      <div className="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">Sign Up</h1>
-        <p className="text-gray-500 mb-8">Enter your email and password to sign up!</p>
+        <p className="text-gray-500 mb-8">Create an account to get started!</p>
 
-        {/* Social Buttons */}
-        <div className="flex justify-center items-center gap-4 mb-6">
-          <button className="flex items-center justify-center w-1/2 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer">
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5 mr-2"
-            />
-            <span className="text-sm text-gray-700 font-medium">
-              Sign up with Google
-            </span>
-          </button>
-
-         
-        </div>
-
-        {/* Divider */}
-        <div className="flex items-center mb-6">
-          <hr className="flex-grow border-gray-200" />
-          <span className="px-3 text-gray-400 text-sm">Or</span>
-          <hr className="flex-grow border-gray-200" />
-        </div>
-
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* First & Last Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 First Name <span className="text-red-500">*</span>
@@ -289,15 +262,17 @@ export default function SignupPage() {
                 {...register("firstName")}
                 type="text"
                 placeholder="Enter your first name"
-                className={`h-11 w-full rounded-lg border text-gray-800 px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none transition
-                  ${errors.firstName ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-indigo-200"}`}
+                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm placeholder:text-gray-400 text-gray-800 focus:outline-none transition ${
+                  errors.firstName
+                    ? "border-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+                }`}
               />
               {errors.firstName && (
                 <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>
               )}
             </div>
 
-            {/* Last Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Last Name <span className="text-red-500">*</span>
@@ -306,8 +281,11 @@ export default function SignupPage() {
                 {...register("lastName")}
                 type="text"
                 placeholder="Enter your last name"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none transition
-                  ${errors.lastName ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-indigo-200"}`}
+                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm placeholder:text-gray-400 text-gray-800 focus:outline-none transition ${
+                  errors.lastName
+                    ? "border-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+                }`}
               />
               {errors.lastName && (
                 <p className="mt-1 text-xs text-red-500">{errors.lastName.message}</p>
@@ -324,10 +302,16 @@ export default function SignupPage() {
               {...register("email")}
               type="email"
               placeholder="Enter your email"
-              className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition
-                ${errors.email ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-indigo-200"}`}
+              autoComplete="off"
+              className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
+                errors.email
+                  ? "border-red-500"
+                  : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+              }`}
             />
-            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -340,19 +324,25 @@ export default function SignupPage() {
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition
-                  ${errors.password ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-indigo-200"}`}
+                 autoComplete="new-password"
+                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
+                  errors.password
+                    ? "border-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
+                 autoComplete="new-password"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                aria-label="toggle password"
               >
                 {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
-            {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Confirm Password */}
@@ -365,22 +355,28 @@ export default function SignupPage() {
                 {...register("confirmPassword")}
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition
-                  ${errors.confirmPassword ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-indigo-200"}`}
+                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
+                  errors.confirmPassword
+                    ? "border-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm((s) => !s)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                aria-label="toggle confirm password"
               >
                 {showConfirm ? "🙈" : "👁️"}
               </button>
             </div>
-            {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>}
+            {errors.confirmPassword && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
-          {/* Terms and checkbox */}
+          {/* Terms */}
           <div className="flex items-start gap-3">
             <input
               {...register("terms")}
@@ -389,50 +385,94 @@ export default function SignupPage() {
               className="mt-1 w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
             />
             <label htmlFor="terms" className="text-sm text-gray-700">
-              By creating an account you agree to the{" "}
-              <a href="#" className="text-indigo-600 hover:underline">Terms and Conditions</a> and our{" "}
-              <a href="#" className="text-indigo-600 hover:underline">Privacy Policy</a>.
-              {errors.terms && <div className="text-xs text-red-500 mt-1">{errors.terms.message}</div>}
+              I agree to the{" "}
+              <a href="#" className="text-indigo-600 hover:underline">
+                Terms and Conditions
+              </a>{" "}
+              and{" "}
+              <a href="#" className="text-indigo-600 hover:underline">
+                Privacy Policy
+              </a>.
+              {errors.terms && (
+                <div className="text-xs text-red-500 mt-1">{errors.terms.message}</div>
+              )}
             </label>
           </div>
 
-          {/* Submit */}
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-3 rounded-lg font-medium text-white transition cursor-pointer
-                ${loading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`}
-            >
-              {loading ? "Creating account..." : "Create account"}
-            </button>
-          </div>
+          {/* ✅ Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2.5 rounded-lg font-medium text-white flex items-center justify-center gap-2 transition ${
+              loading
+                ? "bg-indigo-400 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+            }`}
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+                Creating account...
+              </>
+            ) : (
+              "Create account"
+            )}
+          </button>
 
           <p className="text-sm text-gray-600 mt-3 text-center">
             Already have an account?{" "}
-            <Link to="/login" className="text-indigo-600 hover:underline">Sign in</Link>
+            <Link to="/login" className="text-indigo-600 hover:underline">
+              Sign in
+            </Link>
           </p>
         </form>
       </div>
 
-      {/* RIGHT PANEL (branding) */}
+      {/* RIGHT PANEL */}
       <div className="hidden md:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
-        {/* grid background / subtle squares */}
         <div
           className="absolute inset-0"
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-            backgroundSize: "40px 40px, 40px 40px",
+            backgroundSize: "40px 40px",
             opacity: 0.15,
           }}
         />
-
         <div className="relative text-center px-10">
           <div className="flex items-center justify-center mb-4">
             <div className="bg-indigo-500 p-3 rounded-lg">
-              {/* small logo glyph */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-6 h-6"
+              >
                 <rect x="3" y="3" width="7" height="7" rx="1" />
                 <rect x="14" y="3" width="7" height="7" rx="1" />
                 <rect x="14" y="14" width="7" height="7" rx="1" />
@@ -440,19 +480,12 @@ export default function SignupPage() {
             </div>
             <h2 className="ml-3 text-2xl font-semibold">CloakShield</h2>
           </div>
-
           <p className="text-gray-300 text-sm max-w-md mx-auto">
             Shield your campaigns. Boost your performance. Experience smart traffic cloaking — secure, optimized, effortless.
           </p>
         </div>
-
-        {/* floating control */}
-        {/* <div className="absolute bottom-6 right-6 bg-indigo-600 p-3 rounded-full shadow-lg">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </div> */}
       </div>
     </div>
   );
 }
+

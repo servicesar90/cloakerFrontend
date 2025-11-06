@@ -122,7 +122,7 @@ const BlacklistedIPsPage = ({
                 </footer>
             </div>
             {/* --- Chat Widget --- */}
-            <ChatWidget />
+           
         </div>
     );
 };

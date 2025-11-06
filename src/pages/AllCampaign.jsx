@@ -224,8 +224,16 @@ function AllCampaignsDashboard() {
                                     <span>{item.money || 0}</span>
                                 </span>
                             </td>
-                            <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-48">{new Date(item.date_time).toLocaleDateString("en-GB")}</td>
-                            
+<td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-48">
+  {new Date(item.date_time).toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  })}
+</td>                            
                             {/* ⭐ UPDATED ACTION COLUMN */}
                             <td ref={isDropdownOpen ? dropdownRef : null} className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 relative">
                                 <button 

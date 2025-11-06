@@ -87,16 +87,7 @@ const WebAnalyticsPage = ({
     };
 
     // --- Chat Widget Component ---
-    const ChatWidget = () => (
-        <div className="fixed right-0 top-1/2 -translate-y-1/2 flex flex-col items-center bg-red-600 text-white py-4 px-1 rounded-l-lg shadow-lg z-50">
-            <div className="[writing-mode:vertical-lr] [transform:rotate(180deg)] whitespace-nowrap mb-4 text-sm font-medium">
-                Chat with us
-            </div>
-            <div className="bg-black bg-opacity-20 p-2 rounded-full flex items-center justify-center cursor-pointer">
-                <ChatIcon />
-            </div>
-        </div>
-    );
+  
 
     const startItem = (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
@@ -157,18 +148,10 @@ const WebAnalyticsPage = ({
                 </div>
 
                 {/* --- Footer and Pagination --- */}
-                <footer className="flex flex-col md:flex-row justify-between items-center mt-6 text-sm text-gray-400 gap-4">
-                    <span className="order-2 md:order-1">
-                        {startItem} to {endItem} Items of {totalItems} &mdash; <a href="#" onClick={onViewAll} className="text-blue-600 hover:underline">View all</a>
-                    </span>
-                    <div className="flex gap-2 order-1 md:order-2">
-                        <Button variant="pagination" onClick={onPrevious}>Previous</Button>
-                        <Button variant="pagination" onClick={onNext}>Next</Button>
-                    </div>
-                </footer>
+                
             </div>
             {/* --- Chat Widget --- */}
-            <ChatWidget />
+          
         </div>
     );
 };

@@ -312,7 +312,7 @@ export default function LoginPage() {
         showSuccessToast("Signin successful!");
 
         await new Promise((res) => setTimeout(res, 400));
-        navigate("/dashboard");
+        navigate("/Dashboard/allStats");
       } else {
         showErrorToast("Unexpected response from server. Please try again.");
       }

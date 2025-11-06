@@ -866,9 +866,7 @@ class ReportsDashboardDynamic extends Component {
             table-layout: fixed; /* Header और Body width को synchronize करता है */
           }
         `}</style>{" "}
-        <div className="fixed right-0 top-1/2 transform -translate-y-1/2 bg-red-700 text-white p-2 rounded-l-lg shadow-xl cursor-pointer writing-mode-vertical rotate-180">
-          Chat with us{" "}
-        </div>{" "}
+       
         <div className="fixed right-2 bottom-4 h-8 w-8 bg-black border border-white rounded-full flex items-center justify-center cursor-pointer">
           {" "}
           <svg
@@ -886,10 +884,10 @@ class ReportsDashboardDynamic extends Component {
             />{" "}
           </svg>{" "}
         </div>{" "}
-        <footer className="absolute bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 text-center text-xs text-gray-500 py-3">
+        {/* <footer className="absolute bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 text-center text-xs text-gray-500 py-3">
           &copy; {new Date().getFullYear()} Trafficshield.io. All Rights
           Reserved <span className="ml-4 mr-4">|</span> v2.0{" "}
-        </footer>{" "}
+        </footer>{" "} */}
       </div>
     );
   }

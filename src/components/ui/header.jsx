@@ -1,38 +1,27 @@
 import {
   Menu,
-  HelpCircle,
-  HandCoins,
-  DatabaseIcon,
   LogOut,
-  User
+  User,
+  HelpCircle
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchProfile } from "../../redux/getData";
+import { apiFunction } from "../../api/ApiFunction";
 import { signOutApi } from "../../api/Apis";
-import {apiFunction} from "../../api/ApiFunction";
 
 const Header = ({ onMenuClick }) => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
-
   const [showProfileModal, setShowProfileModal] = useState(false);
   const avatarRef = useRef(null);
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-const user = JSON.parse(localStorage.getItem('user') || "{}");
+  // Example plan data (replace later with API)
+  const [planDetails] = useState({
+    name: "Premium Plan",
+    status: "Active",
+  });
 
-
-  // const { profile } = useSelector((state) => state.getDataReducer);
-
-  // useEffect(() => {
-  //   dispatch(fetchProfile());
-  // }, [dispatch]);
-
-
-
-
-  // ✅ Close dropdown when clicking outside
+  // ✅ Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (avatarRef.current && !avatarRef.current.contains(event.target)) {
@@ -43,50 +32,50 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = async() => {
-    // TODO: Implement your logout API or logic here
-    // e.g., clear tokens from localStorage, Redux, etc.
+  const handleLogout = async () => {
     const response = await apiFunction("get", signOutApi, null, null);
-    if(response){
-      console.log(response)  
-      localStorage.removeItem("user")
+    if (response) {
+      localStorage.removeItem("user");
       localStorage.removeItem("token");
-      navigate("/")
+      navigate("/");
     }
   };
 
   return (
-    <>
-      <header className="w-full flex items-center justify-between bg-black px-6 py-3 shadow-sm relative">
-        {/* Left: Logo and Menu */}
-        <div className="flex items-center gap-4">
-          <Menu
-            className="w-6 h-6 text-white cursor-pointer"
-            onClick={onMenuClick}
-          />
-          <span className="text-white font-medium">Cloaker</span>
+    <header className="w-full flex items-center justify-between bg-white px-6 py-3 shadow-sm border-b border-gray-200">
+      {/* Left: Logo + Menu */}
+      <div className="flex items-center gap-4">
+        <Menu
+          className="w-6 h-6 text-gray-600 cursor-pointer"
+          onClick={onMenuClick}
+        />
+        <span className="text-gray-700 font-semibold text-xl">CloakShield</span>
+      </div>
+
+      {/* Right: Plan Info + Avatar */}
+      <div className="flex items-center gap-6">
+        {/* Plan Info (side by side with labels) */}
+        <div className="flex items-center gap-4 text-sm font-medium text-gray-700">
+          <span>
+            <span className="text-gray-500 mr-1 font-normal">Plan Name:</span>
+            {planDetails.name}
+          </span>
+          <span>
+            <span className="text-gray-500 mr-1 font-normal">Status:</span>
+            <span
+              className={`font-semibold ${
+                planDetails.status === "Active"
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {planDetails.status}
+            </span>
+          </span>
         </div>
 
-        {/* Right: Actions */}
-        <div className="flex items-center md:gap-6 gap-3 relative">
-          <div
-            id="credit"
-            className="flex items-center md:gap-3 gap-1 text-sm text-gray-400 font-medium cursor-pointer"
-          >
-            <HandCoins className="w-5 h-5 text-white" />
-            <DatabaseIcon className="w-5 h-5 text-white" />
-          </div>
-
-          <div
-            onClick={() => navigate("/contact-us")}
-            className="flex items-center gap-2 text-sm text-gray-400 font-medium cursor-pointer"
-          >
-            <HelpCircle className="w-5 h-5 text-white" />
-            <span className="hidden md:flex text-white">Support</span>
-          </div>
-
-          {/* Profile Avatar */}
-          <div className="relative" ref={avatarRef}>
+        {/* Avatar + Dropdown */}
+        <div className="relative" ref={avatarRef}>
           <div
             onClick={() => setShowProfileModal(!showProfileModal)}
             className="cursor-pointer"
@@ -100,35 +89,43 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
             ) : (
               <div className="w-8 h-8 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold text-sm">
                 {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
-                
               </div>
             )}
           </div>
 
-            {/* Profile Dropdown */}
-            {showProfileModal && (
-              <div className="absolute right-0 mt-2 w-40 rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-                <div className="py-1">
-                  <button
-                    onClick={() => navigate("/my-profile")}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
-                  >
-                    <User className="w-4 h-4 mr-2" /> My Profile
-                  </button>
+          {/* Dropdown Menu */}
+          {showProfileModal && (
+            <div className="absolute right-0 mt-2 w-44 rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <div className="py-1">
+                {/* My Profile */}
+                <button
+                  onClick={() => navigate("/my-profile")}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
+                >
+                  <User className="w-4 h-4 mr-2" /> My Profile
+                </button>
 
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" /> Logout
-                  </button>
-                </div>
+                {/* Help */}
+                <button
+                  onClick={() => navigate("/help")}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
+                >
+                  <HelpCircle className="w-4 h-4 mr-2" /> Help
+                </button>
+
+                {/* Logout */}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
+                >
+                  <LogOut className="w-4 h-4 mr-2" /> Logout
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 };
 

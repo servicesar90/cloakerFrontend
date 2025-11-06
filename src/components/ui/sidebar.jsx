@@ -15,6 +15,9 @@ import {
   NotepadText,
   LayoutDashboard,
 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faList, faBan, faChartPie, faChartSimple, faDollarSign } from "@fortawesome/free-solid-svg-icons";
+
 
 // import { useSelector } from "react-redux";
 
@@ -23,37 +26,40 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   const [databaseOpen, setDatabaseOpen] = useState(false);
   const showFull = !isCollapsed;
 
-const user = JSON.parse(localStorage.getItem('user') || "{}");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   // const { employer } = useSelector((state) => state.getDataReducer);
   const navigate = useNavigate();
 
   const navItems = [
     {
       label: "Dashboard",
-      icon: <LayoutDashboard size={20} color="#0784C9" />,
-      route: "/employerHome/Jobs",
+      icon: <FontAwesomeIcon icon={faChartPie} size='lg' />,
+      route: "/Dashboard/allStats",
     },
-    { label: "Campaign", icon: <Database size={20} color="#0784C9" /> ,route:"/Dashboard/allCampaign"},
-    
+    {
+      label: "Campaign",
+      icon:  <FontAwesomeIcon icon={faList} size="lg" />,
+      route: "/Dashboard/allCampaign",
+    },
+
     {
       label: "IP Listing",
-      icon: <HandCoins size={20} color="#0784C9" />,
+      icon: <FontAwesomeIcon icon={faBan} size='lg' />,
       route: "/Dashboard/IpListings",
     },
     {
       label: "Analytics",
-      icon: <HandCoins size={20} color="#0784C9" />,
+      icon: <FontAwesomeIcon icon={faChartSimple} size='lg' />,
       route: "/Dashboard/analytics",
     },
     {
       label: "Report",
-      icon: <NotepadText size={20} color="#0784C9" />,
-      
+      icon: <NotepadText size={24} />,
     },
     {
       label: "Pricing",
-      icon: <HandCoins size={20} color="#0784C9" />,
-      route: "/employerHome/credits",
+      icon: <FontAwesomeIcon icon={faDollarSign} size='lg' />,
+      route: "/Dashboard/pricing",
     },
   ];
 
@@ -63,7 +69,7 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
       route: "/Dashboard/clickLogs",
     },
     {
-      label: "Stats Overview", 
+      label: "Stats Overview",
       route: "/employerHome/SavedSearch",
     },
     {
@@ -105,7 +111,7 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
 
   return (
     <div
-      className={`h-full flex flex-col py-4 px-2 bg-[#0F172B] ${
+      className={`h-full flex flex-col py-4 px-2 bg-white border-t-1 border-gray-300 ${
         isCollapsed ? "w-16" : "w-60"
       } transition-all duration-500 ease-in-out`}
     >
@@ -126,11 +132,7 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
             {user?.name.charAt(0).toUpperCase()}
           </div>
         )}
-        {showFull && (
-          <h1 className="text-14 font-semibold">
-            {user?.name}
-          </h1>
-        )}
+        {showFull && <p className="text-xl text-gray-600 ">{user?.name}</p>}
       </div>
 
       {/* Navigation */}
@@ -151,22 +153,22 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
                     handleNavigate(item.route);
                   }
                 }}
-                className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition-colors  ${
+                className={`flex items-center justify-between px-3 py-2  rounded-md cursor-pointer transition-colors   ${
                   isItemActive
-                    ? "bg-light text-gray-700"
-                    : "text-white-700 hover:bg-gray-100"
+                    ? "bg-[#ECF3FF] text-[#465FFF] "
+                    : "text-gray-600 hover:bg-gray-100 text- "
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <span
                     className={`${
-                      isItemActive ? "text-gray-700" : "text-gray-600"
+                      isItemActive ? "text-[#465FFF]" : "text-gray-600"
                     }`}
                   >
                     {item.icon}
                   </span>
                   {showFull && (
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className="text-md font-medium">{item.label}</span>
                   )}
                 </div>
                 {isDatabase && showFull && (
@@ -213,19 +215,9 @@ const user = JSON.parse(localStorage.getItem('user') || "{}");
         })}
       </nav>
       {/* logout button */}
-      <div className="border-t-[2px] w-full h-[10vh] mt-auto flex justify-center items-center ">
-        <div
-          onClick={logout}
-          className={`flex items-center ${
-            showFull ? "gap-3" : "justify-center"
-          } cursor-pointer`}
-        >
-          <Power size={28} className="text-white bg-red-500 rounded-full p-1" />
-          {showFull && (
-            <p className="text-16 font-semibold text-grey-800">Sign Out</p>
-          )}
-        </div>
-      </div>
+      {/* <div className="border-t-[2px] w-full h-[10vh] mt-auto flex justify-center items-center ">
+      
+      </div> */}
     </div>
   );
 };
@@ -247,7 +239,11 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
           } transition-[width] duration-500 ease-in-out`}
         >
           <div className="h-full flex mt-[8vh] flex-col justify-end">
-            <SidebarContent isCollapsed={collapsed && !hovered} mobileVisible={mobileVisible} onCloseMobile={onCloseMobile} />
+            <SidebarContent
+              isCollapsed={collapsed && !hovered}
+              mobileVisible={mobileVisible}
+              onCloseMobile={onCloseMobile}
+            />
           </div>
         </div>
       </div>
@@ -255,13 +251,13 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
       {/* Mobile Sidebar */}
       {mobileVisible && (
         <div className="absolute inset-0 z-50 flex md:hidden">
-          <div className="w-60 bg-white shadow-lg h-[95vh] py-4 overflow-hidden">
-            <div className="flex justify-end pr-4">
+          <div className="w-60 bg-white shadow-lg h-[95vh] py-1.75 overflow-hidden">
+            {/* <div className="flex justify-end pr-4">
               <X
                 className="cursor-pointer text-gray-600"
                 onClick={onCloseMobile}
               />
-            </div>
+            </div> */}
             <div className="h-full flex flex-col justify-end">
               <SidebarContent isCollapsed={false} />
             </div>

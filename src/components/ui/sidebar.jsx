@@ -172,7 +172,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
                   )}
                 </div>
                 {isDatabase && showFull && (
-                  <span className="text-gray-400">
+                  <span className="text-gray-600">
                     {databaseOpen ? (
                       <ChevronUp size={16} />
                     ) : (
@@ -198,7 +198,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
                           onClick={() => handleNavigate(sub.route)}
                           className={`flex items-center gap-2 px-2 py-1 rounded-md text-sm cursor-pointer transition-colors ${
                             isSubActive
-                              ? "bg-light text-gray-700"
+                              ? "bg-[#ECF3FF] text-[#465FFF]"
                               : "text-gray-600 hover:bg-gray-100"
                           }`}
                         >

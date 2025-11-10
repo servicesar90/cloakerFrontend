@@ -1815,9 +1815,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import Tooltip from "@mui/material/Tooltip";
-import { useNavigate } from "react-router-dom";
-import { apiFunction, createApiFunction } from "../api/ApiFunction";
-import { createCampaignApi, getAllCampaign } from "../api/Apis";
+import { useLocation, useNavigate } from "react-router-dom";
+import { apiFunction } from "../api/ApiFunction";
+import { createCampaignApi } from "../api/Apis";
 
 /* ===========================
    Icon components (inline SVG)
@@ -2021,7 +2021,40 @@ export default function CampaignBuilder() {
   const [activeStatus, setActiveStatus] = useState("Active");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  console.log("faiz is here",location?.state?.mode);
+
+
+  useEffect(() => {
+  if(location?.state?.mode === "edit") {
+    const c = location.state.data;   // jo campaign data aya wo
+    console.log(c);
+    
+    // set form default
+    reset({
+      campaignName: c?.campaign_info?.campaignName,
+      comment: c?.campaign_info?.comment,
+      epc: c?.campaign_info?.epc,
+      cpc: c?.campaign_info?.cpc,
+      trafficSource: c?.campaign_info?.trafficSource,
+      money_page: c?.campaign_info?.money_page,
+      safe_page: c?.campaign_info?.safe_page,
+      conditions: c?.campaign_info?.conditions,
+      filters: c?.campaign_info?.filters,
+      automate: c?.campaign_info?.automate,
+      page_guard: c?.campaign_info?.page_guard,
+      http_code: c?.campaign_info?.http_code,
+    });
+
+    // local states as well
+    setMoneyPages(c?.money_page);
+    setDynamicVariables(c?.dynamicVariables || []);
+    setActiveStatus(c?.status);
+  }
+}, []);
+  console.log("money page",moneyPages);
+  
   // options copied from parts
   const adPlatforms = [
     "Google Adwords","Binge Ads","Yahoo Gemini","Taboola","Facebook Adverts","TikTok Ads","50onRed","ADAMO","AdRoll",

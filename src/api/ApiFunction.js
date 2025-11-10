@@ -29,7 +29,29 @@ export const apiFunction = async(type,api, params, data)=>{
             break;
         }
         case "post": {
+            console.log("pst case");
+            
              response = await axios.post(`${api}${params ? `/${params}`: ""}`, data, {headers});
+             break;
+        }
+         case "patch": {
+             response = await axios.patch(`${api}${params ? `/${params}`: ""}`, data, {headers});
+             break;
+        }
+         case "delete": {
+            console.log("dlt case",headers);
+            try {
+                response = await axios.delete(`${api}${params ? `/${params}`: ""}`, {
+    data,
+    headers
+  });
+                
+            } catch (error) {
+                console.log("hfds",error);
+                
+            }
+             console.log("hgfjdshjfd",response);
+             
              break;
         }
     }

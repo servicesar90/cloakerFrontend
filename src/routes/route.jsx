@@ -13,6 +13,7 @@ import { LoginProtector, RoutesProtector } from "./routesProtector";
 const LandingPage = lazy(() => import("../pages/home.jsx/landingPage"));
 const Dashboard = lazy(() => import("../pages/dashboard"));
 const Campaign = lazy(() => import("../pages/campaignCreation"));
+const CloakingIntegration = lazy(() => import("../pages/CampaignIntegration"))
 const IpListings = lazy(() => import("../pages/IpListings"));
 const Analytics = lazy(() => import("../pages/Analytics"));
 const SignupPage = lazy(() => import("../auth/SignUpForm"));
@@ -74,6 +75,7 @@ export default function Routess() {
             <Route path="allStats" element={<AllStats />} />
             <Route path="allCampaign" element={<AllCampaignsDashboard />} />
             <Route path="create-campaign" element={<Campaign />} />
+             <Route path="campaign-integration" element={<CloakingIntegration />} />
             <Route path="ipListings" element={<IpListings />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="test" element={<Test />} />

@@ -13,6 +13,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/solid";
+import { useNavigate, Link } from "react-router-dom";
 
 const Dashboard = () => {
   const [chartData] = useState([
@@ -46,6 +47,7 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate=useNavigate()
 
 
   const handleRefresh = () => alert("Refresh Account Clicked");
@@ -146,7 +148,15 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Side */}
-        <div className="lg:col-span-2 space-y-6">
+       
+
+        {/* Right Panel */}
+        
+      </div>
+
+
+
+       <div className="lg:col-span-2 space-y-6">
           {/* Chart */}
           <div className="bg-gray-850/40 border border-gray-700 rounded-lg p-6">
             <h3 className="text-white text-lg font-semibold mb-2">
@@ -156,30 +166,76 @@ const Dashboard = () => {
               Cumulative Click Log
             </p>
             <div style={{ width: "100%", height: 260 }}>
-              <ResponsiveContainer>
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 10, right: 16, left: -8, bottom: 0 }}
-                >
-                  <CartesianGrid stroke="#222235" vertical={false} />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fill: "#9ca3af", fontSize: 12 }}
-                  />
-                  <YAxis tick={{ fill: "#9ca3af", fontSize: 12 }} />
-                  <Tooltip
-                    wrapperStyle={{
-                      background: "#0b1220",
-                      border: "1px solid #2b2f3a",
-                    }}
-                    contentStyle={{ color: "#fff" }}
-                  />
-                  <Legend wrapperStyle={{ color: "#9ca3af", fontSize: 12 }} />
-                  <Bar dataKey="Safe" stackId="a" fill="#fca5a5" />
-                  <Bar dataKey="Money" stackId="a" fill="#bbf7d0" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+  <ResponsiveContainer>
+    <BarChart
+      data={chartData}
+      margin={{ top: 10, right: 20, left: -8, bottom: 0 }}
+    >
+      <defs>
+        {/* Blue gradient for "Safe" */}
+        <linearGradient id="safeGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9} />
+          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.2} />
+        </linearGradient>
+        {/* Green gradient for "Money" */}
+        <linearGradient id="moneyGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9} />
+          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.2} />
+        </linearGradient>
+      </defs>
+
+      <CartesianGrid stroke="#1e293b" vertical={false} strokeDasharray="3 3" />
+      <XAxis
+        dataKey="date"
+        tick={{ fill: "#9ca3af", fontSize: 12 }}
+        tickLine={false}
+        axisLine={false}
+      />
+      <YAxis
+        tick={{ fill: "#9ca3af", fontSize: 12 }}
+        tickLine={false}
+        axisLine={false}
+      />
+
+      <Tooltip
+        contentStyle={{
+          background: "#0f172a",
+          border: "1px solid #1e293b",
+          borderRadius: "6px",
+          color: "#fff",
+        }}
+        cursor={{ fill: "rgba(255,255,255,0.05)" }}
+      />
+
+      <Legend
+        wrapperStyle={{
+          color: "#9ca3af",
+          fontSize: 12,
+        }}
+        iconType="circle"
+        verticalAlign="top"
+        align="right"
+      />
+
+      {/* Bars with gradient + rounded top */}
+      <Bar
+        dataKey="Safe"
+        stackId="a"
+        fill="url(#safeGradient)"
+        barSize={16}
+        radius={[4, 4, 0, 0]}
+      />
+      <Bar
+        dataKey="Money"
+        stackId="a"
+        fill="url(#moneyGradient)"
+        barSize={16}
+        radius={[4, 4, 0, 0]}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+
           </div>
 
           {/* Campaign Table */}
@@ -202,9 +258,11 @@ const Dashboard = () => {
                   placeholder="Search"
                   className="bg-slate-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm focus:outline-none"
                 />
-                <button className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm">
+                <Link to='/Dashboard/create-campaign'>
+                <button className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm cursor-pointer">
                   + Add New Campaign
-                </button>
+                </button></Link>
+                
               </div>
             </div>
 
@@ -291,24 +349,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Right Panel */}
-        <div>
-          <div className="bg-gray-850/40 border border-gray-700 rounded-lg p-6 h-full">
-            <div className="text-sm text-yellow-300 mb-2">OUR SERVICE</div>
-            <h3 className="text-white text-lg font-semibold mb-2">
-              Join TrafficShield's Affiliate Revolution!
-            </h3>
-            <p className="text-slate-400 mb-6">
-              Earn a Remarkable 25% Commission on Every Renewal! The Road to
-              Earning More Begins Now!
-            </p>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
-              Start Now
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Bottom Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         {/* To-do */}
@@ -365,4 +405,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard; 

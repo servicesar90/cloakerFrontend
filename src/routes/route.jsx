@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import {
   Outlet,
   Routes,
@@ -6,21 +6,22 @@ import {
   BrowserRouter as Router,
   Navigate,
 } from "react-router-dom";
-
-import LandingPage from "../pages/home.jsx/landingPage";
-import Dashboard from "../pages/dashboard";
-import Campaign from "../pages/campaignCreation";
-import IpListings from "../pages/IpListings";
-import Analytics from "../pages/Analytics";
-import { LoginProtector, RoutesProtector } from "./routesProtector";
-import SignupPage from "../auth/SignUpForm";
-import LoginPage from "../auth/SignInForm";
-import Test from "../pages/test";
-import ClickLogs from "../pages/clickLogs";
-import AllCampaignsDashboard from "../pages/AllCampaign";
-import AllStats from "../pages/AllStats";
-import Pricing from '../pages/Pricing';
 import { Toaster } from "react-hot-toast";
+import { LoginProtector, RoutesProtector } from "./routesProtector";
+
+// ✅ Lazy imports
+const LandingPage = lazy(() => import("../pages/home.jsx/landingPage"));
+const Dashboard = lazy(() => import("../pages/dashboard"));
+const Campaign = lazy(() => import("../pages/campaignCreation"));
+const IpListings = lazy(() => import("../pages/IpListings"));
+const Analytics = lazy(() => import("../pages/Analytics"));
+const SignupPage = lazy(() => import("../auth/SignUpForm"));
+const LoginPage = lazy(() => import("../auth/SignInForm"));
+const Test = lazy(() => import("../pages/test"));
+const ClickLogs = lazy(() => import("../pages/clickLogs"));
+const AllCampaignsDashboard = lazy(() => import("../pages/AllCampaign"));
+const AllStats = lazy(() => import("../pages/AllStats"));
+const Pricing = lazy(() => import("../pages/Pricing"));
 
 const Layout = () => (
   <div className="w-[100vw] h-[100vh]">
@@ -28,55 +29,62 @@ const Layout = () => (
   </div>
 );
 
+// ✅ Simple loading spinner (you can replace it with skeleton or spinner component)
+const Loader = () => (
+  <div className="flex items-center justify-center w-screen h-screen bg-gray-50">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-gray-700"></div>
+  </div>
+);
+
 export default function Routess() {
   return (
     <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
 
-        {/* Guest Only Routes */}
-        <Route
-          path="/signin"
-          element={
-            <LoginProtector>
-              <LoginPage />
-            </LoginProtector>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <LoginProtector>
-              <SignupPage />
-            </LoginProtector>
-          }
-        />
+          {/* Guest Only Routes */}
+          <Route
+            path="/signin"
+            element={
+              <LoginProtector>
+                <LoginPage />
+              </LoginProtector>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <LoginProtector>
+                <SignupPage />
+              </LoginProtector>
+            }
+          />
 
-        {/* Protected Routes */}
-        <Route
-          path="/Dashboard"
-          element={
-            <RoutesProtector>
-              <Dashboard />
-            </RoutesProtector>
-          }
-        >
-          
-          <Route path="allStats" element={<AllStats />} />
-          <Route path="allCampaign" element={<AllCampaignsDashboard />} />
-          <Route path="create-campaign" element={<Campaign />} />
-          <Route path="ipListings" element={<IpListings />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="test" element={<Test />} />
-          <Route path="clickLogs" element={<ClickLogs />} />
-          <Route path="Pricing" element={<Pricing/>} />
+          {/* Protected Routes */}
+          <Route
+            path="/Dashboard"
+            element={
+              <RoutesProtector>
+                <Dashboard />
+              </RoutesProtector>
+            }
+          >
+            <Route path="allStats" element={<AllStats />} />
+            <Route path="allCampaign" element={<AllCampaignsDashboard />} />
+            <Route path="create-campaign" element={<Campaign />} />
+            <Route path="ipListings" element={<IpListings />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="test" element={<Test />} />
+            <Route path="clickLogs" element={<ClickLogs />} />
+            <Route path="Pricing" element={<Pricing />} />
+          </Route>
 
-        </Route> 
-
-        {/* Catch-all redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch-all redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
 
       {/* Toast Notifications */}
       <Toaster

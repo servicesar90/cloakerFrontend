@@ -23,7 +23,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center w-screen
      h-screen bg-gray-50">
-      <h1 className="text-3xl font-semibold mb-6">Welcome to TrafficShield</h1>
+      <h1 className="text-3xl text-black font-semibold mb-6">Welcome to TrafficShield</h1>
 
       {user ? (
         <div className="flex gap-4">

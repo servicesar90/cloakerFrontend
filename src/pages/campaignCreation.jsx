@@ -2089,7 +2089,7 @@ const InputField = ({
       <input
         type={type}
         placeholder={placeholder}
-        defaultValue={defaultValue}
+       defaultValue={defaultValue}
         step={step}
         className={`w-full bg-slate-800 border text-sm rounded-lg py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
           icon ? "pl-10" : "px-4"
@@ -2450,7 +2450,7 @@ export default function CampaignBuilder() {
   const addMoneyPage = () => {
     setMoneyPages((p) => {
       const next = [...p, { description: "", url: "", weight: 100 }];
-      setValue("money_page", next);
+  
       return next;
     });
   };
@@ -2495,6 +2495,8 @@ export default function CampaignBuilder() {
   };
 
   const onSubmit = async (data) => {
+    console.log("form data", data);
+    
     try {
       // merge moneyPages from local state into data (to ensure latest)
       data.money_page = moneyPages;
@@ -2731,6 +2733,7 @@ export default function CampaignBuilder() {
                           name={`money_page.${index}.description`}
                           register={register}
                           placeholder="Enter description"
+                          
                           defaultValue={page.description || ""}
                           tooltip="Short name visible in reports"
                         />
@@ -2742,7 +2745,8 @@ export default function CampaignBuilder() {
                           error={errors.money_page?.[index]?.url}
                           required
                           placeholder="https://www.example.com"
-                          defaultValue={page.url || ""}
+                           
+                   
                           pattern={{
                             value: /^(https?:\/\/[^\s$.?#].[^\s]*)$/i,
                             message: "Enter a valid URL",
@@ -2757,7 +2761,8 @@ export default function CampaignBuilder() {
                           error={errors.money_page?.[index]?.weight}
                           placeholder="100"
                           type="number"
-                          defaultValue={page.weight || 100}
+                      
+                          
                           tooltip="Priority weight for money pages"
                         />
 
@@ -2821,6 +2826,7 @@ export default function CampaignBuilder() {
                         label="VARIABLE NAME"
                         name={`money_variable.${idx}.name`}
                         register={register}
+                        
                         placeholder="Enter variable name"
                         defaultValue={variable.name}
                       />

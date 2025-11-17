@@ -98,9 +98,10 @@ const Header = ({ onMenuClick }) => {
             <div className="absolute right-0 mt-2 w-44 rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
               <div className="py-1">
                 {/* My Profile */}
+             
                 <button
-                  onClick={() => navigate("/my-profile")}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
+                  onClick={() => navigate("/myProfile")}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
                 >
                   <User className="w-4 h-4 mr-2" /> My Profile
                 </button>

@@ -23,6 +23,7 @@ const ClickLogs = lazy(() => import("../pages/clickLogs"));
 const AllCampaignsDashboard = lazy(() => import("../pages/AllCampaign"));
 const AllStats = lazy(() => import("../pages/AllStats"));
 const Pricing = lazy(() => import("../pages/Pricing"));
+const MyProfile = lazy(()=> import('../pages/myProfileScreen') )
 const Clicklog = lazy(() => import("../pages/clickLogs1"))
 
 const Layout = () => (
@@ -82,6 +83,7 @@ export default function Routess() {
             <Route path="test" element={<Test />} />
             <Route path="clickLogs" element={<ClickLogs />} />
             <Route path="Pricing" element={<Pricing />} />
+            <Route path='myProfile' element={<MyProfile/> }/>
             <Route path="reports" element={<Clicklog />} />
           </Route>
 

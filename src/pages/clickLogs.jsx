@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
@@ -485,7 +485,7 @@ class ReportsDashboardDynamic extends Component {
 
     // Elements common to many tabs
     const DateRangePicker = (customRequired = isRequired) => (
-      <div className="flex-grow max-w-xs">
+      <div className="flex-grow max-w-xs min-w-s">
         {" "}
         <label
           htmlFor="date-range"
@@ -501,6 +501,7 @@ class ReportsDashboardDynamic extends Component {
           selectsRange
           isClearable
           dateFormat="dd/MM/yyyy"
+          placeholderText="dd/MM/yyy to dd/MM/yyy"
           customInput={
             <CustomDateInput
               startDate={this.state.startDate}

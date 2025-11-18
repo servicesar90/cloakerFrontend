@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, } from "react";
+import { useLocation } from "react-router-dom";
 // Assuming the Tab component is defined or imported here
 
 const CloakingIntegration = () => {
   // State for the URL input
   const [pastedUrl, setPastedUrl] = useState("");
   const [tab, setTab] = useState("php-paste");
+  const location = useLocation();
+  const camp = location?.state?.data
+  console.log("campaign",camp);
+  
 
   const tabs = [
     {
@@ -106,12 +111,12 @@ const CloakingIntegration = () => {
     console.log("Testing URL:", pastedUrl);
   };
 
-  const renderSection = () => {
+  const renderSection = (camp) => {
     switch (tab) {
       case "php-upload":
         return <Phpupload pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "php-paste":
-        return <PhpPaste pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <PhpPaste camp={camp} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "wordpress":
         return <Wordpress pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "javascript":
@@ -133,7 +138,7 @@ const CloakingIntegration = () => {
               <h1 className="text-2xl font-semibold text-white">
                 Cloaking Intergration
               </h1>
-              <p className="text-sm text-green-500 pl-2">[ID:75289EA809]</p>
+              <p className="text-sm text-green-500 pl-2">[ID:{camp?.cid}]</p>
             </div>
             <p className="text-sm text-left text-gray-500 mt-1">
               Create/Edit/Delete Campaigns
@@ -158,7 +163,7 @@ const CloakingIntegration = () => {
           <Tab name="Javascript CDN" isActive={false} /> */}
         </div>
 
-        <div>{renderSection()}</div>
+        <div>{renderSection(camp)}</div>
 
         {/* --- Separator Line (Optional, for visual clarity) --- */}
       </div>
@@ -300,7 +305,7 @@ const handleCopy = (text) => {
       console.error("Failed to copy text: ", err);
     });
 };
-const PhpPaste = ({ pastedUrl, setPastedUrl }) => (
+const PhpPaste = ({camp, pastedUrl, setPastedUrl }) => (
   <div>
     {/* === 3. Guidance/Warning Banner (Unchanged) === */}
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
@@ -331,12 +336,12 @@ const PhpPaste = ({ pastedUrl, setPastedUrl }) => (
         <pre className="text-green-400 whitespace-pre-wrap text-left">
           {/* PHP Code Snippet */}
           {`
-}<?php
+<?php
 // Disable error display (optional for production)
 error_reporting(E_ALL);
 
 // Your external cloaker API URL
-$cloakerApiUrl = "http://localhost:2000/api/v2/trafficfilter";
+$cloakerApiUrl = "https://app.clockerly.io/api/v2/trafficfilter/${camp?.cid}/${camp?.user_id }";
 // 1. Get IP address
 function getUserIP() {
   if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
@@ -379,7 +384,7 @@ print_r($data);
 echo "</pre>";
 // Based on cloaker decision, redirect or allow
 if ($data && isset($data['action'])) {
-    if ($data['action'] === 'redirect' && !empty($data['target'])) {
+    if ($data['action'] === true && !empty($data['target'])) {
         header("Location: " . $data['target'], true, 302);
         exit();
     } elseif ($data['action'] === 'block') {
@@ -390,7 +395,7 @@ if ($data && isset($data['action'])) {
     // If action is 'allow', do nothing and continue loading the page
 }
 ?>
-}
+
                             `}
         </pre>
       </div>

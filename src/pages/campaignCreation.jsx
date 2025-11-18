@@ -1816,6 +1816,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { useLocation, useNavigate } from "react-router-dom";
 import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
+import { BROWSER_LIST, COUNTRY_LIST, DEVICE_LIST } from "../data/dataList";
 
 /* ===========================
    Icon components (inline SVG)
@@ -2499,19 +2500,34 @@ export default function CampaignBuilder() {
     
     try {
       // merge moneyPages from local state into data (to ensure latest)
-      data.money_page = moneyPages;
+      // data.money_page = moneyPages;
       data.status = activeStatus;
 
       if (location?.state?.mode === "edit") {
         const uid = location?.state?.data?.uid;
 
-        const res = await apiFunction("patch", createCampaignApi, uid, data);
-        return showCustomAlert("Campaign updated successfully!");
+        // const res = await apiFunction("patch", createCampaignApi, uid, data);
+        showCustomAlert("Campaign updated successfully!");
+        navigate("/Dashboard/campaign-integration",{
+          state:{
+            mode:"edit",
+            data: location.state.data
+          }
+        })
       }else{
 
         const response = await apiFunction("post", createCampaignApi, null, data);
+
+        console.log(response);
+        
         // use response to show success
         showCustomAlert("Campaign created successfully!");
+        navigate("/Dashboard/campaign-integration",{
+          state:{
+            mode:"edit",
+            data: response?.data || response
+          }
+        })
       }
     } catch (err) {
       console.error("Error creating campaign:", err);
@@ -2995,156 +3011,205 @@ export default function CampaignBuilder() {
           )}
 
           {/* Step 4: Conditions */}
-          {step === 4 && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <select
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        handleAddCondition(e.target.value);
-                        e.target.value = "";
-                      }
-                    }}
-                    className="w-56 bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
-                  >
-                    <option value="">+ Add condition</option>
-                    {OPTIONS.filter(
-                      (o) => !selectedTypes.includes(o.value)
-                    ).map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {fields.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => reset({ conditions: [] })}
-                      className="text-sm text-slate-400 hover:text-red-500 transition"
-                    >
-                      Clear all
-                    </button>
-                  )}
-                </div>
+        {step === 4 && (
+  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+    <div className="space-y-6">
 
-                <div className="space-y-4">
-                  {fields.map((field, idx) => (
-                    <div
-                      key={field.id}
-                      className="bg-slate-800 border border-slate-700 rounded-lg p-4"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-semibold text-white">
-                          {field.type.toUpperCase()}
-                        </h4>
-                        <button
-                          type="button"
-                          onClick={() => remove(idx)}
-                          className="text-sm text-slate-400 hover:text-red-500"
-                        >
-                          Remove
-                        </button>
-                      </div>
+      {/* ADD CONDITION DROPDOWN */}
+      <div>
+        <select
+          onChange={(e) => {
+            if (e.target.value) {
+              handleAddCondition(e.target.value);
+              e.target.value = "";
+            }
+          }}
+          className="w-56 bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
+        >
+          <option value="">+ Add condition</option>
 
-                      <Controller
-                        control={control}
-                        name={`conditions.${idx}.mode`}
-                        render={({ field }) => (
-                          <div className="flex gap-2 mb-3">
-                            {["allow", "block"].map((mode) => (
-                              <button
-                                key={mode}
-                                type="button"
-                                onClick={() => field.onChange(mode)}
-                                className={`px-3 py-1.5 text-sm rounded-md border ${
-                                  field.value === mode
-                                    ? mode === "allow"
-                                      ? "bg-blue-600 text-white border-blue-600"
-                                      : "bg-red-600 text-white border-red-600"
-                                    : "bg-slate-700 text-slate-300 border-slate-700 hover:bg-slate-700/50"
-                                }`}
-                              >
-                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      />
-
-                      <Controller
-                        control={control}
-                        name={`conditions.${idx}.values`}
-                        render={({ field }) => (
-                          <div>
-                            <div className="flex flex-wrap gap-2 mb-3">
-                              {field?.value?.map((val, i) => (
-                                <span
-                                  key={i}
-                                  className="inline-flex items-center bg-slate-700 text-slate-100 px-2.5 py-1 text-xs rounded-full border border-slate-600"
-                                >
-                                  {val}
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      field.onChange(
-                                        field.value.filter((_, id) => id !== i)
-                                      )
-                                    }
-                                    className="ml-1 text-slate-400 hover:text-slate-200"
-                                  >
-                                    ×
-                                  </button>
-                                </span>
-                              ))}
-                            </div>
-
-                            <input
-                              type="text"
-                              placeholder={`Enter ${field.type}...`}
-                              className="w-full text-sm bg-slate-800 text-white px-3 py-2 rounded-md border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              onKeyDown={(e) => {
-                                if (
-                                  e.key === "Enter" &&
-                                  e.target.value.trim()
-                                ) {
-                                  e.preventDefault();
-                                  field.onChange([
-                                    ...field.value,
-                                    e.target.value.trim(),
-                                  ]);
-                                  e.target.value = "";
-                                }
-                              }}
-                            />
-                          </div>
-                        )}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex justify-between mt-6">
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
-                  >
-                    ‹ Previous
-                  </button>
-                  {fields.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={nextStep}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-                    >
-                      Next ›
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+          {OPTIONS.filter((o) => !selectedTypes.includes(o.value)).map(
+            (opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            )
           )}
+        </select>
+      </div>
+
+      {/* CONDITIONS LIST */}
+      <div className="space-y-5">
+        {fields.map((fieldItem, idx) => {
+          const currentType = fieldItem.type;
+
+          /** DATA SOURCE BASED ON TYPE */
+          let dataList = [];
+          if (currentType === "country") dataList = COUNTRY_LIST;
+          
+          if (currentType === "browser") dataList = BROWSER_LIST;
+          if (currentType === "Device") dataList = DEVICE_LIST;
+
+          const isDropdown = ["country", "browser", "Device"].includes(
+            currentType
+          );
+
+          return (
+            <div
+              key={fieldItem.id}
+              className="bg-slate-800 border border-slate-700 rounded-lg p-4"
+            >
+              {/* HEADER */}
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-semibold text-white">
+                  {currentType.toUpperCase()}
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => remove(idx)}
+                  className="text-sm text-slate-400 hover:text-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+
+              {/* MODE BUTTONS */}
+              <Controller
+                control={control}
+                name={`conditions.${idx}.mode`}
+                render={({ field }) => (
+                  <div className="flex gap-2 mb-3">
+                    {["allow", "block"].map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => field.onChange(mode)}
+                        className={`px-3 py-1.5 text-sm rounded-md border ${
+                          field.value === mode
+                            ? mode === "allow"
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-red-600 text-white border-red-600"
+                            : "bg-slate-700 text-slate-300 border-slate-700 hover:bg-slate-700/50"
+                        }`}
+                      >
+                        {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              />
+
+              {/* MULTI VALUES FIELD */}
+              <Controller
+                control={control}
+                name={`conditions.${idx}.values`}
+                render={({ field }) => (
+                  <div>
+                    {/* CHIPS */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {field.value?.map((val, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center bg-slate-700 text-slate-100 px-2.5 py-1 text-xs rounded-full border border-slate-600"
+                        >
+                          {val}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              field.onChange(
+                                field.value.filter((_, id) => id !== i)
+                              )
+                            }
+                            className="ml-1 text-slate-400 hover:text-slate-200"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* DROPDOWN OR TEXT INPUT */}
+                    {isDropdown ? (
+                      <select
+                        className="w-full bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val && !field.value.includes(val)) {
+                            field.onChange([...field.value, val]);
+                          }
+                          e.target.value = "";
+                        }}
+                      >
+                        <option value="">Select {currentType}</option>
+
+                        {dataList.map((item) => (
+                          <option
+                            key={item.id}
+                            value={
+                              item.country ||
+                              item.state ||
+                              item.name ||
+                              item.browser ||
+                              item.device
+                            }
+                          >
+                            {item.country ||
+                              item.state ||
+                              item.name ||
+                              item.browser ||
+                              item.device}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder={`Enter ${currentType}...`}
+                        className="w-full text-sm bg-slate-800 text-white px-3 py-2 rounded-md border border-slate-700"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && e.target.value.trim()) {
+                            e.preventDefault();
+                            field.onChange([
+                              ...field.value,
+                              e.target.value.trim(),
+                            ]);
+                            e.target.value = "";
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* STEP BUTTONS */}
+      <div className="flex justify-between pt-4">
+        <button
+          type="button"
+          onClick={prevStep}
+          className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
+        >
+          ‹ Previous
+        </button>
+
+        {fields.length > 0 && (
+          <button
+            type="button"
+            onClick={nextStep}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          >
+            Next ›
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
 
           {/* Step 5: Filters */}
           {step === 5 && (

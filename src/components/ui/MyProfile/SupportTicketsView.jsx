@@ -1,0 +1,8 @@
+
+
+export function SupportTicketsView(){
+    return(
+        <>
+        </>
+    )
+};

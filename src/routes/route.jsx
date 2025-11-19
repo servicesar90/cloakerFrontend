@@ -23,8 +23,9 @@ const ClickLogs = lazy(() => import("../pages/clickLogs"));
 const AllCampaignsDashboard = lazy(() => import("../pages/AllCampaign"));
 const AllStats = lazy(() => import("../pages/AllStats"));
 const Pricing = lazy(() => import("../pages/Pricing"));
-const MyProfile = lazy(()=> import('../pages/myProfileScreen') )
+const MyProfile = lazy(()=> import('../pages/MyProfile') )
 const Clicklog = lazy(() => import("../pages/clickLogs1"))
+
 
 const Layout = () => (
   <div className="w-[100vw] h-[100vh]">
@@ -83,9 +84,13 @@ export default function Routess() {
             <Route path="test" element={<Test />} />
             <Route path="clickLogs" element={<ClickLogs />} />
             <Route path="Pricing" element={<Pricing />} />
-            <Route path='myProfile' element={<MyProfile/> }/>
             <Route path="reports" element={<Clicklog />} />
           </Route>
+
+          <Route path='/myProfile' element={
+            <RoutesProtector> <MyProfile/></RoutesProtector>
+            } />
+          
 
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />

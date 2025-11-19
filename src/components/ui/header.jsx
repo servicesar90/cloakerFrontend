@@ -109,7 +109,7 @@ const Header = ({ onMenuClick }) => {
                 {/* Help */}
                 <button
                   onClick={() => navigate("/help")}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
                 >
                   <HelpCircle className="w-4 h-4 mr-2" /> Help
                 </button>
@@ -117,7 +117,7 @@ const Header = ({ onMenuClick }) => {
                 {/* Logout */}
                 <button
                   onClick={handleLogout}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4 mr-2" /> Logout
                 </button>

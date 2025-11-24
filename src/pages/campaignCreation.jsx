@@ -2496,8 +2496,6 @@ export default function CampaignBuilder() {
   };
 
   const onSubmit = async (data) => {
-    console.log("form data", data);
-    
     try {
       // merge moneyPages from local state into data (to ensure latest)
       // data.money_page = moneyPages;
@@ -2518,14 +2516,14 @@ export default function CampaignBuilder() {
 
         const response = await apiFunction("post", createCampaignApi, null, data);
 
-        console.log(response);
+        console.log(response?.data?.status);
         
         // use response to show success
-        showCustomAlert("Campaign created successfully!");
+        showCustomAlert("Campaign created successfully! you are going to route to Integration page");
         navigate("/Dashboard/campaign-integration",{
           state:{
             mode:"edit",
-            data: response?.data || response
+            data: response?.data?.data || response
           }
         })
       }

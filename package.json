@@ -24,6 +24,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
+    "flag-icons": "^7.5.0",
     "framer-motion": "^12.23.11",
     "intro.js-react": "^1.0.0",
     "lucide-react": "^0.533.0",

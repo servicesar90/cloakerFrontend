@@ -29,8 +29,6 @@ export const apiFunction = async(type,api, params, data)=>{
             break;
         }
         case "post": {
-            console.log("pst case");
-            
              response = await axios.post(`${api}${params ? `/${params}`: ""}`, data, {headers});
              break;
         }

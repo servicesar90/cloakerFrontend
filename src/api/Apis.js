@@ -2,9 +2,9 @@
 // // const base_url="http://192.168.1.12:2000"
 // const base_url="http://192.168.1.3:2000";
 
-const base_url = "https://app.clockerly.io"
+// const base_url = "https://app.clockerly.io"
 
-const base_url= "https://app.clockerly.io"
+const base_url= "https://app.clockerly.io";
 
 
 export const signupApi = `${base_url}/auth/signup`;

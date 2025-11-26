@@ -1696,7 +1696,11 @@ export default function CloakingLandingPage() {
                       ...(plan.popular ? {} : { ...styles.buttonSecondary }),
                     }}
                     data-testid={`button-select-${index}`}
-                    onClick={() => console.log(`Selected ${plan.name} plan`)}
+                    onClick={() => {
+                 
+                    
+                    navigate("/pricing")}}
+                  
                     onMouseOver={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
                     }}

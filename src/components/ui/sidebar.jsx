@@ -56,11 +56,11 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       label: "Report",
       icon: <NotepadText size={24} />,
     },
-    {
-      label: "Pricing",
-      icon: <FontAwesomeIcon icon={faDollarSign} size='lg' />,
-      route: "/Dashboard/pricing",
-    },
+    // {
+    //   label: "Pricing",
+    //   icon: <FontAwesomeIcon icon={faDollarSign} size='lg' />,
+    //   route: "/Dashboard/pricing",
+    // },
   ];
 
   const databaseSubItems = [

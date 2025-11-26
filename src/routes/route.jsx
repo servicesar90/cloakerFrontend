@@ -13,7 +13,7 @@ import { LoginProtector, RoutesProtector } from "./routesProtector";
 const LandingPage = lazy(() => import("../pages/home.jsx/landingPage"));
 const Dashboard = lazy(() => import("../pages/dashboard"));
 const Campaign = lazy(() => import("../pages/campaignCreation"));
-const CloakingIntegration = lazy(() => import("../pages/CampaignIntegration"))
+const CloakingIntegration = lazy(() => import("../pages/CampaignIntegration"));
 const IpListings = lazy(() => import("../pages/IpListings"));
 const Analytics = lazy(() => import("../pages/Analytics"));
 const SignupPage = lazy(() => import("../auth/SignUpForm"));
@@ -23,9 +23,9 @@ const ClickLogs = lazy(() => import("../pages/clickLogs"));
 const AllCampaignsDashboard = lazy(() => import("../pages/AllCampaign"));
 const AllStats = lazy(() => import("../pages/AllStats"));
 const Pricing = lazy(() => import("../pages/Pricing"));
-const MyProfile = lazy(()=> import('../pages/MyProfile') )
-const Clicklog = lazy(() => import("../pages/clickLogs1"))
-
+const MyProfile = lazy(() => import("../pages/MyProfile"));
+const Clicklog = lazy(() => import("../pages/clickLogs1"));
+const CheckoutFlow = lazy(() => import("../components/ui/checkOutFlow"));
 
 const Layout = () => (
   <div className="w-[100vw] h-[100vh]">
@@ -78,7 +78,10 @@ export default function Routess() {
             <Route path="allStats" element={<AllStats />} />
             <Route path="allCampaign" element={<AllCampaignsDashboard />} />
             <Route path="create-campaign" element={<Campaign />} />
-             <Route path="campaign-integration" element={<CloakingIntegration />} />
+            <Route
+              path="campaign-integration"
+              element={<CloakingIntegration />}
+            />
             <Route path="ipListings" element={<IpListings />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="test" element={<Test />} />
@@ -87,10 +90,25 @@ export default function Routess() {
             <Route path="reports" element={<Clicklog />} />
           </Route>
 
-          <Route path='/myProfile' element={
-            <RoutesProtector> <MyProfile/></RoutesProtector>
-            } />
-          
+          <Route
+            path="/myProfile"
+            element={
+              <RoutesProtector>
+                {" "}
+                <MyProfile />
+              </RoutesProtector>
+            }
+          />
+
+          <Route
+            path="/pricing"
+            element={
+              <RoutesProtector>
+                {" "}
+                <CheckoutFlow />
+              </RoutesProtector>
+            }
+          />
 
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />

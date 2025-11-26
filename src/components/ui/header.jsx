@@ -2,7 +2,8 @@ import {
   Menu,
   LogOut,
   User,
-  HelpCircle
+  HelpCircle,
+  DollarSign
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -103,7 +104,16 @@ const Header = ({ onMenuClick }) => {
                   onClick={() => navigate("/myProfile")}
                   className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
                 >
-                  <User className="w-4 h-4 mr-2" /> My Profile
+                  <User className="w-4 h-4 mr-2" />My Profile
+                </button>
+
+                {/* billing */}
+
+                <button
+                  onClick={() => navigate("/")}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
+                >
+                  <DollarSign className="w-4 h-4 mr-2" />Pricing
                 </button>
 
                 {/* Help */}

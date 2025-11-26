@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaUser,
   FaSignOutAlt,
@@ -19,6 +19,15 @@ import { signOutApi } from "../api/Apis";
 const MyProfile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("account");
+  const [user,setUser] = useState(null);
+
+   // Load user AFTER component mounts
+    useEffect(() => {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        setUser(JSON.parse(stored)); // ⬅️ FIX
+      }
+    }, []);
 
   const views = {
     orders: <OrdersView />,
@@ -58,7 +67,7 @@ const MyProfile = () => {
 
         {/* LEFT SIDEBAR */}
         <div className="col-span-3 bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6 max-h-fit ">
-          <div className="text-xl font-bold">ABHISHEK</div>
+          <div className="text-xl font-bold">{user?.name?.split(" ")[0]?.toUpperCase()}</div>
 
           <button
             onClick={handleLogout}

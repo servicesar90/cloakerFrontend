@@ -322,54 +322,89 @@ const Clicklogs = () => {
 
                             {/* Result Icon – if missing show Unknown */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-300">
-                              {item.result ? (
-                                <YourResultIconComponent />
+                              {item.status ? (
+                                <span className="text-gray-500">Money Page</span>
                               ) : (
-                                <span className="text-gray-500">Unknown</span>
+                                <span className="text-gray-500">Save Page</span>
                               )}
                             </td>
 
                             {/* Country + Browser + OS + Device icons */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 w-32 flex items-center gap-2">
-                              {!item?.isocode &&
-                              !item?.browser &&
-                              !item?.os &&
-                              !item?.device ? (
-                                <span className="text-gray-500 text-xs">
-                                  No Device / Browser Info
-                                </span>
-                              ) : (
-                                <>
-                                  {/* Country */}
-                                  {item?.isocode && (
-                                    <img
-                                      src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/${item.isocode.toLowerCase()}.svg`}
-                                      className="w-4 h-4"
-                                    />
-                                  )}
+                               {/* COUNTRY FLAG */}
+                            {item?.isocode ? (
+                              <img
+                                title={item?.country}
+                                data-tooltip-id={`tooltip-${item?.isocode?.toLowerCase()}`}
+                                data-tooltip-content={item?.country}
+                                src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/${
+                                  item?.isocode?.toLowerCase() || "in"
+                                }.svg`}
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  borderRadius: "2px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            ) : (
+                               <img className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/fallback-que.jpg`}/>
+                            )}
 
-                                  {/* Browser */}
-                                  {item?.browser && (
-                                    <img
-                                      src={`/icons/browsers/${item.browser}.png`}
-                                      className="size-4"
-                                    />
-                                  )}
+                            {/* BROWSER ICON */}
+                            {item?.browser ? (
+                              <img
+                                className="size-4"
+                                alt={item?.browser}
+                                data-tooltip-id={`tooltip-${item.browser}`}
+                                data-tooltip-content={item?.browser}
+                                src={`/icons/browsers/${item?.browser}.png`}
+                              />
+                            ) : (
+                              <img className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/fallback-que.jpg`}/>
+                            )}
 
-                                  {/* OS */}
-                                  {item?.os && (
-                                    <img
-                                      src={`/icons/os/${item.os}.png`}
-                                      className="size-4"
-                                    />
-                                  )}
+                            {/* OS ICON */}
+                            {item?.os ? (
+                              <img
+                                className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/os/${item.os}.png`}
+                              />
+                            ) : (
+                               <img className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/fallback-que.jpg`}/>
+                            )}
 
-                                  {/* Device */}
-                                  {item?.device && (
-                                    <span>{getDeviceIcon(item.device)}</span>
-                                  )}
-                                </>
-                              )}
+                            {/* DEVICE ICON */}
+                            {item?.device ? (
+                              <span
+                                data-tooltip-id={`tooltip-${item.device}`}
+                                data-tooltip-content={item.device}
+                              >
+                                {getDeviceIcon(item.device)}
+                              </span>
+                            ) : (
+                              <img className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/fallback-que.jpg`}/>
+                            )}
+
                             </td>
 
                             {/* City */}

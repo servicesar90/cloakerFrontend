@@ -1,5 +1,10 @@
 import React, { useEffect, useState, } from "react";
 import { useLocation } from "react-router-dom";
+import ZipGeneratorButton from "../utils/zipgenerator";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import { apiFunction } from "../api/ApiFunction";
+import { createCampaignApi } from "../api/Apis";
 // Assuming the Tab component is defined or imported here
 
 const CloakingIntegration = () => {
@@ -111,12 +116,73 @@ const CloakingIntegration = () => {
     console.log("Testing URL:", pastedUrl);
   };
 
+  const phpCode = `
+<?php
+// Disable error display (optional for production)
+error_reporting(E_ALL);
+
+// Your external cloaker API URL
+$cloakerApiUrl = "https://app.clockerly.io/api/v2/trafficfilter/${camp?.cid}/${camp?.user_id }";
+// 1. Get IP address
+function getUserIP() {
+  if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
+  elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+  return $_SERVER['REMOTE_ADDR'];
+}
+
+// 2. Collect visitor data
+$visitorData = [
+  "ip" => getUserIP(),
+  "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
+  "referer" => $_SERVER['HTTP_REFERER'] ?? '',
+  "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+  "url" => "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+  "timestamp" => gmdate("c"),
+  "headers" => getallheaders()
+];
+
+echo "<pre>";
+print_r($visitorData);
+echo "</pre>";
+
+
+// 3. Send data to cloaker server
+$ch = curl_init($cloakerApiUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json'
+]);
+$response = curl_exec($ch);
+curl_close($ch);
+echo($response);
+// 4. Handle response
+$data = json_decode($response, true);
+// echo($data);
+echo "<pre>";
+print_r($data);
+echo "</pre>";
+// Based on cloaker decision, redirect or allow
+if ($data && isset($data['action'])) {
+    if ($data['action'] === true && !empty($data['target'])) {
+        header("Location: " . $data['target'], true, 302);
+        exit();
+    } elseif ($data['action'] === 'block') {
+        http_response_code(403);
+        echo "Access Denied";
+        exit();
+    }
+    // If action is 'allow', do nothing and continue loading the page
+}
+?>`
+
   const renderSection = (camp) => {
     switch (tab) {
       case "php-upload":
-        return <Phpupload pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <Phpupload camp={camp} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "php-paste":
-        return <PhpPaste camp={camp} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <PhpPaste camp={camp} phpCode={phpCode} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "wordpress":
         return <Wordpress pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "javascript":
@@ -157,10 +223,7 @@ const CloakingIntegration = () => {
           {tabs?.map((t) => {
             return <Tab t={t} tab={tab} setTab={(id) => setTab(id)} />;
           })}
-          {/* <Tab name="PHP Upload" isActive={false} />
-          <Tab name="PHP Paste" isActive={true} />
-          <Tab name="Wordpress Plugin" isActive={false} />
-          <Tab name="Javascript CDN" isActive={false} /> */}
+  
         </div>
 
         <div>{renderSection(camp)}</div>
@@ -184,7 +247,6 @@ const Tab = ({ t, tab, setTab }) => (
         `}
     onClick={() => {
       setTab(t.id);
-      console.log("tab:", tab, "tabid:", t.id);
     }}
   >
     {t.svg}
@@ -192,7 +254,61 @@ const Tab = ({ t, tab, setTab }) => (
   </button>
 );
 
-const Phpupload = ({ pastedUrl, setPastedUrl }) => (
+// Functionality placeholder for copying and testing
+const handleCopy = (text) => {
+  const formatted = typeof data === "object"
+    ? JSON.stringify(text, null, 2)   // pretty JSON
+    : String(text);  
+  navigator.clipboard.writeText(formatted)
+    .then(() => {
+      alert("Copied to clipboard!");
+    })
+    .catch((err) => {
+      console.error("Failed to copy text: ", err);
+    });
+};
+
+// DOWNLOAD PHP PLUGIN FUNCTION
+const handledownload = () =>{
+
+}
+
+const generateZip = async () => {
+    const zip = new JSZip();
+    // ADD FILES TO ZIP
+    zip.file("readme.txt",`
+      `);
+    
+
+    // GENERATE ZIP (async)
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+
+    // DOWNLOAD ZIP
+    saveAs(zipBlob, "myGeneratedZip.zip");
+  }
+
+
+  async function checkIntegration(campid,url) {
+    
+   const res = await fetch(`${url}/?TS-BHDNR-84848=1`);
+   const text = await res.text();
+
+   let status = "failed"; 
+
+   if (text.trim() === "75289ea809") {
+      status = "success";
+   }
+   const data = {
+    integration:true,
+    integrationUrl:url
+   }
+   const integrate = await apiFunction("patch",createCampaignApi,campid,data)
+   if(integrate.status === 200) return alert("Integration Status: " + status);
+   alert("Integration Error try again"+status);
+}
+
+
+const Phpupload = ({ camp,pastedUrl, setPastedUrl }) => (
   <div>
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
       <p className="text-blue-200 text-sm">
@@ -275,7 +391,7 @@ const Phpupload = ({ pastedUrl, setPastedUrl }) => (
 
       {/* Test URL Button */}
       <button
-        // onClick={handleTestUrl}
+        onClick={()=>checkIntegration(camp?.uid,pastedUrl)}
         className="flex items-center px-6 py-3 bg-green-600 text-white text-base font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md"
       >
         <svg
@@ -295,17 +411,7 @@ const Phpupload = ({ pastedUrl, setPastedUrl }) => (
   </div>
 );
 
-// Functionality placeholder for copying and testing
-const handleCopy = (text) => {
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      alert("Copied to clipboard!");
-    })
-    .catch((err) => {
-      console.error("Failed to copy text: ", err);
-    });
-};
-const PhpPaste = ({camp, pastedUrl, setPastedUrl }) => (
+const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
   <div>
     {/* === 3. Guidance/Warning Banner (Unchanged) === */}
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
@@ -335,75 +441,14 @@ const PhpPaste = ({camp, pastedUrl, setPastedUrl }) => (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 font-mono text-sm overflow-auto max-h-96 relative">
         <pre className="text-green-400 whitespace-pre-wrap text-left">
           {/* PHP Code Snippet */}
-          {`
-<?php
-// Disable error display (optional for production)
-error_reporting(E_ALL);
-
-// Your external cloaker API URL
-$cloakerApiUrl = "https://app.clockerly.io/api/v2/trafficfilter/${camp?.cid}/${camp?.user_id }";
-// 1. Get IP address
-function getUserIP() {
-  if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
-  elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-  return $_SERVER['REMOTE_ADDR'];
-}
-
-// 2. Collect visitor data
-$visitorData = [
-  "ip" => getUserIP(),
-  "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
-  "referer" => $_SERVER['HTTP_REFERER'] ?? '',
-  "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
-  "url" => "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-  "timestamp" => gmdate("c"),
-  "headers" => getallheaders()
-];
-
-echo "<pre>";
-print_r($visitorData);
-echo "</pre>";
-
-
-// 3. Send data to cloaker server
-$ch = curl_init($cloakerApiUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json'
-]);
-$response = curl_exec($ch);
-curl_close($ch);
-echo($response);
-// 4. Handle response
-$data = json_decode($response, true);
-// echo($data);
-echo "<pre>";
-print_r($data);
-echo "</pre>";
-// Based on cloaker decision, redirect or allow
-if ($data && isset($data['action'])) {
-    if ($data['action'] === true && !empty($data['target'])) {
-        header("Location: " . $data['target'], true, 302);
-        exit();
-    } elseif ($data['action'] === 'block') {
-        http_response_code(403);
-        echo "Access Denied";
-        exit();
-    }
-    // If action is 'allow', do nothing and continue loading the page
-}
-?>
-
-                            `}
+          {phpCode}
         </pre>
       </div>
     </div>
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
     <button
-      onClick={handleCopy}
+      onClick={()=> handleCopy(phpCode)}
       className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     >
       <svg
@@ -498,7 +543,7 @@ const Wordpress = ({ pastedUrl, setPastedUrl }) => (
       </p>
 
       <button
-        //   onClick={handleCopy}
+          onClick={generateZip}
         className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
       >
         <svg
@@ -532,66 +577,95 @@ const Wordpress = ({ pastedUrl, setPastedUrl }) => (
         <pre className="text-green-400 whitespace-pre-wrap text-left">
           {/* PHP Code Snippet */}
           {`
-}<?php
-// Disable error display (optional for production)
-error_reporting(E_ALL);
+<?php
+error_reporting(0);
 
-// Your external cloaker API URL
-$cloakerApiUrl = "http://localhost:2000/api/v2/trafficfilter";
-// 1. Get IP address
-function getUserIP() {
-  if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
-  elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-  return $_SERVER['REMOTE_ADDR'];
-}
+class ClockerlyShield {
 
-// 2. Collect visitor data
-$visitorData = [
-  "ip" => getUserIP(),
-  "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
-  "referer" => $_SERVER['HTTP_REFERER'] ?? '',
-  "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
-  "url" => "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-  "timestamp" => gmdate("c"),
-  "headers" => getallheaders()
-];
+    private $apiUrl;
 
-echo "<pre>";
-print_r($visitorData);
-echo "</pre>";
-
-
-// 3. Send data to cloaker server
-$ch = curl_init($cloakerApiUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json'
-]);
-$response = curl_exec($ch);
-curl_close($ch);
-echo($response);
-// 4. Handle response
-$data = json_decode($response, true);
-// echo($data);
-echo "<pre>";
-print_r($data);
-echo "</pre>";
-// Based on cloaker decision, redirect or allow
-if ($data && isset($data['action'])) {
-    if ($data['action'] === 'redirect' && !empty($data['target'])) {
-        header("Location: " . $data['target'], true, 302);
-        exit();
-    } elseif ($data['action'] === 'block') {
-        http_response_code(403);
-        echo "Access Denied";
-        exit();
+    function __construct($campId, $userId) {
+        $this->apiUrl = "https://app.clockerly.io/api/v2/trafficfilter/$campId/$userId";
     }
-    // If action is 'allow', do nothing and continue loading the page
+
+    public function run() {
+        ob_start();
+        $this->process();
+    }
+
+    private function process() {
+        $visitor = $this->collectVisitorData();
+        $response = $this->sendRequest($visitor);
+        $this->handle($response);
+    }
+
+    private function getIP() {
+        if (!empty($_SERVER['HTTP_CLIENT_IP']))
+            return $_SERVER['HTTP_CLIENT_IP'];
+
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+            return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+
+        return $_SERVER['REMOTE_ADDR'];
+    }
+
+    private function collectVisitorData() {
+        return [
+            "ip" => $this->getIP(),
+            "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            "referer" => $_SERVER['HTTP_REFERER'] ?? '',
+            "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+            "url" => "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+            "timestamp" => gmdate("c"),
+            "headers" => function_exists('getallheaders') ? getallheaders() : []
+        ];
+    }
+
+    private function sendRequest($visitorData) {
+        $ch = curl_init($this->apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Content-Type: application/json"
+        ]);
+
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($result, true);
+    }
+
+    private function handle($data) {
+
+        if (!$data || !isset($data["action"])) {
+            return; // allow page load
+        }
+
+        // If cloaker says redirect
+        if ($data["action"] === true && !empty($data['target'])) {
+            header("Location: " . $data["target"], true, 302);
+            exit();
+        }
+
+        // If cloaker blocks
+        if ($data["action"] === "block") {
+            http_response_code(403);
+            echo "Access Denied";
+            exit();
+        }
+
+        // If allow → do nothing
+        return;
+    }
 }
+
+
+$cloaker = new ClockerlyShield($camp->cid, $camp->user_id);
+$cloaker->run();
+
 ?>
-}
                             `}
         </pre>
       </div>

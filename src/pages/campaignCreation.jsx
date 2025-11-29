@@ -2500,6 +2500,8 @@ export default function CampaignBuilder() {
       // merge moneyPages from local state into data (to ensure latest)
       // data.money_page = moneyPages;
       data.status = activeStatus;
+      console.log("cmpdata",data);
+      
 
       if (location?.state?.mode === "edit") {
         const uid = location?.state?.data?.uid;

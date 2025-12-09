@@ -131,7 +131,7 @@ function AllCampaignsDashboard() {
 
   const handleStatusTabChange = (tab) => setActiveStatusTab(tab);
   const handleAddNewCampaign = () => {
-    console.log("hcxhgcaxhc");
+   
 
     showInfoToast("Redirecting to Creating New Campaign");
     navigate("/Dashboard/create-campaign");
@@ -225,16 +225,16 @@ function AllCampaignsDashboard() {
 
           return (
             <tr key={campaignId}>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-12">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-12">
                 {index + 1}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-blue-400 hover:text-blue-300 cursor-pointer w-40">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-blue-400 text-left hover:text-blue-300  w-40">
                 {item.campaign_info?.campaignName || "Not Provided"}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-24">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-24">
                 {item.campaign_info?.trafficSource || "Not Provided"}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm w-24">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-24">
                 <span
                   className={`font-semibold ${
                     item.status === "Active"
@@ -247,7 +247,7 @@ function AllCampaignsDashboard() {
                   {item.status || "Active"}
                 </span>
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm w-32">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-32">
                 {/* Intergration Icon Logic (unchanged) */}
                 {item.intergration ? (
                   <svg
@@ -279,10 +279,10 @@ function AllCampaignsDashboard() {
                   </svg>
                 )}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-20">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
                 {item?.CampaignIps[0]?.t_clicks || "No Clicks"}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-16">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-16">
                 {/* Safe Money Logic (unchanged) */}
                 <span className="flex items-center space-x-1">
                   <svg
@@ -295,7 +295,7 @@ function AllCampaignsDashboard() {
                   <span>{item?.CampaignIps[0]?.s_clicks || 0}</span>
                 </span>
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-20">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
                 <span className="flex items-center space-x-1">
                   <svg
                     className="h-4 w-4 text-yellow-500"
@@ -307,7 +307,7 @@ function AllCampaignsDashboard() {
                   <span>{item?.CampaignIps[0]?.m_clicks || 0}</span>
                 </span>
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 w-48">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-48">
                 {new Date(item.date_time).toLocaleString("en-GB", {
                   day: "2-digit",
                   month: "2-digit",
@@ -320,17 +320,17 @@ function AllCampaignsDashboard() {
               {/* ⭐ UPDATED ACTION COLUMN */}
               <td
                 ref={isDropdownOpen ? dropdownRef : null}
-                className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 relative"
+                className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 text-left w-20 relative"
               >
                 <button
                   onClick={() => handleActionClick(item?.uid)}
-                  className={`text-2xl leading-none font-bold p-1 rounded-full ${
+                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
                     isDropdownOpen
                       ? "bg-gray-600 text-white"
                       : "hover:bg-gray-700"
                   }`}
                 >
-                  ⋮ {/* Vertical three dots */}
+                 ⋯ {/* Vertical three dots */}
                 </button>
                 {isDropdownOpen && renderActionDropdown(item?.uid,item)}
               </td>
@@ -438,7 +438,7 @@ function AllCampaignsDashboard() {
       </div>
 
       {/* Campaign Table Container (Unchanged) */}
-      <div className="mt-4 overflow-x-auto  min-h-[50vh]">
+      <div className="mt-4 overflow-y-auto  ">
         <table className="min-w-full divide-y divide-gray-700 table-fixed">
           <thead className="bg-gray-800">
             <tr>
@@ -480,7 +480,7 @@ function AllCampaignsDashboard() {
       </div>
 
       {/* Pagination/Summary Section (Unchanged) */}
-      <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
+      {/* <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
         <div>
           {campaigns.length > 0
             ? `1 to ${campaigns.length} Items of ${totalItems}`
@@ -498,7 +498,7 @@ function AllCampaignsDashboard() {
             Next
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Fixed Components */}
     </div>

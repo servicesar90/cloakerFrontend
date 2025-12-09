@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect,useCallback, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -9,53 +9,139 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/solid";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+// import {ipClicks} from "../api/Apis.js";
+import { apiFunction } from "../api/ApiFunction.js";
+import { ipClicks, campdata,getAllCampaign } from "../api/Apis.js";
 
 const Dashboard = () => {
-  const [chartData] = useState([
-    { date: "Nov 04", Safe: 120, Money: 0 },
-    { date: "Nov 05", Safe: 30, Money: 25 },
-    { date: "Nov 06", Safe: 10, Money: 8 },
-    { date: "Nov 07", Safe: 35, Money: 28 },
-    { date: "Nov 08", Safe: 5, Money: 4 },
-    { date: "Nov 09", Safe: 22, Money: 14 },
-  ]);
-
-  const [campaigns] = useState([
-    {
-      id: 1,
-      name: "fb",
-      source: "Facebook Adverts",
-      status: "active",
-      integration: "ok",
-      clicks: 36,
-      safe: 22,
-      money: 14,
-      createdOn: "07 Nov, 2025 08:19 PM",
-    },
-  ]);
+ 
 
   const [page, setPage] = useState(1);
-  const totalCampaigns = campaigns.length;
-  const activeCount = 1;
-  const allowAll = 0;
-  const blockAll = 0;
+  const [stats, setStats] = useState({
+    total_campaigns: 0,
+    active_campaigns: 0,
+    blocked_campaigns: 0,
+    allowed_campaigns: 0,
+  });
+
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate=useNavigate()
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [totalItems, setTotalItems] = useState(0);
+    const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [clickSummary, setClickSummary] = useState({
+    totalClicks: 0,
+    safeClicks: 0,
+    moneyClicks: 0,
+  });
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
+ const handleRefresh = () => {
+  fetchIpClicks();
+  fetchStats();
+  fetchCampaigns();
 
-  const handleRefresh = () => alert("Refresh Account Clicked");
+};
+
   const goToCampaign = (id) => alert("Open campaign: " + id);
   const prevPage = () => setPage((p) => Math.max(1, p - 1));
   const nextPage = () => setPage((p) => p + 1);
 
-   const handleAddTask = () => {
+
+  const fetchIpClicks = async () => {
+  try {
+    setLoading(true);
+
+    const res = await apiFunction("get", ipClicks);
+    const rawData = res?.data?.data || [];
+
+    const formattedData = rawData.map((item) => ({
+      date: new Date(item.date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      }),
+      Safe: Number(item.total_s_clicks || 0),
+      Money: Number(item.total_m_clicks || 0),
+      Total: Number(item.total_t_clicks || 0),
+    }));
+
+    setChartData(formattedData);
+
+    const totals = rawData.reduce(
+      (acc, item) => {
+        acc.totalClicks += Number(item.total_t_clicks || 0);
+        acc.safeClicks += Number(item.total_s_clicks || 0);
+        acc.moneyClicks += Number(item.total_m_clicks || 0);
+        return acc;
+      },
+      { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+    );
+
+    setClickSummary(totals);
+  } catch (err) {
+    console.error("IP Click API Error:", err);
+    setChartData([]);
+    setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const fetchCampaigns = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await apiFunction("get", getAllCampaign, null, null);
+      console.log(response.data);
+
+      // Assume total items is available in response.data.total or we use array length
+      const dataRows = response.data.data || [];
+
+      setCampaigns(dataRows);
+      setTotalItems(response.data.total || dataRows.length);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching campaigns:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to load campaign data.";
+      setError(errorMessage); // Updated to show actual error if available
+      setIsLoading(false);
+      setCampaigns([]);
+      setTotalItems(0);
+    }
+  }, []);
+
+
+const fetchStats = async () => {
+  try {
+    const res = await apiFunction("get", campdata, null, null);
+
+    setStats({
+      total_campaigns: res?.data?.data?.total_campaigns || 0,
+      active_campaigns: res?.data?.data?.active_campaigns || 0,
+      blocked_campaigns: res?.data?.data?.blocked_campaigns || 0,
+      allowed_campaigns: res?.data?.data?.allowed_campaigns || 0,
+    });
+  } catch (error) {
+    console.error("Stats API Error:", error);
+  }
+};
+
+
+
+  const handleAddTask = () => {
     if (!newTask.trim()) return;
     const task = {
       id: Date.now(),
@@ -85,21 +171,293 @@ const Dashboard = () => {
     task.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
+   const handleActionClick = (campaignId) => {
+      // ड्रॉपडाउन को टॉगल (toggle) करता है
+      setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
+    };
+  
+    const handleActionSelect = async (action, campaignId,row) => {
+      setOpenDropdownId(null); // मेनू बंद करें
+      switch (action) {
+        case "edit":
+          alert(`Editing campaign ID: ${campaignId}`);
+          navigate("/Dashboard/create-campaign", {
+            state: {
+              mode: "edit",
+              data: row, // campaign data from db
+            },
+          });
+          // TODO: Navigate to Edit screen or open a modal
+          break;
+        case "duplicate":
+          alert(`Duplicating campaign ID: ${campaignId}`);
+          // TODO: Call API to duplicate campaign
+          break;
+        case "delete":
+          if (
+            window.confirm(
+              `Are you sure you want to delete campaign ID: ${campaignId}?`
+            )
+          ) {
+            // TODO: Call API to delete campaign and then fetchCampaigns() to refresh
+            const res = await apiFunction(
+              "delete",
+              createCampaignApi,
+              campaignId,
+              null
+            );
+            if (res) return alert(`Deleting campaign ID: ${campaignId}`);
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+     const handleAddNewCampaign = () => {
+       
+    
+        showInfoToast("Redirecting to Creating New Campaign");
+        navigate("/Dashboard/create-campaign");
+      };
+
+  
+
+
+  useEffect(() => {
+  fetchIpClicks();
+  fetchStats();
+  fetchCampaigns();
+}, []);
+
+ useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdownId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []); 
+
+
+ 
+
+  // ✅ Load Todos from LocalStorage on page load
+  useEffect(() => {
+    const savedTasks = localStorage.getItem("dashboard_todos");
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+  }, []);
+
+  // ✅ Auto Save Todos to LocalStorage
+  useEffect(() => {
+    localStorage.setItem("dashboard_todos", JSON.stringify(tasks));
+  }, [tasks]);
+
   // Small reusable StatCard
   const StatCard = ({ icon, value, title, subtitle }) => (
-  <div className="bg-gray-850/40 border border-gray-700 rounded-lg p-4 flex flex-col justify-between">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-md bg-slate-800 text-lg">{icon}</div>
-        <div>
-          <div className="text-2xl font-semibold text-white">{value}</div>
-          <div className="text-xs text-slate-400">{title}</div>
+    <div className="bg-gray-850/40 border border-gray-700 rounded-lg p-4 flex flex-col justify-between">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-md bg-slate-800 text-lg">{icon}</div>
+          <div>
+            <div className="text-2xl font-semibold text-white">{value}</div>
+            <div className="text-xs text-slate-400">{title}</div>
+          </div>
         </div>
+        <div className="text-xs text-slate-400">{subtitle}</div>
       </div>
-      <div className="text-xs text-slate-400">{subtitle}</div>
     </div>
-  </div>
-);
+  );
+
+
+   const renderActionDropdown = (campaignId,row) => (
+    // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
+    <div className="absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20">
+      <div className="py-1">
+        <button
+          onClick={() => handleActionSelect("edit", campaignId,row)}
+          className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100"
+        >
+          Edit Campaign
+        </button>
+        <button
+          onClick={() => handleActionSelect("duplicate", campaignId,null)}
+          className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100"
+        >
+          Duplicate Campaign
+        </button>
+        <button
+          onClick={() => handleActionSelect("delete", campaignId,null)}
+          className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100"
+        >
+          Delete Campaign
+        </button>
+      </div>
+    </div>
+  );
+
+
+    const renderTableContent = () => {
+    // ... (Loading/Error/Empty Data checks)
+    if (isLoading) {
+      /* ... loading JSX ... */ return (
+        <div className="text-center py-10 text-xl text-blue-400">
+          <div
+            className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-500 rounded-full"
+            role="status"
+          ></div>
+          <p className="mt-4">Loading Campaigns...</p>
+        </div>
+      );
+    }
+    if (error) {
+      /* ... error JSX ... */ return (
+        <div className="text-center py-10 text-red-500 text-xl">
+          Error: {error}
+        </div>
+      );
+    }
+    if (campaigns.length === 0) {
+      /* ... empty JSX ... */ return (
+        <span className="flex justify-center items-center">
+          <div className=" py-10 text-gray-500 text-md">
+            No campaigns found.
+          </div>
+        </span>
+      );
+    }
+
+    // --- Actual Table Body Rendering ---
+    return (
+      <tbody className="bg-gray-900 divide-y divide-gray-800">
+        {campaigns.map((item, index) => {
+          const campaignId = item.campaign_info?.campaign_id || index;
+          const isDropdownOpen = openDropdownId === item?.uid;
+          console.log(openDropdownId, campaignId);
+
+          return (
+            <tr key={campaignId}>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-12">
+                {index + 1}
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-blue-400 text-left hover:text-blue-300 cursor-pointer w-40">
+                {item.campaign_info?.campaignName || "Not Provided"}
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-24">
+                {item.campaign_info?.trafficSource || "Not Provided"}
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-24">
+                <span
+                  className={`font-semibold ${
+                    item.status === "Active"
+                      ? "text-green-500"
+                      : item.status === "Block"
+                      ? "text-red-500"
+                      : "text-yellow-500"
+                  }`}
+                >
+                  {item.status || "Active"}
+                </span>
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-32">
+                {/* Intergration Icon Logic (unchanged) */}
+                {item.intergration ? (
+                  <svg
+                    className="h-5 w-5 text-green-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5 text-red-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
+                {item?.CampaignIps[0]?.t_clicks || "No Clicks"}
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-16">
+                {/* Safe Money Logic (unchanged) */}
+                <span className="flex items-center space-x-1">
+                  <svg
+                    className="h-4 w-4 text-green-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{item?.CampaignIps[0]?.s_clicks || 0}</span>
+                </span>
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
+                <span className="flex items-center space-x-1">
+                  <svg
+                    className="h-4 w-4 text-yellow-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 9a1 1 0 110-2 1 1 0 010 2zm4 0a1 1 0 110-2 1 1 0 010 2zm-4 2a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1zm4 0a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1z" />
+                  </svg>
+                  <span>{item?.CampaignIps[0]?.m_clicks || 0}</span>
+                </span>
+              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-48">
+                {new Date(item.date_time).toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </td>
+              {/* ⭐ UPDATED ACTION COLUMN */}
+              <td
+                ref={isDropdownOpen ? dropdownRef : null}
+                className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 text-left relative"
+              >
+                <button
+                  onClick={() => handleActionClick(item?.uid)}
+                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
+                    isDropdownOpen
+                      ? "bg-gray-600 text-white"
+                      : "hover:bg-gray-700"
+                  }`}
+                >
+                  ⋯ {/* Vertical three dots */}
+                </button>
+                {isDropdownOpen && renderActionDropdown(item?.uid,item)}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    );
+  };
 
 
   return (
@@ -110,244 +468,200 @@ const Dashboard = () => {
           <h2 className="text-2xl font-semibold">Dashboard</h2>
           <p className="text-slate-400 text-sm">Let's do something new.</p>
         </div>
-        <button
-          onClick={handleRefresh}
-          className="bg-blue-600 px-4 py-2 rounded-md"
-        >
-          Refresh Account
-        </button>
+       <div className="flex space-x-3">
+          <button
+            onClick={handleAddNewCampaign}
+            className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm shadow-lg transition duration-150 cursor-pointer"
+          >
+            <svg
+              className="h-5 w-5 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add New Campaign
+          </button>
+          <button
+            onClick={handleRefresh}
+            className="flex items-center cursor-pointer px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-sm shadow-lg transition duration-150"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Top Stats */}
       <div className="mb-6 flex gap-6 flex-wrap">
-        <StatCard
-          icon="📊"
-          value={totalCampaigns}
-          title="Campaigns"
-          
-        />
-        <StatCard
-          icon="▶️"
-          value={activeCount}
-          title="Active"
-         
-        />
-        <StatCard
-          icon="⚡"
-          value={allowAll}
-          title="Allow All"
-          
-        />
-        <StatCard
-          icon="🚫"
-          value={blockAll}
-          title="Block All"
-         
-        />
+        <StatCard icon="📊" value={stats.total_campaigns} title="Campaigns" />
+        <StatCard icon="▶️" value={stats.active_campaigns} title="Active" />
+        <StatCard icon="⚡" value={stats.allowed_campaigns} title="Allow All" />
+        <StatCard icon="🚫" value={stats.blocked_campaigns} title="Block All" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side */}
-       
+      <div className="bg-gray-850/40 border border-gray-700 rounded-lg p-6">
+        <h3 className="text-white text-lg font-semibold mb-2">
+          Clicks Overview
+        </h3>
+        <p className="text-sm text-slate-400 mb-4">Cumulative Click Log</p>
 
-        {/* Right Panel */}
-        
-      </div>
+        <div style={{ width: "100%", height: 260 }}>
+          {loading ? (
+            <p style={{ textAlign: "center", marginTop: "20px" }}>Loading...</p>
+          ) : chartData?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="text-4xl mb-2">📉</div>
+              <p className="text-slate-400 text-sm font-medium">
+                No IP Click Data Available
+              </p>
+              <p className="text-slate-500 text-xs mt-1">
+                Data will appear here once clicks are recorded.
+              </p>
+            </div>
+          ) : (
+            <ResponsiveContainer>
+              <BarChart
+                data={chartData}
+                margin={{ top: 10, right: 20, left: -8, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="safeGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.2} />
+                  </linearGradient>
 
+                  <linearGradient
+                    id="moneyGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.2} />
+                  </linearGradient>
+                </defs>
 
-
-       <div className="lg:col-span-2 space-y-6">
-          {/* Chart */}
-          <div className="bg-gray-850/40 border border-gray-700 rounded-lg p-6">
-            <h3 className="text-white text-lg font-semibold mb-2">
-              Clicks Overview
-            </h3>
-            <p className="text-sm text-slate-400 mb-4">
-              Cumulative Click Log
-            </p>
-            <div style={{ width: "100%", height: 260 }}>
-  <ResponsiveContainer>
-    <BarChart
-      data={chartData}
-      margin={{ top: 10, right: 20, left: -8, bottom: 0 }}
-    >
-      <defs>
-        {/* Blue gradient for "Safe" */}
-        <linearGradient id="safeGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9} />
-          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.2} />
-        </linearGradient>
-        {/* Green gradient for "Money" */}
-        <linearGradient id="moneyGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.9} />
-          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.2} />
-        </linearGradient>
-      </defs>
-
-      <CartesianGrid stroke="#1e293b" vertical={false} strokeDasharray="3 3" />
-      <XAxis
-        dataKey="date"
-        tick={{ fill: "#9ca3af", fontSize: 12 }}
-        tickLine={false}
-        axisLine={false}
-      />
-      <YAxis
-        tick={{ fill: "#9ca3af", fontSize: 12 }}
-        tickLine={false}
-        axisLine={false}
-      />
-
-      <Tooltip
-        contentStyle={{
-          background: "#0f172a",
-          border: "1px solid #1e293b",
-          borderRadius: "6px",
-          color: "#fff",
-        }}
-        cursor={{ fill: "rgba(255,255,255,0.05)" }}
-      />
-
-      <Legend
-        wrapperStyle={{
-          color: "#9ca3af",
-          fontSize: 12,
-        }}
-        iconType="circle"
-        verticalAlign="top"
-        align="right"
-      />
-
-      {/* Bars with gradient + rounded top */}
-      <Bar
-        dataKey="Safe"
-        stackId="a"
-        fill="url(#safeGradient)"
-        barSize={16}
-        radius={[4, 4, 0, 0]}
-      />
-      <Bar
-        dataKey="Money"
-        stackId="a"
-        fill="url(#moneyGradient)"
-        barSize={16}
-        radius={[4, 4, 0, 0]}
-      />
-    </BarChart>
-  </ResponsiveContainer>
-</div>
-
-          </div>
-
-          {/* Campaign Table */}
-          <div className="bg-transparent">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-white text-xl font-semibold">
-                  All Campaigns{" "}
-                  <span className="text-slate-500 text-sm">
-                    ( {campaigns.length} )
-                  </span>
-                </h3>
-                <div className="text-slate-400 text-sm">
-                  Create/Edit/Delete Campaigns
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="bg-slate-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm focus:outline-none"
+                <CartesianGrid
+                  stroke="#1e293b"
+                  vertical={false}
+                  strokeDasharray="3 3"
                 />
-                <Link to='/Dashboard/create-campaign'>
-                <button className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm cursor-pointer">
-                  + Add New Campaign
-                </button></Link>
-                
-              </div>
-            </div>
 
-            <div className="overflow-x-auto rounded-lg border border-gray-700">
-              <table className="min-w-full divide-y divide-gray-800">
-                <thead>
-                  <tr className="text-left text-sm text-slate-400">
-                    <th className="px-4 py-3">Sn</th>
-                    <th className="px-4 py-3">Campaign Name</th>
-                    <th className="px-4 py-3">Source</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Integration</th>
-                    <th className="px-4 py-3">Clicks</th>
-                    <th className="px-4 py-3">Safe</th>
-                    <th className="px-4 py-3">Money</th>
-                    <th className="px-4 py-3">Created on</th>
-                    <th className="px-4 py-3">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-transparent divide-y divide-gray-800">
-                  {campaigns.map((c, idx) => (
-                    <tr
-                      key={c.id}
-                      className="text-sm text-slate-300 hover:bg-slate-900/30"
-                    >
-                      <td className="px-4 py-3">{idx + 1}</td>
-                      <td className="px-4 py-3 font-medium text-white">
-                        {c.name}
-                      </td>
-                      <td className="px-4 py-3 text-slate-400">{c.source}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`inline-block w-3 h-3 rounded-full ${
-                              c.status === "active"
-                                ? "bg-green-400"
-                                : "bg-gray-500"
-                            }`}
-                          ></span>
-                          <span className="text-xs">{c.status}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-400">
-                        {c.integration}
-                      </td>
-                      <td className="px-4 py-3">{c.clicks}</td>
-                      <td className="px-4 py-3">{c.safe}</td>
-                      <td className="px-4 py-3">{c.money}</td>
-                      <td className="px-4 py-3 text-slate-400 text-xs">
-                        {c.createdOn}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => goToCampaign(c.id)}
-                          className="text-xs bg-slate-800 px-2 py-1 rounded-md text-slate-200 hover:bg-slate-700"
-                        >
-                          ...
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                <XAxis
+                  dataKey="date"
+                  tick={{ fill: "#9ca3af", fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
 
-            {/* Pagination */}
-            <div className="mt-4 flex items-center justify-end gap-2">
-              <button
-                onClick={prevPage}
-                className="px-3 py-1 rounded-md bg-slate-800 text-slate-200"
-              >
-                <ChevronLeftIcon className="w-4 h-4" />
-              </button>
-              <div className="px-3 py-1 rounded-md bg-slate-800 text-slate-200">
-                {page}
-              </div>
-              <button
-                onClick={nextPage}
-                className="px-3 py-1 rounded-md bg-slate-800 text-slate-200"
-              >
-                <ChevronRightIcon className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+                <YAxis
+                  tick={{ fill: "#9ca3af", fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+
+                <Tooltip
+                  contentStyle={{
+                    background: "#0f172a",
+                    border: "1px solid #1e293b",
+                    borderRadius: "6px",
+                    color: "#fff",
+                  }}
+                  cursor={{ fill: "rgba(255,255,255,0.05)" }}
+                />
+
+                <Legend
+                  wrapperStyle={{
+                    color: "#9ca3af",
+                    fontSize: 12,
+                  }}
+                  iconType="circle"
+                  verticalAlign="top"
+                  align="right"
+                />
+
+                <Bar
+                  dataKey="Safe"
+                  stackId="a"
+                  fill="url(#safeGradient)"
+                  barSize={16}
+                  radius={[4, 4, 0, 0]}
+                />
+
+                <Bar
+                  dataKey="Money"
+                  stackId="a"
+                  fill="url(#moneyGradient)"
+                  barSize={16}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
+      </div>
+
+
+       <div className="mt-4 overflow-y-auto">
+        <table className="min-w-full divide-y divide-gray-700 table-fixed">
+          <thead className="bg-gray-800">
+            <tr>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-12">
+                Sn <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-40">
+                Campaign Name <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-24">
+                Source <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-24">
+                Status <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-32">
+                Intergration <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
+                Clicks <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-16">
+                Safe <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
+                Money <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-48">
+                Created on <span className="text-sm">⇅</span>
+              </th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
+                Action 
+              </th>
+            </tr>
+          </thead>
+          {/* Dynamic Table Body (Handles Loading/Error/Data) */}
+          {renderTableContent()}
+        </table>
+      </div>
 
       {/* Bottom Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -357,15 +671,70 @@ const Dashboard = () => {
             <h4 className="text-white font-semibold">To do</h4>
             <div className="text-slate-400 text-sm">Reminders List for me</div>
           </div>
+
           <div className="bg-slate-900 border border-gray-800 rounded-md p-4 min-h-[120px]">
+            {/* ✅ Search */}
             <input
-              className="w-full bg-transparent border border-gray-700 px-3 py-2 rounded-md text-slate-300"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-transparent border border-gray-700 px-3 py-2 rounded-md text-slate-300 mb-3"
               placeholder="Search tasks"
             />
-            <div className="mt-4 text-slate-400">0 tasks</div>
-            <button className="mt-6 bg-blue-600 text-white px-4 py-2 rounded-md">
-              + Add new task
-            </button>
+
+            {/* ✅ Add Task */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <input
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                className="flex-1 w-full bg-transparent border border-gray-700 px-3 py-2 rounded-md text-slate-300"
+                placeholder="Write new task..."
+              />
+              <button
+                onClick={handleAddTask}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer"
+              >
+                Add
+              </button>
+            </div>
+
+            {/* ✅ Task List */}
+            <div className="space-y-2 max-h-[180px] overflow-y-auto">
+              {filteredTasks.length === 0 ? (
+                <p className="text-slate-400 text-sm text-center">
+                  No tasks found
+                </p>
+              ) : (
+                filteredTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-md"
+                  >
+                    <div
+                      onClick={() => handleToggleComplete(task.id)}
+                      className={`cursor-pointer text-sm ${
+                        task.completed
+                          ? "line-through text-slate-500"
+                          : "text-white"
+                      }`}
+                    >
+                      {task.text}
+                    </div>
+
+                    <button
+                      onClick={() => handleDeleteTask(task.id)}
+                      className="text-red-400 text-xs hover:text-red-300"
+                    >
+                      ❌
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* ✅ Task Count */}
+            <div className="mt-3 text-slate-400 text-xs text-right">
+              {tasks.length} tasks
+            </div>
           </div>
         </div>
 
@@ -379,30 +748,44 @@ const Dashboard = () => {
               Recent activity across all campaigns
             </div>
           </div>
+
           <div className="bg-slate-900 border border-gray-800 rounded-md p-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="bg-slate-800 p-4 rounded-md inline-block">
-                  <div className="text-2xl font-semibold text-white">14</div>
+            {loading ? (
+              <p className="text-center text-slate-400">Loading...</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {/* 🔥 Total Clicks */}
+                <div className="text-center">
+                  <div className="bg-slate-800 p-4 rounded-md inline-block">
+                    <div className="text-2xl font-semibold text-white">
+                      {clickSummary.totalClicks}
+                    </div>
+                  </div>
+                  <div className="text-slate-400 text-xs mt-2">
+                    Total Clicks
+                  </div>
                 </div>
-                <div className="text-slate-400 text-xs mt-2">Total Clicks</div>
-              </div>
-              <div className="text-center">
-                <div className="bg-slate-800 p-4 rounded-md inline-block">
-                  <div className="text-2xl font-semibold text-white">22</div>
+
+                {/* 🔥 Safe Clicks */}
+                <div className="text-center">
+                  <div className="bg-slate-800 p-4 rounded-md inline-block">
+                    <div className="text-2xl font-semibold text-white">
+                      {clickSummary.safeClicks}
+                    </div>
+                  </div>
+                  <div className="text-slate-400 text-xs mt-2">Safe Clicks</div>
                 </div>
-                <div className="text-slate-400 text-xs mt-2">Safe Clicks</div>
+
+                
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
-      <footer className="mt-10 text-slate-400 text-sm">
-        © 2025 Trafficshield.io, All Rights Reserved
-      </footer>
+    
     </div>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

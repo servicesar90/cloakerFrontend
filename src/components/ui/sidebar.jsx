@@ -234,7 +234,7 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
         onMouseLeave={() => setHovered(false)}
       >
         <div
-          className={`h-[93vh] mt-[-8vh] bg-white shadow-md ${
+          className={`h-[100vh] mt-[-8vh] bg-white shadow-md ${
             collapsed && !hovered ? "w-16" : "w-60"
           } transition-[width] duration-500 ease-in-out`}
         >

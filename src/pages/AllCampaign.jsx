@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { createCampaignApi, getAllCampaign } from "../api/Apis";
+import { createCampaignApi, getAllCampaign, ipClicks } from "../api/Apis";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
 import { showInfoToast } from "../components/toast/toast";
@@ -17,11 +17,18 @@ function AllCampaignsDashboard() {
   const [activeStatusTab, setActiveStatusTab] = useState("All");
   const [dateRange, setDateRange] = useState("d/m/y to d/m/y");
   const [searchTerm, setSearchTerm] = useState("");
+  const [chartData, setChartData] = useState([]);
 
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalItems, setTotalItems] = useState(0);
+   const [loading, setLoading] = useState(true);
+   const [clickSummary, setClickSummary] = useState({
+      totalClicks: 0,
+      safeClicks: 0,
+      moneyClicks: 0,
+    });
 
   // ⭐ NEW STATE for Dropdown
   const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -57,8 +64,49 @@ function AllCampaignsDashboard() {
     }
   }, []);
 
+
+    const fetchIpClicks = async () => {
+      try {
+        setLoading(true);
+  
+        const res = await apiFunction("get", ipClicks);
+        const rawData = res?.data?.data || [];
+  
+        const formattedData = rawData.map((item) => ({
+          date: new Date(item.date).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+          }),
+          Safe: Number(item.total_s_clicks || 0),
+          Money: Number(item.total_m_clicks || 0),
+          Total: Number(item.total_t_clicks || 0),
+        }));
+  
+        setChartData(formattedData);
+  
+        const totals = rawData.reduce(
+          (acc, item) => {
+            acc.totalClicks += Number(item.total_t_clicks || 0);
+            acc.safeClicks += Number(item.total_s_clicks || 0);
+            acc.moneyClicks += Number(item.total_m_clicks || 0);
+            return acc;
+          },
+          { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+        );
+  
+        setClickSummary(totals);
+      } catch (err) {
+        console.error("IP Click API Error:", err);
+        setChartData([]);
+        setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
+      } finally {
+        setLoading(false);
+      }
+    };
+
   useEffect(() => {
     fetchCampaigns();
+    fetchIpClicks();
   }, [fetchCampaigns]);
 
   useEffect(() => {
@@ -185,7 +233,7 @@ function AllCampaignsDashboard() {
     </div>
   );
 
-   const renderTableContent = () => {
+    const renderTableContent = () => {
     // ... (Loading/Error/Empty Data checks)
     if (isLoading) {
       /* ... loading JSX ... */ return (
@@ -248,22 +296,28 @@ function AllCampaignsDashboard() {
                   {item.status || "Active"}
                 </span>
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-32">
-                {/* Intergration Icon Logic (unchanged) */}
-                {item.intergration ? (
-                  <svg
-                    className="h-5 w-5 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-center w-32">
+                {item.integration ? (
+                  <div className="relative group flex justify-center">
+                    <svg
+                      className="h-5 w-5 text-green-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+
+                    {/* ⭐ Tooltip container */}
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
+                      {item.integrationUrl || "No URL Found"}
+                    </div>
+                  </div>
                 ) : (
                   <svg
                     className="h-5 w-5 text-red-500"
@@ -280,34 +334,60 @@ function AllCampaignsDashboard() {
                   </svg>
                 )}
               </td>
+
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
-                {item?.CampaignIps[0]?.t_clicks || "No Clicks"}
+                {clickSummary.totalClicks || "No Clicks"}
               </td>
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-16">
-                {/* Safe Money Logic (unchanged) */}
-                <span className="flex items-center space-x-1">
-                  <svg
-                    className="h-4 w-4 text-green-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{item?.CampaignIps[0]?.s_clicks || 0}</span>
-                </span>
-              </td>
+  <div className="flex items-center space-x-1 relative group">
+
+    {/* i Icon */}
+    <svg
+      className="h-4 w-4 text-blue-400 cursor-pointer"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
+    </svg>
+
+    {/* Value */}
+    <span>{clickSummary?.safeClicks || 0}</span>
+
+    {/* Tooltip */}
+    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
+        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
+      {item?.safe_page || "No URL Found"}
+    </div>
+  </div>
+</td>
+
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
-                <span className="flex items-center space-x-1">
-                  <svg
-                    className="h-4 w-4 text-yellow-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-2 9a1 1 0 110-2 1 1 0 010 2zm4 0a1 1 0 110-2 1 1 0 010 2zm-4 2a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1zm4 0a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1z" />
-                  </svg>
-                  <span>{item?.CampaignIps[0]?.m_clicks || 0}</span>
-                </span>
-              </td>
+  <div className="flex items-center space-x-1 relative group">
+
+    {/* i Icon */}
+    <svg
+      className="h-4 w-4 text-blue-400 cursor-pointer"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
+    </svg>
+
+    {/* Value */}
+    <span>{clickSummary?.moneyClicks || 0}</span>
+
+    {/* Tooltip */}
+    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
+        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
+      {item?.money_page[0]?.url || "No URL Found"}
+    </div>
+  </div>
+</td>
+
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-48">
                 {new Date(item.date_time).toLocaleString("en-GB", {
                   day: "2-digit",
@@ -439,7 +519,7 @@ function AllCampaignsDashboard() {
       </div>
 
       {/* Campaign Table Container (Unchanged) */}
-      <div className="mt-4   ">
+      <div className="mt-4 overflow-y-auto  ">
         <table className="min-w-full divide-y divide-gray-700 table-fixed">
           <thead className="bg-gray-800">
             <tr>

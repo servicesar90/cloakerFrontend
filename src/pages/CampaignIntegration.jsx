@@ -1,4 +1,4 @@
-import React, { useEffect, useState, } from "react";
+ import React, { useEffect, useState, } from "react";
 import { useLocation } from "react-router-dom";
 import ZipGeneratorButton from "../utils/zipgenerator";
 import JSZip from "jszip";
@@ -14,6 +14,7 @@ const CloakingIntegration = () => {
   const location = useLocation();
   const camp = location?.state?.data
   console.log("campaign",camp);
+  
   
 
   const tabs = [
@@ -118,63 +119,102 @@ const CloakingIntegration = () => {
 
   const phpCode = `
 <?php
-// Disable error display (optional for production)
-error_reporting(E_ALL);
+error_reporting(0);
 
-// Your external cloaker API URL
-$cloakerApiUrl = "https://app.clockerly.io/api/v2/trafficfilter/${camp?.cid}/${camp?.user_id }";
-// 1. Get IP address
-function getUserIP() {
-  if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
-  elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-  return $_SERVER['REMOTE_ADDR'];
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+// integration check
+function _check() { 
+      if(isset($_GET['TS-BHDNR-84848'])){ 
+        echo ${camp?.cid}; 
+        die(); 
+      } 
+    }
+
+_check();
+
+$cloakerApiUrl = "${import.meta.env.VITE_SERVER_URL}/api/v2/trafficfilter/${camp?.cid}/${camp?.user_id}";
+
+// Get real headers safely
+function getHeadersSafe() {
+    if (function_exists('getallheaders')) {
+        return getallheaders();
+    }
+    $headers = [];
+    foreach ($_SERVER as $name => $value) {
+        if (substr($name, 0, 5) == 'HTTP_') {
+            $headers[str_replace('_', '-', substr($name, 5))] = $value;
+        }
+    }
+    return $headers;
 }
 
-// 2. Collect visitor data
+// Get visitor IP
+function getUserIP() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+    return $_SERVER['REMOTE_ADDR'];
+}
+
+// Detect protocol
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+
+// Collect visitor data
 $visitorData = [
   "ip" => getUserIP(),
   "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
   "referer" => $_SERVER['HTTP_REFERER'] ?? '',
   "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
-  "url" => "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+  "url" => $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
   "timestamp" => gmdate("c"),
-  "headers" => getallheaders()
+  "headers" => getHeadersSafe()
 ];
 
+
+// log visitors data
 echo "<pre>";
 print_r($visitorData);
 echo "</pre>";
 
 
-// 3. Send data to cloaker server
+// Send to API
 $ch = curl_init($cloakerApiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json'
-]);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 $response = curl_exec($ch);
+$curlError = curl_error($ch);
 curl_close($ch);
-echo($response);
-// 4. Handle response
+
+
+// If CURL failed → allow visitor normally
+if (!$response || $curlError) {
+    return;
+}
+
 $data = json_decode($response, true);
-// echo($data);
-echo "<pre>";
-print_r($data);
-echo "</pre>";
-// Based on cloaker decision, redirect or allow
+
+
+// Cloaker rules
 if ($data && isset($data['action'])) {
+
+    Redirect to target if safe
     if ($data['action'] === true && !empty($data['target'])) {
         header("Location: " . $data['target'], true, 302);
-        exit();
-    } elseif ($data['action'] === 'block') {
-        http_response_code(403);
-        echo "Access Denied";
-        exit();
+        exit;
     }
-    // If action is 'allow', do nothing and continue loading the page
+
+    // Block visitor
+    if ($data['action'] === false) {
+        http_response_code(403);
+        exit("Access Denied");
+    }
 }
+
+// If action = allow → load your page normally
 ?>`
 
   const renderSection = (camp) => {
@@ -288,21 +328,26 @@ const generateZip = async () => {
   }
 
 
-  async function checkIntegration(campid,url) {
+  async function checkIntegration(camp,url) {
     
    const res = await fetch(`${url}/?TS-BHDNR-84848=1`);
    const text = await res.text();
-
+   console.log("result",camp,"text",text);
+   
    let status = "failed"; 
-
-   if (text.trim() === "75289ea809") {
+    if (text.trim() != camp?.cid) {
+      status = "false";
+       alert("Integration Error try again "+status);
+      return
+   }
+   if (text.trim() === camp?.cid) {
       status = "success";
    }
    const data = {
     integration:true,
     integrationUrl:url
    }
-   const integrate = await apiFunction("patch",createCampaignApi,campid,data)
+   const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
    if(integrate.status === 200) return alert("Integration Status: " + status);
    alert("Integration Error try again"+status);
 }
@@ -506,7 +551,7 @@ const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
 
       {/* Test URL Button */}
       <button
-        // onClick={handleTestUrl}
+        onClick={()=>checkIntegration(camp,pastedUrl)}
         className="flex items-center px-6 py-3 bg-green-600 text-white text-base font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md"
       >
         <svg
@@ -666,7 +711,7 @@ $cloaker = new ClockerlyShield($camp->cid, $camp->user_id);
 $cloaker->run();
 
 ?>
-                            `}
+`}
         </pre>
       </div>
     </div>

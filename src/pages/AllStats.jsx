@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -14,11 +14,10 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 // import {ipClicks} from "../api/Apis.js";
 import { apiFunction } from "../api/ApiFunction.js";
-import { ipClicks, campdata,getAllCampaign } from "../api/Apis.js";
+import { ipClicks, campdata, getAllCampaign } from "../api/Apis.js";
+import { showInfoToast } from "../components/toast/toast.jsx";
 
 const Dashboard = () => {
- 
-
   const [page, setPage] = useState(1);
   const [stats, setStats] = useState({
     total_campaigns: 0,
@@ -36,7 +35,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalItems, setTotalItems] = useState(0);
-    const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
   const [clickSummary, setClickSummary] = useState({
     totalClicks: 0,
     safeClicks: 0,
@@ -45,59 +44,56 @@ const Dashboard = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
- const handleRefresh = () => {
-  fetchIpClicks();
-  fetchStats();
-  fetchCampaigns();
-
-};
+  const handleRefresh = () => {
+    fetchIpClicks();
+    fetchStats();
+    fetchCampaigns();
+  };
 
   const goToCampaign = (id) => alert("Open campaign: " + id);
   const prevPage = () => setPage((p) => Math.max(1, p - 1));
   const nextPage = () => setPage((p) => p + 1);
 
-
   const fetchIpClicks = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const res = await apiFunction("get", ipClicks);
-    const rawData = res?.data?.data || [];
+      const res = await apiFunction("get", ipClicks);
+      const rawData = res?.data?.data || [];
 
-    const formattedData = rawData.map((item) => ({
-      date: new Date(item.date).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-      }),
-      Safe: Number(item.total_s_clicks || 0),
-      Money: Number(item.total_m_clicks || 0),
-      Total: Number(item.total_t_clicks || 0),
-    }));
+      const formattedData = rawData.map((item) => ({
+        date: new Date(item.date).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+        }),
+        Safe: Number(item.total_s_clicks || 0),
+        Money: Number(item.total_m_clicks || 0),
+        Total: Number(item.total_t_clicks || 0),
+      }));
 
-    setChartData(formattedData);
+      setChartData(formattedData);
 
-    const totals = rawData.reduce(
-      (acc, item) => {
-        acc.totalClicks += Number(item.total_t_clicks || 0);
-        acc.safeClicks += Number(item.total_s_clicks || 0);
-        acc.moneyClicks += Number(item.total_m_clicks || 0);
-        return acc;
-      },
-      { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
-    );
+      const totals = rawData.reduce(
+        (acc, item) => {
+          acc.totalClicks += Number(item.total_t_clicks || 0);
+          acc.safeClicks += Number(item.total_s_clicks || 0);
+          acc.moneyClicks += Number(item.total_m_clicks || 0);
+          return acc;
+        },
+        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+      );
 
-    setClickSummary(totals);
-  } catch (err) {
-    console.error("IP Click API Error:", err);
-    setChartData([]);
-    setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
-  } finally {
-    setLoading(false);
-  }
-};
+      setClickSummary(totals);
+    } catch (err) {
+      console.error("IP Click API Error:", err);
+      setChartData([]);
+      setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-const fetchCampaigns = useCallback(async () => {
+  const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -123,23 +119,20 @@ const fetchCampaigns = useCallback(async () => {
     }
   }, []);
 
+  const fetchStats = async () => {
+    try {
+      const res = await apiFunction("get", campdata, null, null);
 
-const fetchStats = async () => {
-  try {
-    const res = await apiFunction("get", campdata, null, null);
-
-    setStats({
-      total_campaigns: res?.data?.data?.total_campaigns || 0,
-      active_campaigns: res?.data?.data?.active_campaigns || 0,
-      blocked_campaigns: res?.data?.data?.blocked_campaigns || 0,
-      allowed_campaigns: res?.data?.data?.allowed_campaigns || 0,
-    });
-  } catch (error) {
-    console.error("Stats API Error:", error);
-  }
-};
-
-
+      setStats({
+        total_campaigns: res?.data?.data?.total_campaigns || 0,
+        active_campaigns: res?.data?.data?.active_campaigns || 0,
+        blocked_campaigns: res?.data?.data?.blocked_campaigns || 0,
+        allowed_campaigns: res?.data?.data?.allowed_campaigns || 0,
+      });
+    } catch (error) {
+      console.error("Stats API Error:", error);
+    }
+  };
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
@@ -171,67 +164,61 @@ const fetchStats = async () => {
     task.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleActionClick = (campaignId) => {
+    // ड्रॉपडाउन को टॉगल (toggle) करता है
+    setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
+  };
 
-   const handleActionClick = (campaignId) => {
-      // ड्रॉपडाउन को टॉगल (toggle) करता है
-      setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
-    };
-  
-    const handleActionSelect = async (action, campaignId,row) => {
-      setOpenDropdownId(null); // मेनू बंद करें
-      switch (action) {
-        case "edit":
-          alert(`Editing campaign ID: ${campaignId}`);
-          navigate("/Dashboard/create-campaign", {
-            state: {
-              mode: "edit",
-              data: row, // campaign data from db
-            },
-          });
-          // TODO: Navigate to Edit screen or open a modal
-          break;
-        case "duplicate":
-          alert(`Duplicating campaign ID: ${campaignId}`);
-          // TODO: Call API to duplicate campaign
-          break;
-        case "delete":
-          if (
-            window.confirm(
-              `Are you sure you want to delete campaign ID: ${campaignId}?`
-            )
-          ) {
-            // TODO: Call API to delete campaign and then fetchCampaigns() to refresh
-            const res = await apiFunction(
-              "delete",
-              createCampaignApi,
-              campaignId,
-              null
-            );
-            if (res) return alert(`Deleting campaign ID: ${campaignId}`);
-          }
-          break;
-        default:
-          break;
-      }
-    };
+  const handleActionSelect = async (action, campaignId, row) => {
+    setOpenDropdownId(null); // मेनू बंद करें
+    switch (action) {
+      case "edit":
+        alert(`Editing campaign ID: ${campaignId}`);
+        navigate("/Dashboard/create-campaign", {
+          state: {
+            mode: "edit",
+            data: row, // campaign data from db
+          },
+        });
+        // TODO: Navigate to Edit screen or open a modal
+        break;
+      case "duplicate":
+        alert(`Duplicating campaign ID: ${campaignId}`);
+        // TODO: Call API to duplicate campaign
+        break;
+      case "delete":
+        if (
+          window.confirm(
+            `Are you sure you want to delete campaign ID: ${campaignId}?`
+          )
+        ) {
+          // TODO: Call API to delete campaign and then fetchCampaigns() to refresh
+          const res = await apiFunction(
+            "delete",
+            createCampaignApi,
+            campaignId,
+            null
+          );
+          if (res) return alert(`Deleting campaign ID: ${campaignId}`);
+        }
+        break;
+      default:
+        break;
+    }
+  };
 
-     const handleAddNewCampaign = () => {
-       
-    
-        showInfoToast("Redirecting to Creating New Campaign");
-        navigate("/Dashboard/create-campaign");
-      };
-
-  
-
+  const handleAddNewCampaign = () => {
+    showInfoToast("Redirecting to Creating New Campaign");
+    navigate("/Dashboard/create-campaign");
+  };
 
   useEffect(() => {
-  fetchIpClicks();
-  fetchStats();
-  fetchCampaigns();
-}, []);
+    fetchIpClicks();
+    fetchStats();
+    fetchCampaigns();
+  }, []);
 
- useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpenDropdownId(null);
@@ -241,10 +228,7 @@ const fetchStats = async () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []); 
-
-
- 
+  }, []);
 
   // ✅ Load Todos from LocalStorage on page load
   useEffect(() => {
@@ -275,25 +259,24 @@ const fetchStats = async () => {
     </div>
   );
 
-
-   const renderActionDropdown = (campaignId,row) => (
+  const renderActionDropdown = (campaignId, row) => (
     // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
     <div className="absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20">
       <div className="py-1">
         <button
-          onClick={() => handleActionSelect("edit", campaignId,row)}
+          onClick={() => handleActionSelect("edit", campaignId, row)}
           className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100"
         >
           Edit Campaign
         </button>
         <button
-          onClick={() => handleActionSelect("duplicate", campaignId,null)}
+          onClick={() => handleActionSelect("duplicate", campaignId, null)}
           className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100"
         >
           Duplicate Campaign
         </button>
         <button
-          onClick={() => handleActionSelect("delete", campaignId,null)}
+          onClick={() => handleActionSelect("delete", campaignId, null)}
           className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100"
         >
           Delete Campaign
@@ -302,25 +285,25 @@ const fetchStats = async () => {
     </div>
   );
 
-
-    const renderTableContent = () => {
+  const renderTableContent = () => {
     // ... (Loading/Error/Empty Data checks)
     if (isLoading) {
       /* ... loading JSX ... */ return (
-        <div className="text-center py-10 text-xl text-blue-400">
-          <div
-            className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-500 rounded-full"
-            role="status"
-          ></div>
-          <p className="mt-4">Loading Campaigns...</p>
-        </div>
+        <tr>
+          <td colSpan="10" className="text-center py-10 text-blue-400 text-xl">
+            <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full"></div>
+            <p className="mt-4">Loading Campaigns...</p>
+          </td>
+        </tr>
       );
     }
     if (error) {
       /* ... error JSX ... */ return (
-        <div className="text-center py-10 text-red-500 text-xl">
-          Error: {error}
-        </div>
+        <tr>
+          <td colSpan="10" className="text-center py-10 text-gray-400">
+            No campaigns found.
+          </td>
+        </tr>
       );
     }
     if (campaigns.length === 0) {
@@ -450,7 +433,7 @@ const fetchStats = async () => {
                 >
                   ⋯ {/* Vertical three dots */}
                 </button>
-                {isDropdownOpen && renderActionDropdown(item?.uid,item)}
+                {isDropdownOpen && renderActionDropdown(item?.uid, item)}
               </td>
             </tr>
           );
@@ -458,7 +441,6 @@ const fetchStats = async () => {
       </tbody>
     );
   };
-
 
   return (
     <div className="min-h-screen bg-[#0b0d14] p-6 text-white">
@@ -468,7 +450,7 @@ const fetchStats = async () => {
           <h2 className="text-2xl font-semibold">Dashboard</h2>
           <p className="text-slate-400 text-sm">Let's do something new.</p>
         </div>
-       <div className="flex space-x-3">
+        <div className="flex space-x-3">
           <button
             onClick={handleAddNewCampaign}
             className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm shadow-lg transition duration-150 cursor-pointer"
@@ -621,8 +603,7 @@ const fetchStats = async () => {
         </div>
       </div>
 
-
-       <div className="mt-4 overflow-y-auto">
+      <div className="mt-4 ">
         <table className="min-w-full divide-y divide-gray-700 table-fixed">
           <thead className="bg-gray-800">
             <tr>
@@ -654,7 +635,7 @@ const fetchStats = async () => {
                 Created on <span className="text-sm">⇅</span>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
-                Action 
+                Action
               </th>
             </tr>
           </thead>
@@ -775,15 +756,11 @@ const fetchStats = async () => {
                   </div>
                   <div className="text-slate-400 text-xs mt-2">Safe Clicks</div>
                 </div>
-
-                
               </div>
             )}
           </div>
         </div>
       </div>
-
-    
     </div>
   );
 };

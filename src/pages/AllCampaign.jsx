@@ -185,24 +185,25 @@ function AllCampaignsDashboard() {
     </div>
   );
 
-  const renderTableContent = () => {
+   const renderTableContent = () => {
     // ... (Loading/Error/Empty Data checks)
     if (isLoading) {
       /* ... loading JSX ... */ return (
-        <div className="text-center py-10 text-xl text-blue-400">
-          <div
-            className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-500 rounded-full"
-            role="status"
-          ></div>
-          <p className="mt-4">Loading Campaigns...</p>
-        </div>
+        <tr>
+          <td colSpan="10" className="text-center py-10 text-blue-400 text-xl">
+            <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full"></div>
+            <p className="mt-4">Loading Campaigns...</p>
+          </td>
+        </tr>
       );
     }
     if (error) {
       /* ... error JSX ... */ return (
-        <div className="text-center py-10 text-red-500 text-xl">
-          Error: {error}
-        </div>
+        <tr>
+          <td colSpan="10" className="text-center py-10 text-gray-400">
+            No campaigns found.
+          </td>
+        </tr>
       );
     }
     if (campaigns.length === 0) {
@@ -228,7 +229,7 @@ function AllCampaignsDashboard() {
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-12">
                 {index + 1}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-blue-400 text-left hover:text-blue-300  w-40">
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-blue-400 text-left hover:text-blue-300 cursor-pointer w-40">
                 {item.campaign_info?.campaignName || "Not Provided"}
               </td>
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-24">
@@ -320,7 +321,7 @@ function AllCampaignsDashboard() {
               {/* ⭐ UPDATED ACTION COLUMN */}
               <td
                 ref={isDropdownOpen ? dropdownRef : null}
-                className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 text-left w-20 relative"
+                className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 text-left relative"
               >
                 <button
                   onClick={() => handleActionClick(item?.uid)}
@@ -330,9 +331,9 @@ function AllCampaignsDashboard() {
                       : "hover:bg-gray-700"
                   }`}
                 >
-                 ⋯ {/* Vertical three dots */}
+                  ⋯ {/* Vertical three dots */}
                 </button>
-                {isDropdownOpen && renderActionDropdown(item?.uid,item)}
+                {isDropdownOpen && renderActionDropdown(item?.uid, item)}
               </td>
             </tr>
           );
@@ -438,7 +439,7 @@ function AllCampaignsDashboard() {
       </div>
 
       {/* Campaign Table Container (Unchanged) */}
-      <div className="mt-4 overflow-y-auto  ">
+      <div className="mt-4   ">
         <table className="min-w-full divide-y divide-gray-700 table-fixed">
           <thead className="bg-gray-800">
             <tr>

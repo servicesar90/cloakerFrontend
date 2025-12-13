@@ -18,7 +18,7 @@ export const createCampaignApi = `${base_url}/api/v2/campaign`;
 
 export const campdata = `${base_url}/api/v2/analytics/campdata`;
 
-export const getAllCampaign = `${base_url}/api/v2/campaign/all`;
+export const getAllCampaign = `${base_url}/api/v2/campaign/all2`;
 
 export const getAllCampNames = `${base_url}/api/v2/campaign/campnames`;
 

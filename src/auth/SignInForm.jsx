@@ -266,6 +266,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createApiFunction } from "../api/ApiFunction";
 import { logInApi } from "../api/Apis";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 import {showErrorToast, showSuccessToast} from "../components/toast/toast";
 
 export default function LoginPage() {
@@ -330,7 +332,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT PANEL */}
-      <div className="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
+       <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
         <p className="text-gray-500 mb-8">
           Enter your email and password to access your dashboard.
@@ -402,7 +404,11 @@ export default function LoginPage() {
                 role="button"
                 tabIndex={0}
               >
-                {showPassword ? "👁️" : "🙈"}
+               {showPassword ? (
+    <EyeIcon className="h-5 w-5" />
+  ) : (
+    <EyeSlashIcon className="h-5 w-5" />
+  )}
               </span>
             </div>
           </div>
@@ -477,7 +483,7 @@ export default function LoginPage() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="hidden md:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
+     <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_1px,_transparent_1px)] bg-[length:40px_40px]" />
         <div className="relative text-center px-10">
           <div className="flex items-center justify-center mb-4">
@@ -503,9 +509,6 @@ export default function LoginPage() {
             Shield your campaigns. Boost your performance. Experience smart
             traffic cloaking — secure, optimized, and effortless.
           </p>
-        </div>
-        <div className="absolute bottom-6 right-6 bg-indigo-600 p-3 rounded-full shadow-lg">
-          🌙
         </div>
       </div>
     </div>

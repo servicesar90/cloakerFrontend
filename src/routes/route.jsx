@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { LoginProtector, RoutesProtector } from "./routesProtector";
+import UpdatePassword from "../auth/updatePassword";
+
 
 // ✅ Lazy imports
 const LandingPage = lazy(() => import("../pages/home.jsx/landingPage"));
@@ -26,6 +28,8 @@ const Pricing = lazy(() => import("../pages/Pricing"));
 const MyProfile = lazy(() => import("../pages/MyProfile"));
 const Clicklog = lazy(() => import("../pages/clickLogs1"));
 const CheckoutFlow = lazy(() => import("../components/ui/checkOutFlow"));
+const ResetPassword = lazy(()=> import("../auth/ResetPassword"));
+const updatePassword = lazy(() => import("../auth/updatePassword"))
 
 const Layout = () => (
   <div className="w-[100vw] h-[100vh]">
@@ -65,6 +69,24 @@ export default function Routess() {
               </LoginProtector>
             }
           />
+          <Route
+            path="/reset-password"
+            element={
+              <LoginProtector>
+                <ResetPassword />
+              </LoginProtector>
+            }
+          />
+
+          <Route
+            path="/update-password"
+            element={
+              <LoginProtector>
+                <UpdatePassword />
+              </LoginProtector>
+            }
+          />
+
 
           {/* Protected Routes */}
           <Route

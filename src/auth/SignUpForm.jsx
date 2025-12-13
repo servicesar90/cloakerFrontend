@@ -171,6 +171,8 @@ import * as Yup from "yup";
 import { useNavigate, Link } from "react-router-dom";
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 import { createApiFunction } from "../api/ApiFunction";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 import { signupApi } from "../api/Apis";
 
 // ✅ Validation Schema
@@ -247,7 +249,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT PANEL */}
-      <div className="w-full md:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
+      <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">Sign Up</h1>
         <p className="text-gray-500 mb-8">Create an account to get started!</p>
 
@@ -337,7 +339,11 @@ export default function SignupPage() {
                  autoComplete="new-password"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? (
+    <EyeIcon className="h-5 w-5" />
+  ) : (
+    <EyeSlashIcon className="h-5 w-5" />
+  )}
               </button>
             </div>
             {errors.password && (
@@ -366,7 +372,11 @@ export default function SignupPage() {
                 onClick={() => setShowConfirm((s) => !s)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
               >
-                {showConfirm ? "🙈" : "👁️"}
+                {showConfirm ? (
+    <EyeIcon className="h-5 w-5" />
+  ) : (
+    <EyeSlashIcon className="h-5 w-5" />
+  )}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -448,7 +458,7 @@ export default function SignupPage() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="hidden md:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
+      <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
         <div
           className="absolute inset-0"
           style={{

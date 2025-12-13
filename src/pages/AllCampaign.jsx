@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { createCampaignApi, getAllCampaign, ipClicks } from "../api/Apis";
+import { createCampaignApi, getAllCampaign, ipClicks,campdata } from "../api/Apis";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
 import { showInfoToast } from "../components/toast/toast";
 
 // Note: TABS definition is kept here for reference
-const TABS = [
-  { name: "All", count: 1 },
-  { name: "Active", count: 1 },
-  { name: "Allow All", count: 0 },
-  { name: "Block All", count: 0 },
-];
 
 function AllCampaignsDashboard() {
   // --- Existing State ---
@@ -18,7 +12,6 @@ function AllCampaignsDashboard() {
   const [dateRange, setDateRange] = useState("d/m/y to d/m/y");
   const [searchTerm, setSearchTerm] = useState("");
   const [chartData, setChartData] = useState([]);
-
   const [campaigns, setCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,6 +22,14 @@ function AllCampaignsDashboard() {
       safeClicks: 0,
       moneyClicks: 0,
     });
+
+    const [statusTabs, setStatusTabs] = useState([
+  { name: "All", count: 0 },
+  { name: "Active", count: 0 },
+  { name: "Allow All", count: 0 },
+  { name: "Block All", count: 0 },
+]);
+
 
   // ⭐ NEW STATE for Dropdown
   const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -104,9 +105,30 @@ function AllCampaignsDashboard() {
       }
     };
 
+    const fetchStats = async () => {
+        try {
+          const res = await apiFunction("get", campdata, null, null);
+          console.log(res);
+          
+
+           const data = res?.data || {};
+
+    
+         setStatusTabs([
+      { name: "All", count: data?.data?.total_campaigns || 0 },
+      { name: "Active", count: data?.data?.active_campaigns || 0 },
+      { name: "Allow All", count: data?.data?.blocked_campaigns || 0 },
+      { name: "Block All", count: data?.data?.allowed_campaigns || 0 },
+    ]);
+        } catch (error) {
+          console.error("Stats API Error:", error);
+        }
+      };
+
   useEffect(() => {
     fetchCampaigns();
     fetchIpClicks();
+    fetchStats();
   }, [fetchCampaigns]);
 
   useEffect(() => {
@@ -188,23 +210,23 @@ function AllCampaignsDashboard() {
   // --- Render Functions ---
 
   const renderStatusTabs = () => (
-    // ... (Status Tabs rendering logic - Unchanged)
-    <div className="flex space-x-6 text-sm">
-      {TABS.map((tab) => (
-        <button
-          key={tab.name}
-          onClick={() => handleStatusTabChange(tab.name)}
-          className={`font-medium py-1 transition duration-150 ${
-            activeStatusTab === tab.name
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-400 hover:text-gray-300"
-          }`}
-        >
-          {tab.name} ({tab.count})
-        </button>
-      ))}
-    </div>
-  );
+  <div className="flex space-x-6 text-sm">
+    {statusTabs.map((tab) => (
+      <button
+        key={tab.name}
+        onClick={() => handleStatusTabChange(tab.name)}
+        className={`font-medium py-1 transition duration-150 ${
+          activeStatusTab === tab.name
+            ? "text-blue-500 border-b-2 border-blue-500"
+            : "text-gray-400 hover:text-gray-300"
+        }`}
+      >
+        {tab.name} ({tab.count})
+      </button>
+    ))}
+  </div>
+);
+
 
   // ⭐ NEW Render Function: Action Dropdown Menu
   const renderActionDropdown = (campaignId,row) => (

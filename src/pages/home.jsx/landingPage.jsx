@@ -24,7 +24,7 @@ export default function CloakingLandingPage() {
     const response = await apiFunction("get", signOutApi, null, null);
     if (response) {
       console.log(response);
-      showSuccessToast("Show Success Toast")
+      showSuccessToast("Show Success Toast");
       localStorage.removeItem("user");
       localStorage.removeItem("token");
       navigate("/");
@@ -735,154 +735,142 @@ export default function CloakingLandingPage() {
   const features = [
     {
       icon: "🛡️",
-      title: "Multi-Layer Traffic Obfuscation",
+      title: "Smart Traffic Cloaking",
       description:
-        "Advanced polymorphic cloaking technology disguises legitimate traffic patterns while maintaining sub-5ms latency across distributed edge nodes.",
+        "Intelligently separates human traffic from automated scanners, bots, and review systems using real-time request analysis.",
     },
     {
       icon: "⚡",
-      title: "Behavioral Pattern Masking",
+      title: "Behavior-Based Filtering",
       description:
-        "Neural network-powered behavioral analysis creates synthetic traffic signatures that mimic human patterns while blocking automated bot fingerprinting.",
+        "Detects non-human behavior patterns and blocks unwanted traffic without affecting genuine users or conversions.",
     },
     {
       icon: "🔐",
-      title: "Quantum-Resistant Encryption",
+      title: "Secure Request Handling",
       description:
-        "Post-quantum cryptographic algorithms future-proof your data against emerging quantum computing threats with military-grade 512-bit encryption.",
+        "All requests are processed through encrypted channels with strict access rules and IP reputation checks.",
     },
     {
       icon: "🎯",
-      title: "Adaptive Traffic Morphing",
+      title: "Policy-Safe Redirection",
       description:
-        "Real-time traffic shape-shifting technology dynamically alters packet structures to evade deep packet inspection and signature-based detection.",
+        "Safely route approved users while automatically redirecting restricted traffic to compliant fallback pages.",
     },
     {
       icon: "📊",
-      title: "Zero-Knowledge Architecture",
+      title: "Real-Time Traffic Insights",
       description:
-        "Cryptographic zero-knowledge proofs validate traffic authenticity without exposing payload data or revealing infrastructure topology.",
+        "Monitor traffic sources, device types, countries, and risk levels through a clean real-time analytics dashboard.",
     },
     {
-      icon: "🚀",
-      title: "Distributed Proxy Mesh",
+      icon: "🌍",
+      title: "Global Proxy Infrastructure",
       description:
-        "Decentralized proxy network spans 156+ global edge nodes with automatic failover and intelligent routing for maximum anonymity.",
+        "Distributed edge routing ensures fast response times and stable performance across multiple regions.",
     },
   ];
 
   const pricingPlans = [
-    {
-      name: "Starter",
-      price: activePricing === "monthly" ? "99" : "990",
-      features: [
-        "100K requests/month",
-        "Basic bot filtering",
-        "Real-time analytics",
-        "Email support",
-        "99.5% uptime SLA",
-        "Standard encryption",
-        "API access",
-        "24/7 monitoring",
-      ],
-    },
-    {
-      name: "Professional",
-      price: activePricing === "monthly" ? "299" : "2990",
-      popular: true,
-      features: [
-        "1M requests/month",
-        "AI-powered filtering",
-        "Quantum encryption",
-        "Priority support",
-        "99.9% uptime SLA",
-        "Custom traffic rules",
-        "Advanced API protection",
-        "Account manager",
-        "Threat intelligence",
-        "Custom integrations",
-      ],
-    },
-    {
-      name: "Enterprise",
-      price: activePricing === "monthly" ? "999" : "9990",
-      features: [
-        "Unlimited requests",
-        "Full quantum suite",
-        "Zero-trust architecture",
-        "24/7 premium support",
-        "99.99% uptime SLA",
-        "White-label solution",
-        "Enterprise API access",
-        "Dedicated infrastructure",
-        "Custom development",
-        "On-premise option",
-      ],
-    },
-  ];
+  {
+    name: "Starter",
+    price: activePricing === "monthly" ? "79" : "790",
+    features: [
+      "100K requests / month",
+      "Basic traffic filtering",
+      "Country & device rules",
+      "Live analytics",
+      "Email support",
+      "API access",
+    ],
+  },
+  {
+    name: "Professional",
+    price: activePricing === "monthly" ? "249" : "2490",
+    popular: true,
+    features: [
+      "1M requests / month",
+      "Advanced bot detection",
+      "Custom routing rules",
+      "Real-time monitoring",
+      "Priority support",
+      "Multiple domains",
+      "Webhook alerts",
+    ],
+  },
+  {
+    name: "Enterprise",
+    price: activePricing === "monthly" ? "899" : "8990",
+    features: [
+      "Unlimited requests",
+      "Dedicated infrastructure",
+      "Advanced compliance controls",
+      "Custom integrations",
+      "24/7 support",
+      "SLA-backed uptime",
+    ],
+  },
+];
 
-  const testimonials = [
-    {
-      quote:
-        "CloakShield's polymorphic obfuscation eliminated our bot detection issues completely. The quantum-resistant encryption future-proofs our security infrastructure.",
-      author: "Sarah Chen",
-      title: "CTO, TechVault",
-      rating: 5,
-    },
-    {
-      quote:
-        "The behavioral masking technology is revolutionary. Our traffic patterns are now indistinguishable from legitimate users while maintaining zero false positives.",
-      author: "Michael Rodriguez",
-      title: "Security Director, DataShield",
-      rating: 5,
-    },
-    {
-      quote:
-        "Integration with our zero-knowledge infrastructure was seamless. The distributed proxy mesh gives us true global anonymity with sub-10ms latency.",
-      author: "Emily Watson",
-      title: "VP Engineering, CloudSecure",
-      rating: 5,
-    },
-    {
-      quote:
-        "The adaptive traffic morphing defeated every DPI system we tested against. Best investment in our privacy infrastructure this decade.",
-      author: "David Kim",
-      title: "CISO, FinTech Global",
-      rating: 5,
-    },
-  ];
 
-  const howItWorksSteps = [
-    {
-      title: "Traffic Interception",
-      description:
-        "All incoming requests are captured and analyzed by our quantum-powered edge network in real-time with cryptographic validation.",
-    },
-    {
-      title: "Polymorphic Obfuscation",
-      description:
-        "Advanced algorithms morph traffic signatures to evade fingerprinting while neural networks classify and mask behavioral patterns.",
-    },
-    {
-      title: "Distributed Routing",
-      description:
-        "Requests are routed through our 156-node proxy mesh with dynamic path selection and automatic failover for maximum anonymity.",
-    },
-    {
-      title: "Quantum Encryption",
-      description:
-        "Post-quantum cryptographic layer encrypts all data with 512-bit keys before reaching your protected infrastructure endpoints.",
-    },
-  ];
+ const testimonials = [
+  {
+    quote:
+      "CloakShield helped us filter low-quality traffic without impacting our genuine users. Setup was simple and results were immediate.",
+    author: "Alex Morgan",
+    title: "Growth Manager, AdNova",
+    rating: 5,
+  },
+  {
+    quote:
+      "The real-time traffic insights gave us complete visibility into where our traffic was coming from and how it behaved.",
+    author: "Ritika Sharma",
+    title: "Performance Lead, ScaleAds",
+    rating: 5,
+  },
+  {
+    quote:
+      "Clean UI, powerful rules, and reliable filtering. Exactly what we needed for campaign protection.",
+    author: "Daniel Wright",
+    title: "CTO, FunnelStack",
+    rating: 5,
+  },
+];
+
+
+ const howItWorksSteps = [
+  {
+    title: "Request Analysis",
+    description:
+      "Each incoming request is analyzed for device signals, IP reputation, headers, and behavior patterns.",
+  },
+  {
+    title: "Traffic Classification",
+    description:
+      "Our engine classifies traffic as human, bot, reviewer, or unknown in real time.",
+  },
+  {
+    title: "Rule-Based Decision",
+    description:
+      "Based on your rules, traffic is either allowed, blocked, or redirected safely.",
+  },
+  {
+    title: "Secure Delivery",
+    description:
+      "Approved users are routed to your destination with minimal latency impact.",
+  },
+];
+
 
   const techStack = [
-    { name: "Quantum Computing", status: "Active" },
-    { name: "Neural Networks", status: "Active" },
-    { name: "Edge Distribution", status: "Active" },
-    { name: "Zero-Trust Protocol", status: "Active" },
-    { name: "Real-time Analytics", status: "Active" },
-    { name: "API Gateway", status: "Active" },
-  ];
+  { name: "Edge Request Processing", status: "Active" },
+  { name: "Behavioral Analysis Engine", status: "Active" },
+  { name: "IP Reputation Database", status: "Active" },
+  { name: "Rule-Based Routing System", status: "Active" },
+  { name: "Real-Time Analytics", status: "Active" },
+  { name: "Secure API Gateway", status: "Active" },
+];
+
 
   return (
     <>
@@ -1298,19 +1286,18 @@ export default function CloakingLandingPage() {
                 {typedText}
               </span>
               <h1 style={styles.h1} className="glitch-effect">
-                {"> ADVANCED POLYMORPHIC"}
+                {"> SMART TRAFFIC"}
                 <br />
-                {"CLOAKING & TRAFFIC"}
+                {"FILTERING & CLOAKING"}
                 <br />
-                {"OBFUSCATION SYSTEM"}
+                {"PLATFORM"}
               </h1>
               <p style={styles.subtitle}>
-                Military-grade traffic masking powered by quantum-resistant
-                encryption and neural network behavioral analysis. Evade deep
-                packet inspection, defeat bot fingerprinting, and achieve true
-                digital anonymity across 156 global edge nodes with adaptive
-                traffic morphing technology.
-              </p>
+  Protect your campaigns with intelligent traffic filtering.
+  CloakShield helps you control who sees what — blocking bots,
+  reviewers, and unwanted scanners while allowing real users
+  to pass seamlessly.
+</p>
               <div style={styles.buttonGroup}>
                 <button
                   style={styles.buttonPrimary}
@@ -1348,25 +1335,25 @@ export default function CloakingLandingPage() {
               <div style={styles.heroInfoBox} className="scan-line">
                 <div style={styles.infoRow}>
                   <span style={styles.infoLabel}>Encryption Protocol:</span>
-                  <span style={styles.infoValue}>POST-QUANTUM AES-512</span>
+                  <span style={styles.infoValue}>TLS 1.3 Secure Channels</span>
                 </div>
                 <div style={styles.infoRow}>
-                  <span style={styles.infoLabel}>Obfuscation Method:</span>
-                  <span style={styles.infoValue}>POLYMORPHIC MORPHING</span>
+                  <span style={styles.infoLabel}>Traffic Filtering:</span>
+                  <span style={styles.infoValue}>Behavioral & IP Reputation</span>
                 </div>
                 <div style={styles.infoRow}>
-                  <span style={styles.infoLabel}>Network Topology:</span>
-                  <span style={styles.infoValue}>DISTRIBUTED PROXY MESH</span>
+                  <span style={styles.infoLabel}>Routing Logic</span>
+                  <span style={styles.infoValue}>Smart Rule-Based Redirection</span>
                 </div>
                 <div style={styles.infoRow}>
                   <span style={styles.infoLabel}>Threat Detection:</span>
                   <span style={styles.infoValue}>
-                    NEURAL BEHAVIORAL ANALYSIS
+                   Automated Bot Identification
                   </span>
                 </div>
                 <div style={{ ...styles.infoRow, borderBottom: "none" }}>
-                  <span style={styles.infoLabel}>Global Edge Nodes:</span>
-                  <span style={styles.infoValue}>156 ACTIVE</span>
+                  <span style={styles.infoLabel}>Global Edge Nodes: </span>
+                  <span style={styles.infoValue}>150+ Active Locations</span>
                 </div>
               </div>
 
@@ -1375,25 +1362,25 @@ export default function CloakingLandingPage() {
                   <div style={styles.statValue} data-testid="stat-uptime">
                     99.99%
                   </div>
-                  <div style={styles.statLabel}>System Uptime</div>
+                  <div style={styles.statLabel}>Campaign Uptime</div>
                 </div>
                 <div style={styles.stat} className="float-animation">
                   <div style={styles.statValue} data-testid="stat-threats">
                     {(threatCount / 1000000000).toFixed(2)}B+
                   </div>
-                  <div style={styles.statLabel}>Threats Cloaked</div>
+                  <div style={styles.statLabel}>1.2B+ Requests Processed</div>
                 </div>
                 <div style={styles.stat} className="float-animation">
                   <div style={styles.statValue} data-testid="stat-response">
                     &lt;5ms
                   </div>
-                  <div style={styles.statLabel}>Latency Overhead</div>
+                  <div style={styles.statLabel}>Avg Latency</div>
                 </div>
                 <div style={styles.stat} className="float-animation">
                   <div style={styles.statValue} data-testid="stat-accuracy">
-                    99.9%
+                    98.7%
                   </div>
-                  <div style={styles.statLabel}>Detection Evasion</div>
+                  <div style={styles.statLabel}>Bot Detection Accuracy</div>
                 </div>
               </div>
             </div>
@@ -1697,10 +1684,8 @@ export default function CloakingLandingPage() {
                     }}
                     data-testid={`button-select-${index}`}
                     onClick={() => {
-                 
-                    
-                    navigate("/pricing")}}
-                  
+                      navigate("/pricing");
+                    }}
                     onMouseOver={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
                     }}
@@ -1758,28 +1743,10 @@ export default function CloakingLandingPage() {
               </h2>
               <p style={styles.ctaSubtitle}>
                 Join thousands of enterprises protecting their infrastructure
-                with quantum-grade cloaking technology. Start your free trial
-                today.
+                with quantum-grade cloaking technology. 
               </p>
-              <button
-                style={styles.ctaButton}
-                className="pulse-glow"
-                data-testid="button-start-trial"
-                onClick={() => console.log("Start Free Trial clicked")}
-                onMouseOver={(e) =>
-                  (e.currentTarget.style.transform = "translateY(-2px)")
-                }
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.transform = "translateY(0)")
-                }
-              >
-                Initialize Free Trial
-              </button>
-              <div style={styles.trustIndicators}>
-                <div style={styles.trustItem}>✓ No credit card required</div>
-                <div style={styles.trustItem}>✓ Setup in 5 minutes</div>
-                <div style={styles.trustItem}>✓ 14-day free trial</div>
-              </div>
+              
+             
             </div>
           </section>
 

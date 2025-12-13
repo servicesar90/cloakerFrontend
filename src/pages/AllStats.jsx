@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
+
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 // import {ipClicks} from "../api/Apis.js";
@@ -93,7 +93,7 @@ const Dashboard = () => {
     }
   };
 
-  const fetchCampaigns = useCallback(async () => {
+  const fetchCampaigns = useCallback(async () => { 
     setIsLoading(true);
     setError(null);
     try {
@@ -388,57 +388,67 @@ const Dashboard = () => {
               </td>
 
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
-                {clickSummary.totalClicks || "No Clicks"}
+                {item?.campclicks?.total_t_clicks || "No Clicks"}
               </td>
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-16">
-  <div className="flex items-center space-x-1 relative group">
+                <div className="flex items-center space-x-1 relative group">
+                  {/* i Icon */}
+                  <svg
+                    className="h-4 w-4 text-blue-400 cursor-pointer"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                    />
+                  </svg>
 
-    {/* i Icon */}
-    <svg
-      className="h-4 w-4 text-blue-400 cursor-pointer"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
-    </svg>
+                  {/* Value */}
+                  <span>{item?.campclicks?.total_s_clicks|| 0}</span>
 
-    {/* Value */}
-    <span>{clickSummary?.safeClicks || 0}</span>
-
-    {/* Tooltip */}
-    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
-        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
-      {item?.safe_page || "No URL Found"}
-    </div>
-  </div>
-</td>
+                  {/* Tooltip */}
+                  <div
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
+        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
+                  >
+                    {item?.safe_page || "No URL Found"}
+                  </div>
+                </div>
+              </td>
 
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
-  <div className="flex items-center space-x-1 relative group">
+                <div className="flex items-center space-x-1 relative group">
+                  {/* i Icon */}
+                  <svg
+                    className="h-4 w-4 text-blue-400 cursor-pointer"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                    />
+                  </svg>
 
-    {/* i Icon */}
-    <svg
-      className="h-4 w-4 text-blue-400 cursor-pointer"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
-    </svg>
+                  {/* Value */}
+                  <span>{item?.campclicks?.total_m_clicks || 0}</span>
 
-    {/* Value */}
-    <span>{clickSummary?.moneyClicks || 0}</span>
-
-    {/* Tooltip */}
-    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
-        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
-      {item?.money_page[0]?.url || "No URL Found"}
-    </div>
-  </div>
-</td>
+                  {/* Tooltip */}
+                  <div
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
+        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
+                  >
+                    {item?.money_page[0]?.url || "No URL Found"}
+                  </div>
+                </div>
+              </td>
 
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-48">
                 {new Date(item.date_time).toLocaleString("en-GB", {

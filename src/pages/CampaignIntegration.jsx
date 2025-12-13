@@ -128,7 +128,7 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 // integration check
 function _check() { 
       if(isset($_GET['TS-BHDNR-84848'])){ 
-        echo ${camp?.cid}; 
+        echo "${camp?.cid}"; 
         die(); 
       } 
     }
@@ -201,7 +201,7 @@ $data = json_decode($response, true);
 // Cloaker rules
 if ($data && isset($data['action'])) {
 
-    Redirect to target if safe
+   // Redirect to target if safe
     if ($data['action'] === true && !empty($data['target'])) {
         header("Location: " . $data['target'], true, 302);
         exit;
@@ -224,11 +224,11 @@ if ($data && isset($data['action'])) {
       case "php-paste":
         return <PhpPaste camp={camp} phpCode={phpCode} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "wordpress":
-        return <Wordpress pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <Wordpress camp={camp} phpCode={phpCode} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "javascript":
-        return <Javascript pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <Javascript camp={camp} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       default:
-        return <PhpPaste pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <PhpPaste camp={camp} phpCode={phpCode} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
     }
   };
 
@@ -308,10 +308,6 @@ const handleCopy = (text) => {
     });
 };
 
-// DOWNLOAD PHP PLUGIN FUNCTION
-const handledownload = () =>{
-
-}
 
 const generateZip = async () => {
     const zip = new JSZip();
@@ -571,7 +567,7 @@ const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
   </div>
 );
 
-const Wordpress = ({ pastedUrl, setPastedUrl }) => (
+const Wordpress = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
   <div>
     {/* <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
       <p className="text-blue-200 text-sm">
@@ -621,97 +617,7 @@ const Wordpress = ({ pastedUrl, setPastedUrl }) => (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 font-mono text-sm overflow-auto max-h-96 relative">
         <pre className="text-green-400 whitespace-pre-wrap text-left">
           {/* PHP Code Snippet */}
-          {`
-<?php
-error_reporting(0);
-
-class ClockerlyShield {
-
-    private $apiUrl;
-
-    function __construct($campId, $userId) {
-        $this->apiUrl = "https://app.clockerly.io/api/v2/trafficfilter/$campId/$userId";
-    }
-
-    public function run() {
-        ob_start();
-        $this->process();
-    }
-
-    private function process() {
-        $visitor = $this->collectVisitorData();
-        $response = $this->sendRequest($visitor);
-        $this->handle($response);
-    }
-
-    private function getIP() {
-        if (!empty($_SERVER['HTTP_CLIENT_IP']))
-            return $_SERVER['HTTP_CLIENT_IP'];
-
-        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-            return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-
-        return $_SERVER['REMOTE_ADDR'];
-    }
-
-    private function collectVisitorData() {
-        return [
-            "ip" => $this->getIP(),
-            "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
-            "referer" => $_SERVER['HTTP_REFERER'] ?? '',
-            "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
-            "url" => "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-            "timestamp" => gmdate("c"),
-            "headers" => function_exists('getallheaders') ? getallheaders() : []
-        ];
-    }
-
-    private function sendRequest($visitorData) {
-        $ch = curl_init($this->apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Content-Type: application/json"
-        ]);
-
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($result, true);
-    }
-
-    private function handle($data) {
-
-        if (!$data || !isset($data["action"])) {
-            return; // allow page load
-        }
-
-        // If cloaker says redirect
-        if ($data["action"] === true && !empty($data['target'])) {
-            header("Location: " . $data["target"], true, 302);
-            exit();
-        }
-
-        // If cloaker blocks
-        if ($data["action"] === "block") {
-            http_response_code(403);
-            echo "Access Denied";
-            exit();
-        }
-
-        // If allow → do nothing
-        return;
-    }
-}
-
-
-$cloaker = new ClockerlyShield($camp->cid, $camp->user_id);
-$cloaker->run();
-
-?>
-`}
+          {phpCode}
         </pre>
       </div>
     </div>
@@ -796,7 +702,7 @@ $cloaker->run();
   </div>
 );
 
-const Javascript = ({ pastedUrl, setPastedUrl }) => (
+const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
   <div>
     <div className="mb-4">
       <p className="text-sm text-left text-white-400 mb-2">
@@ -807,7 +713,7 @@ const Javascript = ({ pastedUrl, setPastedUrl }) => (
       <p className="text-sm text-left text-gray-400 mb-2">
         Copy the JavaScript snippet and paste it between the{" "}
         <code>&lt;head&gt;&lt;/head&gt;</code> tags of your safe page's HTML
-        source:
+        source:{`<script src="${import.meta.env.VITE_SERVER_URL}/v2/js_code/${camp?.cid}.js"></script>`}
       </p>
     </div>
 
@@ -816,7 +722,7 @@ const Javascript = ({ pastedUrl, setPastedUrl }) => (
         id="pastedUrl"
         type="url"
         disabled
-        value={'<script src="https://app.trafficshield.io/v2/js_code/75289ea809.js"></script>'}
+        value={`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`}
         // onChange={(e) => setPastedUrl(e.target.value)}
         placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
         className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
@@ -824,7 +730,7 @@ const Javascript = ({ pastedUrl, setPastedUrl }) => (
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
     <button
-        onClick={()=>handleCopy('<script src="https://app.trafficshield.io/v2/js_code/75289ea809.js"></script>')}
+        onClick={()=>handleCopy(`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`)}
       className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     > <svg
         /* ... (Copy Icon) */ className="h-5 w-5 mr-2"

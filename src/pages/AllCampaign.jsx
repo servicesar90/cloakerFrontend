@@ -154,7 +154,7 @@ function AllCampaignsDashboard() {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
       case "edit":
-        alert(`Editing campaign ID: ${campaignId}`);
+        // alert(`Editing campaign ID: ${campaignId}`);
         navigate("/Dashboard/create-campaign", {
           state: {
             mode: "edit",
@@ -164,7 +164,7 @@ function AllCampaignsDashboard() {
         // TODO: Navigate to Edit screen or open a modal
         break;
       case "duplicate":
-        alert(`Duplicating campaign ID: ${campaignId}`);
+        // alert(`Duplicating campaign ID: ${campaignId}`);
         // TODO: Call API to duplicate campaign
         break;
       case "delete":
@@ -232,7 +232,7 @@ function AllCampaignsDashboard() {
   // ⭐ NEW Render Function: Action Dropdown Menu
   const renderActionDropdown = (campaignId,row) => (
     // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-    <div className="absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20">
+    <div className="absolute z-50 right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20">
       <div className="py-1">
         <button
           onClick={() => handleActionSelect("edit", campaignId,row)}
@@ -293,7 +293,6 @@ function AllCampaignsDashboard() {
         {campaigns.map((item, index) => {
           const campaignId = item.campaign_info?.campaign_id || index;
           const isDropdownOpen = openDropdownId === item?.uid;
-          console.log(openDropdownId, campaignId);
 
           return (
             <tr key={campaignId}>

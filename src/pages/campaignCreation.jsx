@@ -2090,11 +2090,10 @@ const InputField = ({
       <input
         type={type}
         placeholder={placeholder}
-       defaultValue={defaultValue}
+        defaultValue={defaultValue}
         step={step}
-        className={`w-full bg-slate-800 border text-sm rounded-lg py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-          icon ? "pl-10" : "px-4"
-        } ${error ? "border-red-500" : "border-slate-700"}`}
+        className={`w-full bg-slate-800 border text-sm rounded-lg py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${icon ? "pl-10" : "px-4"
+          } ${error ? "border-red-500" : "border-slate-700"}`}
         {...register(name, {
           required: required ? `${label} is required.` : false,
           pattern: pattern || undefined,
@@ -2129,9 +2128,8 @@ const SelectField = ({
     </label>
     <div className="relative">
       <select
-        className={`w-full appearance-none bg-slate-800 border rounded-lg py-2 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-          error ? "border-red-500" : "border-slate-700"
-        }`}
+        className={`w-full appearance-none bg-slate-800 border rounded-lg py-2 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${error ? "border-red-500" : "border-slate-700"
+          }`}
         {...register(name, { required: required && `${label} is required.` })}
       >
         {options.map((opt, i) => (
@@ -2151,19 +2149,17 @@ const StatusButton = ({ label, Icon, isActive, onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 h-20 w-full ${
-      isActive
+    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 h-20 w-full ${isActive
         ? "border-blue-500 bg-blue-500/10"
         : "border-slate-700 bg-slate-800 hover:bg-slate-700/50"
-    }`}
+      }`}
   >
     <Icon
       className={`w-5 h-5 ${isActive ? "text-blue-400" : "text-slate-400"}`}
     />
     <span
-      className={`text-sm font-medium mt-2 ${
-        isActive ? "text-white" : "text-slate-300"
-      }`}
+      className={`text-sm font-medium mt-2 ${isActive ? "text-white" : "text-slate-300"
+        }`}
     >
       {label}
     </span>
@@ -2231,11 +2227,11 @@ export default function CampaignBuilder() {
       });
 
       // local states as well
-    
-      
+
+
       setMoneyPages(c?.money_page || [
-    { description: "", url: "", weight: 100 },
-  ]);
+        { description: "", url: "", weight: 100 },
+      ]);
       setDynamicVariables(c?.dynamicVariables || []);
       setActiveStatus(c?.status);
     }
@@ -2451,7 +2447,7 @@ export default function CampaignBuilder() {
   const addMoneyPage = () => {
     setMoneyPages((p) => {
       const next = [...p, { description: "", url: "", weight: 100 }];
-  
+
       return next;
     });
   };
@@ -2500,31 +2496,31 @@ export default function CampaignBuilder() {
       // merge moneyPages from local state into data (to ensure latest)
       // data.money_page = moneyPages;
       data.status = activeStatus;
-      console.log("cmpdata",data);
-      
+      console.log("cmpdata", data);
+
 
       if (location?.state?.mode === "edit") {
         const uid = location?.state?.data?.uid;
 
         // const res = await apiFunction("patch", createCampaignApi, uid, data);
         showCustomAlert("Campaign updated successfully!");
-        navigate("/Dashboard/campaign-integration",{
-          state:{
-            mode:"edit",
+        navigate("/Dashboard/campaign-integration", {
+          state: {
+            mode: "edit",
             data: location.state.data
           }
         })
-      }else{
+      } else {
 
         const response = await apiFunction("post", createCampaignApi, null, data);
 
         console.log(response?.data?.status);
-        
+
         // use response to show success
         showCustomAlert("Campaign created successfully! you are going to route to Integration page");
-        navigate("/Dashboard/campaign-integration",{
-          state:{
-            mode:"edit",
+        navigate("/Dashboard/campaign-integration", {
+          state: {
+            mode: "edit",
             data: response?.data?.data || response
           }
         })
@@ -2543,12 +2539,12 @@ export default function CampaignBuilder() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-left justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">
-              New Campaign
+            <h1 className="text-2xl font-semibold tracking-tight text-left text-white">
+              {location?.state?.mode === "edit" ? "Update" : "Create"} Campaign
             </h1>
-            <p className="text-slate-400 mt-1 max-w-xl">
+            <p className="text-slate-400 mt-1 text-left max-w-xl">
               Transform your traffic into a success story — multi-step campaign
               builder with advanced cloaking controls.
             </p>
@@ -2567,35 +2563,32 @@ export default function CampaignBuilder() {
         </div>
 
         {/* Stepper */}
-        <nav aria-label="Progress" className="mb-2">
+        <nav aria-label="Progress" className="mb-8">
           <ol role="list" className="flex items-center gap-4">
             {steps.map((s, idx) => {
               const active = idx + 1 <= step;
               return (
                 <li key={s.name} className="flex items-center">
                   <div
-                    className={`flex items-center justify-center h-10 w-10 rounded-full ${
-                      active ? "bg-blue-600" : "bg-slate-800"
-                    }`}
+                    onClick={() => setStep(idx + 1)}
+                    className={`flex items-center justify-center h-10 w-10 rounded-full ${active ? "bg-blue-600" : "bg-slate-800"
+                      }`}
                   >
                     <s.icon
-                      className={`w-5 h-5 ${
-                        active ? "text-white" : "text-slate-400"
-                      }`}
+                      className={`w-5 h-5 ${active ? "text-white" : "text-slate-400"
+                        }`}
                     />
                   </div>
                   <div
-                    className={`ml-2 text-sm ${
-                      active ? "text-white font-medium" : "text-slate-500"
-                    }`}
+                    className={`ml-2 text-sm ${active ? "text-white font-medium" : "text-slate-500"
+                      }`}
                   >
                     {s.name}
                   </div>
                   {idx !== steps.length - 1 && (
                     <div
-                      className={`mx-4 h-[2px] w-14 ${
-                        idx + 1 < step ? "bg-blue-600" : "bg-slate-800"
-                      }`}
+                      className={`mx-4 h-[2px] w-14 ${idx + 1 < step ? "bg-blue-600" : "bg-slate-800"
+                        }`}
                     />
                   )}
                 </li>
@@ -2749,7 +2742,7 @@ export default function CampaignBuilder() {
                           name={`money_page.${index}.description`}
                           register={register}
                           placeholder="Enter description"
-                          
+
                           defaultValue={page.description || ""}
                           tooltip="Short name visible in reports"
                         />
@@ -2761,8 +2754,8 @@ export default function CampaignBuilder() {
                           error={errors.money_page?.[index]?.url}
                           required
                           placeholder="https://www.example.com"
-                           
-                   
+
+
                           pattern={{
                             value: /^(https?:\/\/[^\s$.?#].[^\s]*)$/i,
                             message: "Enter a valid URL",
@@ -2777,8 +2770,8 @@ export default function CampaignBuilder() {
                           error={errors.money_page?.[index]?.weight}
                           placeholder="100"
                           type="number"
-                      
-                          
+
+
                           tooltip="Priority weight for money pages"
                         />
 
@@ -2806,16 +2799,16 @@ export default function CampaignBuilder() {
                     ))
                   ) : (
                     <>
-                    <p className="text-gray-400 text-sm">
-                      No money pages added yet.
-                    </p>
-                    <button
-                              type="button"
-                              onClick={addMoneyPage}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md flex items-center gap-2 transition"
-                              >
-                              <Plus className="w-4 h-4" /> Add
-                            </button>
+                      <p className="text-gray-400 text-sm">
+                        No money pages added yet.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={addMoneyPage}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md flex items-center gap-2 transition"
+                      >
+                        <Plus className="w-4 h-4" /> Add
+                      </button>
                     </>
                   )}
                 </div>
@@ -2842,7 +2835,7 @@ export default function CampaignBuilder() {
                         label="VARIABLE NAME"
                         name={`money_variable.${idx}.name`}
                         register={register}
-                        
+
                         placeholder="Enter variable name"
                         defaultValue={variable.name}
                       />
@@ -2890,17 +2883,18 @@ export default function CampaignBuilder() {
                     >
                       Next ›
                     </button>
-                    <button
+                    {location?.state?.mode === "edit" ? <button
                       type="button"
-                      onClick={() => {
-                        showCustomAlert(
-                          "You can preview changes before creating campaign"
-                        );
-                      }}
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
                       className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
                     >
-                      Preview
-                    </button>
+                      Save
+                    </button> : null}
                   </div>
                 </div>
               </div>
@@ -3004,6 +2998,18 @@ export default function CampaignBuilder() {
                     >
                       Next ›
                     </button>
+                    {location?.state?.mode === "edit" ? <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
+                    >
+                      Save
+                    </button> : null}
                   </div>
                 </div>
               </div>
@@ -3011,210 +3017,224 @@ export default function CampaignBuilder() {
           )}
 
           {/* Step 4: Conditions */}
-        {step === 4 && (
-  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
-    <div className="space-y-6">
+          {step === 4 && (
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+              <div className="space-y-6">
 
-      {/* ADD CONDITION DROPDOWN */}
-      <div>
-        <select
-          onChange={(e) => {
-            if (e.target.value) {
-              handleAddCondition(e.target.value);
-              e.target.value = "";
-            }
-          }}
-          className="w-56 bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
-        >
-          <option value="">+ Add condition</option>
+                {/* ADD CONDITION DROPDOWN */}
+                <div>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleAddCondition(e.target.value);
+                        e.target.value = "";
+                      }
+                    }}
+                    className="w-56 bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
+                  >
+                    <option value="">+ Add condition</option>
 
-          {OPTIONS.filter((o) => !selectedTypes.includes(o.value)).map(
-            (opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            )
-          )}
-        </select>
-      </div>
+                    {OPTIONS.filter((o) => !selectedTypes.includes(o.value)).map(
+                      (opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
 
-      {/* CONDITIONS LIST */}
-      <div className="space-y-5">
-        {fields.map((fieldItem, idx) => {
-          const currentType = fieldItem.type;
+                {/* CONDITIONS LIST */}
+                <div className="space-y-5">
+                  {fields.map((fieldItem, idx) => {
+                    const currentType = fieldItem.type;
 
-          /** DATA SOURCE BASED ON TYPE */
-          let dataList = [];
-          if (currentType === "country") dataList = COUNTRY_LIST;
-          
-          if (currentType === "browser") dataList = BROWSER_LIST;
-          if (currentType === "Device") dataList = DEVICE_LIST;
+                    /** DATA SOURCE BASED ON TYPE */
+                    let dataList = [];
+                    if (currentType === "country") dataList = COUNTRY_LIST;
 
-          const isDropdown = ["country", "browser", "Device"].includes(
-            currentType
-          );
+                    if (currentType === "browser") dataList = BROWSER_LIST;
+                    if (currentType === "Device") dataList = DEVICE_LIST;
 
-          return (
-            <div
-              key={fieldItem.id}
-              className="bg-slate-800 border border-slate-700 rounded-lg p-4"
-            >
-              {/* HEADER */}
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-semibold text-white">
-                  {currentType.toUpperCase()}
-                </h4>
-                <button
-                  type="button"
-                  onClick={() => remove(idx)}
-                  className="text-sm text-slate-400 hover:text-red-500"
-                >
-                  Remove
-                </button>
-              </div>
+                    const isDropdown = ["country", "browser", "Device"].includes(
+                      currentType
+                    );
 
-              {/* MODE BUTTONS */}
-              <Controller
-                control={control}
-                name={`conditions.${idx}.mode`}
-                render={({ field }) => (
-                  <div className="flex gap-2 mb-3">
-                    {["allow", "block"].map((mode) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        onClick={() => field.onChange(mode)}
-                        className={`px-3 py-1.5 text-sm rounded-md border ${
-                          field.value === mode
-                            ? mode === "allow"
-                              ? "bg-blue-600 text-white border-blue-600"
-                              : "bg-red-600 text-white border-red-600"
-                            : "bg-slate-700 text-slate-300 border-slate-700 hover:bg-slate-700/50"
-                        }`}
+                    return (
+                      <div
+                        key={fieldItem.id}
+                        className="bg-slate-800 border border-slate-700 rounded-lg p-4"
                       >
-                        {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              />
-
-              {/* MULTI VALUES FIELD */}
-              <Controller
-                control={control}
-                name={`conditions.${idx}.values`}
-                render={({ field }) => (
-                  <div>
-                    {/* CHIPS */}
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {field.value?.map((val, i) => (
-                        <span
-                          key={i}
-                          className="inline-flex items-center bg-slate-700 text-slate-100 px-2.5 py-1 text-xs rounded-full border border-slate-600"
-                        >
-                          {val}
+                        {/* HEADER */}
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-semibold text-white">
+                            {currentType.toUpperCase()}
+                          </h4>
                           <button
                             type="button"
-                            onClick={() =>
-                              field.onChange(
-                                field.value.filter((_, id) => id !== i)
-                              )
-                            }
-                            className="ml-1 text-slate-400 hover:text-slate-200"
+                            onClick={() => remove(idx)}
+                            className="text-sm text-slate-400 hover:text-red-500"
                           >
-                            ×
+                            Remove
                           </button>
-                        </span>
-                      ))}
-                    </div>
+                        </div>
 
-                    {/* DROPDOWN OR TEXT INPUT */}
-                    {isDropdown ? (
-                      <select
-                        className="w-full bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val && !field.value.includes(val)) {
-                            field.onChange([...field.value, val]);
-                          }
-                          e.target.value = "";
-                        }}
+                        {/* MODE BUTTONS */}
+                        <Controller
+                          control={control}
+                          name={`conditions.${idx}.mode`}
+                          render={({ field }) => (
+                            <div className="flex gap-2 mb-3">
+                              {["allow", "block"].map((mode) => (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  onClick={() => field.onChange(mode)}
+                                  className={`px-3 py-1.5 text-sm rounded-md border ${field.value === mode
+                                      ? mode === "allow"
+                                        ? "bg-blue-600 text-white border-blue-600"
+                                        : "bg-red-600 text-white border-red-600"
+                                      : "bg-slate-700 text-slate-300 border-slate-700 hover:bg-slate-700/50"
+                                    }`}
+                                >
+                                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        />
+
+                        {/* MULTI VALUES FIELD */}
+                        <Controller
+                          control={control}
+                          name={`conditions.${idx}.values`}
+                          render={({ field }) => (
+                            <div>
+                              {/* CHIPS */}
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                {field.value?.map((val, i) => (
+                                  <span
+                                    key={i}
+                                    className="inline-flex items-center bg-slate-700 text-slate-100 px-2.5 py-1 text-xs rounded-full border border-slate-600"
+                                  >
+                                    {val}
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        field.onChange(
+                                          field.value.filter((_, id) => id !== i)
+                                        )
+                                      }
+                                      className="ml-1 text-slate-400 hover:text-slate-200"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+
+                              {/* DROPDOWN OR TEXT INPUT */}
+                              {isDropdown ? (
+                                <select
+                                  className="w-full bg-slate-800 text-white text-sm px-3 py-2 rounded-md border border-slate-700"
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val && !field.value.includes(val)) {
+                                      field.onChange([...field.value, val]);
+                                    }
+                                    e.target.value = "";
+                                  }}
+                                >
+                                  <option value="">Select {currentType}</option>
+
+                                  {dataList.map((item) => (
+                                    <option
+                                      key={item.id}
+                                      value={
+                                        item.country ||
+                                        item.state ||
+                                        item.name ||
+                                        item.browser ||
+                                        item.device
+                                      }
+                                    >
+                                      {item.country ||
+                                        item.state ||
+                                        item.name ||
+                                        item.browser ||
+                                        item.device}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input
+                                  type="text"
+                                  placeholder={`Enter ${currentType}...`}
+                                  className="w-full text-sm bg-slate-800 text-white px-3 py-2 rounded-md border border-slate-700"
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" && e.target.value.trim()) {
+                                      e.preventDefault();
+                                      field.onChange([
+                                        ...field.value,
+                                        e.target.value.trim(),
+                                      ]);
+                                      e.target.value = "";
+                                    }
+                                  }}
+                                />
+                              )}
+                            </div>
+                          )}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* STEP BUTTONS */}
+                <div className="flex justify-between pt-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
+                  >
+                    ‹ Previous
+                  </button>
+                  <div className="flex gap-3">
+
+                    {fields.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={nextStep}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
                       >
-                        <option value="">Select {currentType}</option>
-
-                        {dataList.map((item) => (
-                          <option
-                            key={item.id}
-                            value={
-                              item.country ||
-                              item.state ||
-                              item.name ||
-                              item.browser ||
-                              item.device
-                            }
-                          >
-                            {item.country ||
-                              item.state ||
-                              item.name ||
-                              item.browser ||
-                              item.device}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        placeholder={`Enter ${currentType}...`}
-                        className="w-full text-sm bg-slate-800 text-white px-3 py-2 rounded-md border border-slate-700"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && e.target.value.trim()) {
-                            e.preventDefault();
-                            field.onChange([
-                              ...field.value,
-                              e.target.value.trim(),
-                            ]);
-                            e.target.value = "";
-                          }
-                        }}
-                      />
+                        Next ›
+                      </button>
                     )}
+                    {location?.state?.mode === "edit" ? <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
+                    >
+                      Save
+                    </button> : null}
                   </div>
-                )}
-              />
+                </div>
+              </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* STEP BUTTONS */}
-      <div className="flex justify-between pt-4">
-        <button
-          type="button"
-          onClick={prevStep}
-          className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
-        >
-          ‹ Previous
-        </button>
-
-        {fields.length > 0 && (
-          <button
-            type="button"
-            onClick={nextStep}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-          >
-            Next ›
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+          )} 
 
 
           {/* Step 5: Filters */}
           {step === 5 && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
               <div className="space-y-4">
+                <div className="flex justify-center">
                 <Controller
                   name="filters"
                   control={control}
@@ -3283,8 +3303,9 @@ export default function CampaignBuilder() {
                       <div
                         style={{
                           display: "flex",
-                          gap: 20,
+                          gap: 40,
                           alignItems: "center",
+                          border:"1px solid black"
                         }}
                       >
                         <select
@@ -3370,6 +3391,8 @@ export default function CampaignBuilder() {
                   }}
                 />
 
+                </div>
+                {/* =========BUTTONS LOWER */}
                 <div className="flex justify-between mt-6">
                   <button
                     type="button"
@@ -3378,6 +3401,7 @@ export default function CampaignBuilder() {
                   >
                     ‹ Previous
                   </button>
+                  <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={nextStep}
@@ -3385,6 +3409,20 @@ export default function CampaignBuilder() {
                   >
                     Next ›
                   </button>
+                  {location?.state?.mode === "edit" ? <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
+                    >
+                      Save
+                    </button>: null}
+
+                  </div>
                 </div>
               </div>
             </div>
@@ -3586,7 +3624,7 @@ export default function CampaignBuilder() {
                     type="submit"
                     className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-md shadow"
                   >
-                    Create Campaign
+                    {location?.state?.mode === "edit" ? "Update" : "Create"} Campaign
                   </button>
                 </div>
               </div>

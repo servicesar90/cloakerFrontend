@@ -1,21 +1,22 @@
  import React, { useEffect, useState, } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ZipGeneratorButton from "../utils/zipgenerator";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
+
 // Assuming the Tab component is defined or imported here
+
 
 const CloakingIntegration = () => {
   // State for the URL input
   const [pastedUrl, setPastedUrl] = useState("");
   const [tab, setTab] = useState("php-paste");
   const location = useLocation();
-  const camp = location?.state?.data
-  console.log("campaign",camp);
-  
-  
+  const camp = location?.state?.data;
+  const navigate = useNavigate();  
+    
 
   const tabs = [
     {
@@ -109,7 +110,6 @@ const CloakingIntegration = () => {
   ];
 
   useEffect(() => {
-    console.log("Updated tab:", tab);
   }, [tab]);
 
   const handleTestUrl = () => {
@@ -250,7 +250,14 @@ if ($data && isset($data['action'])) {
               Create/Edit/Delete Campaigns
             </p>
           </div>
-          <button className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150">
+          <button onClick={()=>{
+             navigate("/Dashboard/create-campaign", {
+          state: {
+            mode: "edit",
+            data: camp, // campaign data from db
+          },
+        });
+          }} className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150">
             Edit Campaign
           </button>
         </header>

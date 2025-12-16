@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import PropTypes from "prop-types";
+import { getAllCampaign } from "../api/Apis";
+import { apiFunction } from "../api/ApiFunction";
 
 const WebAnalyticsPage = ({
   analyticsData = [],
-  totalItems,
+
   currentPage,
   itemsPerPage,
   onViewAll,
@@ -17,7 +19,12 @@ const WebAnalyticsPage = ({
 }) => {
   // --- Icons ---
   const PlusIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-4 w-4"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
       <path
         fillRule="evenodd"
         d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
@@ -26,24 +33,26 @@ const WebAnalyticsPage = ({
     </svg>
   );
 
-  const RefreshIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M4 4a8 8 0 1111.31 6.9l1.39 1.39a1 1 0 01-1.42 1.42l-2.83-2.83A1 1 0 0113 9h3a6 6 0 10-6 6v-2a1 1 0 012 0v3a1 1 0 01-1 1H8a8 8 0 01-4-13z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
+ 
 
   const ChartBarIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 text-blue-500"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
       <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
     </svg>
   );
 
   const CodeIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 text-gray-300"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
       <path
         fillRule="evenodd"
         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414L13.414 10l-4.707 4.707a1 1 0 01-1.414 0z"
@@ -53,7 +62,12 @@ const WebAnalyticsPage = ({
   );
 
   const TrashIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 text-red-500"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
       <path
         fillRule="evenodd"
         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z"
@@ -63,18 +77,27 @@ const WebAnalyticsPage = ({
   );
 
   // --- Reusable Button Component ---
-  const Button = ({ children, variant, icon: Icon, onClick, className = "" }) => {
+  const Button = ({
+    children,
+    variant,
+    icon: Icon,
+    onClick,
+    className = "",
+  }) => {
     let baseClasses =
       "px-4 py-2 rounded-xl font-medium transition-all duration-200 inline-flex items-center gap-2 focus:outline-none";
 
     if (variant === "primary") {
       baseClasses += " bg-blue-600 hover:bg-blue-700 text-white shadow-md";
     } else if (variant === "secondary") {
-      baseClasses += " bg-gray-700 text-gray-100 hover:bg-gray-600 border border-gray-600";
+      baseClasses +=
+        " bg-gray-700 text-gray-100 hover:bg-gray-600 border border-gray-600";
     } else if (variant === "pagination") {
-      baseClasses += " bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700";
+      baseClasses +=
+        " bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700";
     } else if (variant === "icon") {
-      baseClasses = "p-2 rounded-lg bg-transparent hover:bg-[#25344E] transition-all duration-200";
+      baseClasses =
+        "p-2 rounded-lg bg-transparent hover:bg-[#25344E] transition-all duration-200";
     }
 
     return (
@@ -85,28 +108,84 @@ const WebAnalyticsPage = ({
     );
   };
 
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [campaigns, setCampaigns] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const handleRefresh = () => {
+    fetchCampaigns();
+  };
+
+  const fetchCampaigns = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await apiFunction("get", getAllCampaign, null, null);
+     
+
+      // Assume total items is available in response.data.total or we use array length
+      const dataRows = response.data.data || [];
+
+      setCampaigns(dataRows);
+      setTotalItems(response.data.data || dataRows);
+      
+      
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching campaigns:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to load campaign data.";
+      setError(errorMessage); // Updated to show actual error if available
+      setIsLoading(false);
+      setCampaigns([]);
+      setTotalItems(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
 
   return (
-    <div style={{ fontFamily: "Outfit, sans-serif", fontWeight: 400 }} className="min-h-screen bg-[#0F172B] text-gray-100 p-8 font-sans">
+    <div
+      style={{ fontFamily: "Outfit, sans-serif", fontWeight: 400 }}
+      className="min-h-screen bg-[#0b0d14] text-gray-100 p-8 font-sans"
+    >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Web Analytics</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              Web Analytics
+            </h1>
             <p className="text-sm text-gray-400 mt-2">
               Track your URLs and monitor real-time visitor data
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button variant="primary" icon={PlusIcon} onClick={onAddNewUrl}>
-              Add New URL
-            </Button>
-            <Button variant="secondary" icon={RefreshIcon} onClick={onRefresh}>
+            <button
+              onClick={handleRefresh}
+              className="flex items-center cursor-pointer px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-sm shadow-lg transition duration-150"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
               Refresh
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -123,38 +202,89 @@ const WebAnalyticsPage = ({
             <div>Actions</div>
           </div>
 
-          {analyticsData.length === 0 ? (
+          {campaigns.length === 0 ? (
             <div className="py-20 text-center text-gray-500 text-sm border-t border-gray-700">
               No analytics data found.
             </div>
           ) : (
-            analyticsData.map((item, index) => (
+            campaigns?.map((item, index) => (
               <div
                 key={item.id}
                 className="grid grid-cols-8 gap-4 px-6 py-3 text-sm text-gray-200 border-t border-gray-700 hover:bg-[#25344E] transition-colors"
               >
-                <div>{startItem + index}</div>
-                <div>{item.name}</div>
-                <div className="truncate">
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:underline"
-                  >
-                    {item.url}
-                  </a>
-                </div>
-                <div>{item.totalVisitors}</div>
+                <div>{1 + index}</div>
+                <div>{item?.campaign_info?.campaignName || "NA"}</div>
+                <div className="relative group flex items-center">
+  {/* Icon */}
+  <svg
+    className="h-4 w-4 text-blue-400 cursor-pointer"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+    />
+  </svg>
+
+  {/* Tooltip */}
+  <div
+    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
+    hidden group-hover:block bg-gray-800 text-gray-200 text-xs 
+    px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
+  >
+    {item.integrationUrl || "No URL Found"}
+  </div>
+</div>
+
+                <div>{item?.campclicks?.total_t_clicks}</div>
                 <div>
-                  <Button variant="icon" icon={ChartBarIcon} onClick={() => onViewClick(item.id)} />
+                  <Button
+                    variant="icon"
+                    icon={ChartBarIcon}
+                    onClick={() => onViewClick(item.id)}
+                  />
                 </div>
+               <div className="relative group">
+  {/* Code Icon */}
+  <button className="text-blue-400 hover:text-blue-300">
+    <CodeIcon className="h-5 w-5" />
+  </button>
+
+  {/* Tooltip */}
+  <div
+    className="absolute z-50 hidden group-hover:block 
+    bottom-full mb-2 right-0 w-80 
+    bg-gray-900 border border-gray-700 
+    rounded-lg shadow-xl p-3"
+  >
+    {/* Code Block */}
+    <pre className="text-xs text-green-400 bg-black rounded p-2 max-h-40 overflow-auto">
+      {item?.javascriptCDN || "No code available"}
+    </pre>
+
+    {/* Copy Button */}
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(item?.code || "");
+      }}
+      className="mt-2 text-xs text-blue-400 hover:text-blue-300"
+    >
+      📋 Copy code
+    </button>
+  </div>
+</div>
+
+                <div>{item?.createdAt}</div>
                 <div>
-                  <Button variant="icon" icon={CodeIcon} onClick={() => onCodeClick(item.id)} />
-                </div>
-                <div>{item.createdDateTime}</div>
-                <div>
-                  <Button variant="icon" icon={TrashIcon} onClick={() => onDeleteClick(item.id)} />
+                  <Button
+                    variant="icon"
+                    icon={TrashIcon}
+                    onClick={() => onDeleteClick(item.id)}
+                  />
                 </div>
               </div>
             ))
@@ -164,20 +294,22 @@ const WebAnalyticsPage = ({
         {/* Pagination Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center mt-6 text-sm text-gray-400 gap-4">
           <span>
-            {startItem}–{endItem} of {totalItems} items —{" "}
-            <button onClick={onViewAll} className="text-blue-500 hover:underline">
+            <button
+              onClick={onViewAll}
+              className="text-blue-500 hover:underline"
+            >
               View all
             </button>
           </span>
 
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <Button variant="pagination" onClick={onPrevious}>
               Previous
             </Button>
             <Button variant="pagination" onClick={onNext}>
               Next
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

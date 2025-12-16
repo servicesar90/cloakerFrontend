@@ -231,7 +231,7 @@ export default function SignupPage() {
       if (response?.status === 201 || response?.success) {
         showSuccessToast("Account created successfully!");
         reset();
-        navigate("/login");
+        navigate("/signin");
       } else {
         showErrorToast(response?.message || "Something went wrong. Please try again.");
       }

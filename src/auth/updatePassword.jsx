@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
+import { updatePassword } from "../api/Apis";
+import { createApiFunction } from "../api/ApiFunction";
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 
 export default function UpdatePassword() {
@@ -15,6 +17,8 @@ export default function UpdatePassword() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const email = localStorage.getItem("resetEmail");
+
 
   // Strong Password Regex
   const strongPasswordRegex =
@@ -23,6 +27,15 @@ export default function UpdatePassword() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+
+  useEffect(() => {
+  if (!email) {
+    showErrorToast("Session expired. Please try again.");
+    navigate("/reset-password");
+  }
+}, []);
+
 
   // Submit Function
   const onSubmit = async (e) => {
@@ -34,8 +47,8 @@ export default function UpdatePassword() {
     }
 
     // 🔥 OTP must be exactly 4 digits
-    if (formData.otp.length !== 4) {
-      showErrorToast("OTP must be 4 digits");
+    if (formData.otp.length !== 6) {
+      showErrorToast("OTP must be 6 digits");
       return;
     }
 
@@ -60,29 +73,41 @@ export default function UpdatePassword() {
       );
       return;
     }
+try {
+  setIsSubmitting(true);
 
-    try {
-      setIsSubmitting(true);
+  const res = await createApiFunction(
+  "post",
+  updatePassword,
+  null,
+  {
+    email: email,
+    otp: formData.otp,
+    password: formData.newPassword,
+  }
+);
 
-      const res = await axios.post(
-        "https://your-api.com/api/auth/verify-otp-update-password",
-        {
-          otp: formData.otp,
-          password: formData.newPassword,
-        }
-      );
 
-      showSuccessToast(res.data.message || "Password updated successfully!");
-      setTimeout(() => {
-        navigate("/signin");
-      }, 800); // thoda delay taaki toast dikhe
-      navigate;
-    } catch (err) {
-      showErrorToast(err.response?.data?.message || "Something went wrong!");
-    } finally {
-      setIsSubmitting(false);
-    }
+  showSuccessToast(
+    res?.data?.message || "Password updated successfully!"
+  );
+  localStorage.removeItem("resetEmail");
+
+  setTimeout(() => {
+    navigate("/signin");
+  }, 800);
+
+} catch (err) {
+  showErrorToast(
+    err.response?.data?.message || "Something went wrong!"
+  );
+} finally {
+  setIsSubmitting(false);
+}
+
   };
+
+
 
   return (
     <>
@@ -107,18 +132,18 @@ export default function UpdatePassword() {
                 <input
                   type="text"
                   name="otp"
-                  placeholder="Enter 4-digit OTP"
+                  placeholder="Enter 6-digit OTP"
                   value={formData.otp}
                   onChange={(e) => {
                     const value = e.target.value;
 
                     // Allow only digits + limit to 4 digits
-                    if (/^\d{0,4}$/.test(value)) {
+                    if (/^\d{0,6}$/.test(value)) {
                       setFormData({ ...formData, otp: value });
                     }
                   }}
                   required
-                  maxLength={4}
+                  maxLength={6}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>

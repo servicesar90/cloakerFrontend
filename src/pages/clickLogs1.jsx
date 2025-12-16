@@ -143,7 +143,7 @@ const Clicklogs = () => {
 
   return (
     <>
-      <div className="bg-[#0F172B] min-h-screen">
+      <div className="bg-[ ] min-h-screen">
         <header className="flex items-center justify-between pt-5 mb-6  ml-4 mr-4">
           <div>
             <h1 className="text-2xl font-semibold flex items-center">

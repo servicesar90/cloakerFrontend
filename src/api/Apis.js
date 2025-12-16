@@ -28,3 +28,7 @@ export const signOutApi = `${base_url}/auth/signout`;
 
 export const ipClicks = `${base_url}/api/v2/analytics/ipclicks`;
 
+export const forgotPassword = `${base_url}/auth/forgot-password`;
+
+export const updatePassword = `${base_url}/auth/reset-password`;
+

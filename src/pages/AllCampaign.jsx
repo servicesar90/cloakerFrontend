@@ -70,7 +70,7 @@ function AllCampaignsDashboard() {
       try {
         setLoading(true);
   
-        const res = await apiFunction("get", ipClicks);
+        const res = await apiFunction("get", ipClicks,null, null);
         const rawData = res?.data?.data || [];
   
         const formattedData = rawData.map((item) => ({
@@ -359,57 +359,67 @@ function AllCampaignsDashboard() {
               </td>
 
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
-                {clickSummary.totalClicks || "No Clicks"}
+                {item?.campclicks?.total_t_clicks || "No Clicks"}
               </td>
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-16">
-  <div className="flex items-center space-x-1 relative group">
+                <div className="flex items-center space-x-1 relative group">
+                  {/* i Icon */}
+                  <svg
+                    className="h-4 w-4 text-blue-400 cursor-pointer"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                    />
+                  </svg>
 
-    {/* i Icon */}
-    <svg
-      className="h-4 w-4 text-blue-400 cursor-pointer"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
-    </svg>
+                  {/* Value */}
+                  <span>{item?.campclicks?.total_s_clicks|| 0}</span>
 
-    {/* Value */}
-    <span>{clickSummary?.safeClicks || 0}</span>
-
-    {/* Tooltip */}
-    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
-        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
-      {item?.safe_page || "No URL Found"}
-    </div>
-  </div>
-</td>
+                  {/* Tooltip */}
+                  <div
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
+        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
+                  >
+                    {item?.safe_page || "No URL Found"}
+                  </div>
+                </div>
+              </td>
 
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-20">
-  <div className="flex items-center space-x-1 relative group">
+                <div className="flex items-center space-x-1 relative group">
+                  {/* i Icon */}
+                  <svg
+                    className="h-4 w-4 text-blue-400 cursor-pointer"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                    />
+                  </svg>
 
-    {/* i Icon */}
-    <svg
-      className="h-4 w-4 text-blue-400 cursor-pointer"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
-    </svg>
+                  {/* Value */}
+                  <span>{item?.campclicks?.total_m_clicks || 0}</span>
 
-    {/* Value */}
-    <span>{clickSummary?.moneyClicks || 0}</span>
-
-    {/* Tooltip */}
-    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
-        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
-      {item?.money_page[0]?.url || "No URL Found"}
-    </div>
-  </div>
-</td>
+                  {/* Tooltip */}
+                  <div
+                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block 
+        bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
+                  >
+                    {item?.money_page[0]?.url || "No URL Found"}
+                  </div>
+                </div>
+              </td>
 
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-48">
                 {new Date(item.date_time).toLocaleString("en-GB", {
@@ -444,9 +454,8 @@ function AllCampaignsDashboard() {
       </tbody>
     );
   };
-
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-[#0b0d14] text-white p-6">
       {/* Header Section (Unchanged) */}
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">All Campaigns ({totalItems})</h1>
@@ -542,8 +551,11 @@ function AllCampaignsDashboard() {
       </div>
 
       {/* Campaign Table Container (Unchanged) */}
-      <div className="mt-4 overflow-y-auto  ">
-        <table className="min-w-full divide-y divide-gray-700 table-fixed">
+<div className="mt-4 border border-gray-700 rounded-lg overflow-hidden">
+  
+  {/* TABLE SCROLL AREA */}
+  <div className="overflow-y-auto max-h-[70vh]">
+     <table className="min-w-full divide-y divide-gray-700 table-fixed">
           <thead className="bg-gray-800">
             <tr>
               <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-12">
@@ -574,14 +586,41 @@ function AllCampaignsDashboard() {
                 Created on <span className="text-sm">⇅</span>
               </th>
               <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
-                Action <span className="text-sm">...</span>
+                Action
               </th>
             </tr>
           </thead>
           {/* Dynamic Table Body (Handles Loading/Error/Data) */}
           {renderTableContent()}
         </table>
-      </div>
+  </div>
+
+  {/* FOOTER STRIP */}
+  <div className="bg-gray-800 border-t border-gray-700 px-4 py-3 flex items-center justify-between">
+    <span className="text-sm text-gray-400">
+      Showing 1–10 of 120 campaigns
+    </span>
+
+    {/* PAGINATION */}
+    <div className="flex items-center gap-2">
+      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+        Prev
+      </button>
+
+      <button className="px-3 py-1 text-sm bg-indigo-600 text-white rounded">
+        1
+      </button>
+
+      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+        2
+      </button>
+
+      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* Pagination/Summary Section (Unchanged) */}
       {/* <div className="mt-4 flex justify-between items-center text-sm text-gray-400">

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { createApiFunction } from "../api/ApiFunction";
+import { forgotPassword } from "../api/Apis";
+import { showErrorToast, showInfoToast, showSuccessToast } from "../components/toast/toast";
 
 export default function ResetPassword() {
   const [formData, setFormData] = useState({ email: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   // Handle Input Change
   const handleChange = (e) => {
@@ -12,32 +15,40 @@ export default function ResetPassword() {
   };
 
   // Submit Function
-  const onSubmit = async (e) => {
-    e.preventDefault();
+const onSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!formData.email.trim()) {
-      alert("Email is required");
-      return;
-    }
+  if (!formData.email.trim()) {
+    alert("Email is required");
+    return;
+  }
 
-    try {
-      setIsSubmitting(true);
+  try {
+    setIsSubmitting(true);
 
-      const res = await axios.post(
-        "https://your-api.com/api/auth/reset-password",
-        { email: formData.email }
-      );
+    const res = await createApiFunction(
+      "post",
+      forgotPassword,
+      null,
+      { email: formData.email }
+    );
+    localStorage.setItem("resetEmail", formData.email);
 
-      // alert(res.data.message || "Reset link sent!");
-    } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          "Something went wrong! Please try again."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  showSuccessToast(res?.data?.message || "OTP Sent");
+  navigate('/update-password')
+
+  } catch (err) {
+    console.error(err);
+    showErrorToast(
+      err.response?.data?.message ||
+      "Something went wrong! Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
 
   return (
     <>

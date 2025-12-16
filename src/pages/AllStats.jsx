@@ -645,8 +645,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mt-4 overflow-y-auto ">
-        <table className="min-w-full divide-y divide-gray-700 table-fixed">
+      <div className="mt-4 border border-gray-700 rounded-lg overflow-hidden">
+  
+  {/* TABLE SCROLL AREA */}
+  <div className="overflow-y-auto max-h-[70vh]">
+     <table className="min-w-full divide-y divide-gray-700 table-fixed">
           <thead className="bg-gray-800">
             <tr>
               <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-12">
@@ -684,7 +687,35 @@ const Dashboard = () => {
           {/* Dynamic Table Body (Handles Loading/Error/Data) */}
           {renderTableContent()}
         </table>
-      </div>
+  </div>
+
+  {/* FOOTER STRIP */}
+  <div className="bg-gray-800 border-t border-gray-700 px-4 py-3 flex items-center justify-between">
+    <span className="text-sm text-gray-400">
+      Showing 1–10 of 120 campaigns
+    </span>
+
+    {/* PAGINATION */}
+    <div className="flex items-center gap-2">
+      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+        Prev
+      </button>
+
+      <button className="px-3 py-1 text-sm bg-indigo-600 text-white rounded">
+        1
+      </button>
+
+      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+        2
+      </button>
+
+      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
 
       {/* Bottom Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

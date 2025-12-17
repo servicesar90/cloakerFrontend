@@ -5,6 +5,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
+import IntegrationTable from '../components/IntegrationPage/IntegrationTable'
 
 // Assuming the Tab component is defined or imported here
 
@@ -234,7 +235,7 @@ if ($data && isset($data['action'])) {
 
   return (
     // Outer padding and dark background for the main content area
-    <div className="p-4 md:p-8 bg-gray-900 min-h-full">
+    false ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
       {/* Max width container for clean layout */}
       <div className="max-w-7xl mx-auto">
         {/* === 1. Component Header (Unchanged) === */}
@@ -277,6 +278,10 @@ if ($data && isset($data['action'])) {
 
         {/* --- Separator Line (Optional, for visual clarity) --- */}
       </div>
+    </div>) : 
+    <div className="bg-gray-900 min-h-full">
+
+      <IntegrationTable/>
     </div>
   );
 };
@@ -804,4 +809,107 @@ const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
     </div>
   </div>
 );
+
+// const IntegrationTable = ({
+//   campaignName = "bagwala",
+//   campaignId = "bbed2aefab",
+//   url = "https://bagwala.org/",
+//   status = "Active",
+//   type = "JAVASCRIPT",
+//   firstInstalled = "2025-December-09 23:13:05",
+//   lastUpdated = "01/17/2023 04:11:42 pm",
+// }) => {
+//   return (
+//     <div className="row">
+//       <div className="col-sm-12">
+//         <div className="card">
+//           {/* Header */}
+//           <div className="card-header m-4">
+//             <div className="flex justify-between w-full ">
+//               <h4 className="card-title">
+//                 Campaign Name [ <span className="text-success">{campaignName}</span> ]
+//               </h4>
+
+//               <a href={`https://app.trafficshield.io/v2/dashboard/updatecampaign/${campaignId}`}>
+//                 <button className="btn btn-sm btn-primary mx-1">
+//                   <i className="fa-solid fa-pen-to-square me-2"></i>
+//                   Edit Campaign
+//                 </button>
+//               </a>
+//             </div>
+//           </div>
+
+//           {/* Body */}
+//           <div className="card-body">
+//             <div className="tab-pane fade active show">
+//               <div className="card-datatable table-responsive pt-0 my-2">
+//                 <table className="table table-sm table-bordered text-center">
+//                   <thead>
+//                     <tr>
+//                       <th>Select</th>
+//                       <th>URL</th>
+//                       <th>Status</th>
+//                       <th>Type</th>
+//                       <th>First Installed</th>
+//                       <th>Last Upgrade Date</th>
+//                     </tr>
+//                   </thead>
+
+//                   <tbody>
+//                     <tr>
+//                       <td>
+  //                         <input
+  //                           type="checkbox"
+  //                           className="form-check-input"
+  //                           value={campaignId}
+  //                         />
+//                         <input type="hidden" value={url} />
+//                       </td>
+
+//                       <td>{url}</td>
+
+//                       <td className="text-success fw-semibold">
+//                         {status}
+//                       </td>
+
+//                       <td>{type}</td>
+
+//                       <td>{firstInstalled}</td>
+
+//                       <td>{lastUpdated}</td>
+//                     </tr>
+//                   </tbody>
+//                 </table>
+
+//                 {/* Buttons */}
+//                 <div className="demo-inline-spacing pt-2">
+//                   <button className="btn btn-sm btn-primary">
+//                     <i className="fa-regular fa-circle-check me-2"></i>
+//                     Test Url
+//                   </button>
+
+//                   <button className="btn btn-sm btn-danger">
+//                     <i className="fa-solid fa-trash-can me-2"></i>
+//                     Delete
+//                   </button>
+
+//                   <a
+//                     href={`https://app.trafficshield.io/v2/dashboard/cloaked_url/${campaignId}`}
+//                   >
+//                     <button className="btn btn-sm btn-secondary">
+//                       <i className="fa-solid fa-arrows-rotate me-2"></i>
+//                       Refresh
+//                     </button>
+//                   </a>
+//                 </div>
+
+//               </div>
+//             </div>
+//           </div>
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 export default CloakingIntegration;

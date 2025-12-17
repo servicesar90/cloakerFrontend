@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { createCampaignApi, getAllCampaign, ipClicks,campdata } from "../api/Apis";
+import { createCampaignApi, getAllCampaign, ipClicks, campdata } from "../api/Apis";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
 import { showInfoToast } from "../components/toast/toast";
@@ -16,23 +16,24 @@ function AllCampaignsDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalItems, setTotalItems] = useState(0);
-   const [loading, setLoading] = useState(true);
-   const [clickSummary, setClickSummary] = useState({
-      totalClicks: 0,
-      safeClicks: 0,
-      moneyClicks: 0,
-    });
+  const [loading, setLoading] = useState(true);
+  const [clickSummary, setClickSummary] = useState({
+    totalClicks: 0,
+    safeClicks: 0,
+    moneyClicks: 0,
+  });
 
-    const [statusTabs, setStatusTabs] = useState([
-  { name: "All", count: 0 },
-  { name: "Active", count: 0 },
-  { name: "Allow All", count: 0 },
-  { name: "Block All", count: 0 },
-]);
+  const [statusTabs, setStatusTabs] = useState([
+    { name: "All", count: 0 },
+    { name: "Active", count: 0 },
+    { name: "Allow All", count: 0 },
+    { name: "Block All", count: 0 },
+  ]);
 
 
   // ⭐ NEW STATE for Dropdown
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [dropdownPos, setDropdownPos] = useState(null);
 
   // ⭐ useRef for Click Outside logic
   const dropdownRef = useRef(null);
@@ -66,65 +67,65 @@ function AllCampaignsDashboard() {
   }, []);
 
 
-    const fetchIpClicks = async () => {
-      try {
-        setLoading(true);
-  
-        const res = await apiFunction("get", ipClicks,null, null);
-        const rawData = res?.data?.data || [];
-  
-        const formattedData = rawData.map((item) => ({
-          date: new Date(item.date).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-          }),
-          Safe: Number(item.total_s_clicks || 0),
-          Money: Number(item.total_m_clicks || 0),
-          Total: Number(item.total_t_clicks || 0),
-        }));
-  
-        setChartData(formattedData);
-  
-        const totals = rawData.reduce(
-          (acc, item) => {
-            acc.totalClicks += Number(item.total_t_clicks || 0);
-            acc.safeClicks += Number(item.total_s_clicks || 0);
-            acc.moneyClicks += Number(item.total_m_clicks || 0);
-            return acc;
-          },
-          { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
-        );
-  
-        setClickSummary(totals);
-      } catch (err) {
-        console.error("IP Click API Error:", err);
-        setChartData([]);
-        setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
-      } finally {
-        setLoading(false);
-      }
-    };
- 
+  const fetchIpClicks = async () => {
+    try {
+      setLoading(true);
 
-    const fetchStats = async () => {
-        try {
-          const res = await apiFunction("get", campdata, null, null);
-          console.log(res);
-          
+      const res = await apiFunction("get", ipClicks, null, null);
+      const rawData = res?.data?.data || [];
 
-           const data = res?.data || {};
+      const formattedData = rawData.map((item) => ({
+        date: new Date(item.date).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+        }),
+        Safe: Number(item.total_s_clicks || 0),
+        Money: Number(item.total_m_clicks || 0),
+        Total: Number(item.total_t_clicks || 0),
+      }));
 
-    
-         setStatusTabs([
-      { name: "All", count: data?.data?.total_campaigns || 0 },
-      { name: "Active", count: data?.data?.active_campaigns || 0 },
-      { name: "Allow All", count: data?.data?.blocked_campaigns || 0 },
-      { name: "Block All", count: data?.data?.allowed_campaigns || 0 },
-    ]);
-        } catch (error) {
-          console.error("Stats API Error:", error);
-        }
-      };
+      setChartData(formattedData);
+
+      const totals = rawData.reduce(
+        (acc, item) => {
+          acc.totalClicks += Number(item.total_t_clicks || 0);
+          acc.safeClicks += Number(item.total_s_clicks || 0);
+          acc.moneyClicks += Number(item.total_m_clicks || 0);
+          return acc;
+        },
+        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+      );
+
+      setClickSummary(totals);
+    } catch (err) {
+      console.error("IP Click API Error:", err);
+      setChartData([]);
+      setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const fetchStats = async () => {
+    try {
+      const res = await apiFunction("get", campdata, null, null);
+      console.log(res);
+
+
+      const data = res?.data || {};
+
+
+      setStatusTabs([
+        { name: "All", count: data?.data?.total_campaigns || 0 },
+        { name: "Active", count: data?.data?.active_campaigns || 0 },
+        { name: "Allow All", count: data?.data?.blocked_campaigns || 0 },
+        { name: "Block All", count: data?.data?.allowed_campaigns || 0 },
+      ]);
+    } catch (error) {
+      console.error("Stats API Error:", error);
+    }
+  };
 
   useEffect(() => {
     fetchCampaigns();
@@ -136,6 +137,7 @@ function AllCampaignsDashboard() {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpenDropdownId(null);
+        setDropdownPos(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -145,12 +147,18 @@ function AllCampaignsDashboard() {
   }, []); // Empty dependency array means this runs once
 
   // --- NEW Handlers for Dropdown ---
-  const handleActionClick = (campaignId) => {
-    // ड्रॉपडाउन को टॉगल (toggle) करता है
+  const handleActionClick = (e,campaignId) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    console.log(rect);
+    
+    setDropdownPos({
+      top: rect.bottom + 2, // below button
+      left: rect.right -150, // align right (w-48 = 192px)
+    });
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
 
-  const handleActionSelect = async (action, campaignId,row) => {
+  const handleActionSelect = async (action, campaignId, row) => {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
       case "edit":
@@ -202,7 +210,7 @@ function AllCampaignsDashboard() {
 
   const handleStatusTabChange = (tab) => setActiveStatusTab(tab);
   const handleAddNewCampaign = () => {
-   
+
 
     showInfoToast("Redirecting to Creating New Campaign");
     navigate("/Dashboard/create-campaign");
@@ -211,43 +219,46 @@ function AllCampaignsDashboard() {
   // --- Render Functions ---
 
   const renderStatusTabs = () => (
-  <div className="flex space-x-6 text-sm">
-    {statusTabs.map((tab) => (
-      <button
-        key={tab.name}
-        onClick={() => handleStatusTabChange(tab.name)}
-        className={`font-medium py-1 transition duration-150 ${
-          activeStatusTab === tab.name
-            ? "text-blue-500 border-b-2 border-blue-500"
-            : "text-gray-400 hover:text-gray-300"
-        }`}
-      >
-        {tab.name} ({tab.count})
-      </button>
-    ))}
-  </div>
-);
+    <div className="flex space-x-6 text-sm">
+      {statusTabs.map((tab) => (
+        <button
+          key={tab.name}
+          onClick={() => handleStatusTabChange(tab.name)}
+          className={`font-medium py-1 transition duration-150 ${activeStatusTab === tab.name
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-400 hover:text-gray-300"
+            }`}
+        >
+          {tab.name} ({tab.count})
+        </button>
+      ))}
+    </div>
+  );
 
 
   // ⭐ NEW Render Function: Action Dropdown Menu
-  const renderActionDropdown = (campaignId,row) => (
+  const renderActionDropdown = (campaignId, row) => (
     // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-    <div className="absolute z-50 right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20">
+    <div className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20" style={{
+      zIndex: 9999999, // over ALL elements
+      left: dropdownPos.left,
+      top: dropdownPos.top, // adjust dynamically if needed
+    }}>
       <div className="py-1">
         <button
-          onClick={() => handleActionSelect("edit", campaignId,row)}
+          onClick={() => handleActionSelect("edit", campaignId, row)}
           className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100"
         >
           Edit Campaign
         </button>
         <button
-          onClick={() => handleActionSelect("duplicate", campaignId,null)}
+          onClick={() => handleActionSelect("duplicate", campaignId, null)}
           className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100"
         >
           Duplicate Campaign
         </button>
         <button
-          onClick={() => handleActionSelect("delete", campaignId,null)}
+          onClick={() => handleActionSelect("delete", campaignId, null)}
           className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100"
         >
           Delete Campaign
@@ -256,7 +267,7 @@ function AllCampaignsDashboard() {
     </div>
   );
 
-    const renderTableContent = () => {
+  const renderTableContent = () => {
     // ... (Loading/Error/Empty Data checks)
     if (isLoading) {
       /* ... loading JSX ... */ return (
@@ -307,13 +318,12 @@ function AllCampaignsDashboard() {
               </td>
               <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-24">
                 <span
-                  className={`font-semibold ${
-                    item.status === "Active"
+                  className={`font-semibold ${item.status === "Active"
                       ? "text-green-500"
                       : item.status === "Block"
-                      ? "text-red-500"
-                      : "text-yellow-500"
-                  }`}
+                        ? "text-red-500"
+                        : "text-yellow-500"
+                    }`}
                 >
                   {item.status || "Active"}
                 </span>
@@ -378,7 +388,7 @@ function AllCampaignsDashboard() {
                   </svg>
 
                   {/* Value */}
-                  <span>{item?.campclicks?.total_s_clicks|| 0}</span>
+                  <span>{item?.campclicks?.total_s_clicks || 0}</span>
 
                   {/* Tooltip */}
                   <div
@@ -436,12 +446,11 @@ function AllCampaignsDashboard() {
                 className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 text-left relative"
               >
                 <button
-                  onClick={() => handleActionClick(item?.uid)}
-                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
-                    isDropdownOpen
+                  onClick={(e) => handleActionClick(e,item?.uid)}
+                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${isDropdownOpen
                       ? "bg-gray-600 text-white"
                       : "hover:bg-gray-700"
-                  }`}
+                    }`}
                 >
                   ⋯ {/* Vertical three dots */}
                 </button>
@@ -453,6 +462,10 @@ function AllCampaignsDashboard() {
       </tbody>
     );
   };
+
+
+
+
   return (
     <div className="min-h-screen bg-[#0b0d14] text-white p-6">
       {/* Header Section (Unchanged) */}
@@ -550,76 +563,76 @@ function AllCampaignsDashboard() {
       </div>
 
       {/* Campaign Table Container (Unchanged) */}
-<div className="mt-4 border border-gray-700 rounded-lg overflow-hidden">
-  
-  {/* TABLE SCROLL AREA */}
-  <div className="overflow-y-auto max-h-[70vh]">
-     <table className="min-w-full divide-y divide-gray-700 table-fixed">
-          <thead className="bg-gray-800">
-            <tr>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-12">
-                Sn <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-40">
-                Campaign Name <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-24">
-                Source <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-24">
-                Status <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-32">
-                Intergration <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
-                Clicks <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-16">
-                Safe <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
-                Money <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-48">
-                Created on <span className="text-sm">⇅</span>
-              </th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
-                Action
-              </th>
-            </tr>
-          </thead>
-          {/* Dynamic Table Body (Handles Loading/Error/Data) */}
-          {renderTableContent()}
-        </table>
-  </div>
+      <div className="mt-4 border border-gray-700 rounded-lg overflow-hidden">
 
-  {/* FOOTER STRIP */}
-  <div className="bg-gray-800 border-t border-gray-700 px-4 py-3 flex items-center justify-between">
-    <span className="text-sm text-gray-400">
-      Showing 1–10 of 120 campaigns
-    </span>
+        {/* TABLE SCROLL AREA */}
+        <div className="overflow-y-auto max-h-[70vh]">
+          <table className="min-w-full divide-y divide-gray-700 table-fixed">
+            <thead className="bg-gray-800">
+              <tr>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-12">
+                  Sn <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-40">
+                  Campaign Name <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-24">
+                  Source <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-24">
+                  Status <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-32">
+                  Intergration <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
+                  Clicks <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-16">
+                  Safe <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
+                  Money <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-48">
+                  Created on <span className="text-sm">⇅</span>
+                </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider w-20">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            {/* Dynamic Table Body (Handles Loading/Error/Data) */}
+            {renderTableContent()}
+          </table>
+        </div>
 
-    {/* PAGINATION */}
-    <div className="flex items-center gap-2">
-      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
-        Prev
-      </button>
+        {/* FOOTER STRIP */}
+        <div className="bg-gray-800 border-t border-gray-700 px-4 py-3 flex items-center justify-between">
+          <span className="text-sm text-gray-400">
+            Showing 1–10 of 120 campaigns
+          </span>
 
-      <button className="px-3 py-1 text-sm bg-indigo-600 text-white rounded">
-        1
-      </button>
+          {/* PAGINATION */}
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+              Prev
+            </button>
 
-      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
-        2
-      </button>
+            <button className="px-3 py-1 text-sm bg-indigo-600 text-white rounded">
+              1
+            </button>
 
-      <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
-        Next
-      </button>
-    </div>
-  </div>
-</div>
+            <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+              2
+            </button>
+
+            <button className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Pagination/Summary Section (Unchanged) */}
       {/* <div className="mt-4 flex justify-between items-center text-sm text-gray-400">

@@ -6,6 +6,7 @@ import { saveAs } from "file-saver";
 import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
 import IntegrationTable from '../components/IntegrationPage/IntegrationTable'
+import axios from "axios";
 
 // Assuming the Tab component is defined or imported here
 
@@ -235,7 +236,7 @@ if ($data && isset($data['action'])) {
 
   return (
     // Outer padding and dark background for the main content area
-    false ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
+    true ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
       {/* Max width container for clean layout */}
       <div className="max-w-7xl mx-auto">
         {/* === 1. Component Header (Unchanged) === */}
@@ -336,29 +337,48 @@ const generateZip = async () => {
   }
 
 
-  async function checkIntegration(camp,url) {
+  const checkIntegration = async (camp,url) => {
+  const res = await apiFunction(
+    "post",
+    "http://localhost:2000/api/v2/trafficfilter/check",null,
+    {
+      url: url,        // client site URL
+      campId: camp.cid            // expected camp id
+    }
+  );
+  console.log(res);
+  
+  if (res.data.success) {
+    alert("✅ Integration Successful");
+  } else {
+    alert("❌ Integration Failed");
+  }
+};
+
+//   async function checkIntegration(camp,url) {
     
-   const res = await fetch(`${url}/?TS-BHDNR-84848=1`);
-   const text = await res.text();
-   console.log("result",camp,"text",text);
+//    const res = await axios.get(`${url}/?TS-BHDNR-84848=1`);
+
+//    const text = await res.text();
+//    console.log("result",camp,"text",text);
    
-   let status = "failed"; 
-    if (text.trim() != camp?.cid) {
-      status = "false";
-       alert("Integration Error try again "+status);
-      return
-   }
-   if (text.trim() === camp?.cid) {
-      status = "success";
-   }
-   const data = {
-    integration:true,
-    integrationUrl:url
-   }
-   const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
-   if(integrate.status === 200) return alert("Integration Status: " + status);
-   alert("Integration Error try again"+status);
-}
+//    let status = "failed"; 
+//     if (text.trim() != camp?.cid) {
+//       status = "false";
+//        alert("Integration Error try again "+status);
+//       return
+//    }
+//    if (text.trim() === camp?.cid) {
+//       status = "success";
+//    }
+//    const data = {
+//     integration:true,
+//     integrationUrl:url
+//    }
+//    const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
+//    if(integrate.status === 200) return alert("Integration Status: " + status);
+//    alert("Integration Error try again"+status);
+// }
 
 
 const Phpupload = ({ camp,pastedUrl, setPastedUrl }) => (

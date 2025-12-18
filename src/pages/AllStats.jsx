@@ -14,7 +14,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 // import {ipClicks} from "../api/Apis.js";
 import { apiFunction } from "../api/ApiFunction.js";
-import { ipClicks, campdata, getAllCampaign } from "../api/Apis.js";
+import { ipClicks, campdata, getAllCampaign,signOutApi } from "../api/Apis.js";
 import { showInfoToast } from "../components/toast/toast.jsx";
 
 const Dashboard = () => {
@@ -92,6 +92,8 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  
 
   const fetchCampaigns = useCallback(async () => { 
     setIsLoading(true);
@@ -213,6 +215,13 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+      const token = localStorage.getItem("token");
+  if (!token) {
+    signOut();
+    navigate('/signin')
+  }
+
+
     fetchIpClicks();
     fetchStats();
     fetchCampaigns();

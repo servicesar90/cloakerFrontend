@@ -2413,7 +2413,7 @@ export default function CampaignBuilder() {
       epc: null,
       cpc: null,
       trafficSource: adPlatforms[0],
-      money_page: [{ description: "", url: "", weight: "" }],
+      money_page: [{ description: "", url: "", weight: 100 }],
       safe_page: null,
       conditions: [],
       filters: [],

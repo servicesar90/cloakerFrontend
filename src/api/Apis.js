@@ -32,3 +32,5 @@ export const forgotPassword = `${base_url}/auth/forgot-password`;
 
 export const updatePassword = `${base_url}/auth/reset-password`;
 
+export const updateCampaignStatus = `${base_url}/api/v2/campaign`
+

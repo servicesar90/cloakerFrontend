@@ -149,8 +149,7 @@ function AllCampaignsDashboard() {
   // --- NEW Handlers for Dropdown ---
   const handleActionClick = (e,campaignId) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    console.log(rect);
-    
+   
     setDropdownPos({
       top: rect.bottom + 2, // below button
       left: rect.right -150, // align right (w-48 = 192px)
@@ -198,7 +197,7 @@ function AllCampaignsDashboard() {
 
   // --- Existing Handlers ---
   const handleRefresh = () => {
-    alert("Refreshing campaign list...");
+    // alert("Refreshing campaign list...");
     fetchCampaigns();
   };
 

@@ -125,6 +125,8 @@ export const phpZipCode = `
 </html>
 `
 
+
+const camp = null
 export const phpcode = `<?php
 error_reporting(0);
 

@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { createCampaignApi, getAllCampaign, ipClicks, campdata } from "../api/Apis";
+import {
+  createCampaignApi,
+  getAllCampaign,
+  ipClicks,
+  campdata,
+} from "../api/Apis";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
 import { showInfoToast } from "../components/toast/toast";
@@ -29,7 +34,6 @@ function AllCampaignsDashboard() {
     { name: "Allow All", count: 0 },
     { name: "Block All", count: 0 },
   ]);
-
 
   // ⭐ NEW STATE for Dropdown
   const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -65,7 +69,6 @@ function AllCampaignsDashboard() {
       setTotalItems(0);
     }
   }, []);
-
 
   const fetchIpClicks = async () => {
     try {
@@ -106,15 +109,12 @@ function AllCampaignsDashboard() {
     }
   };
 
-
   const fetchStats = async () => {
     try {
       const res = await apiFunction("get", campdata, null, null);
       console.log(res);
 
-
       const data = res?.data || {};
-
 
       setStatusTabs([
         { name: "All", count: data?.data?.total_campaigns || 0 },
@@ -147,13 +147,13 @@ function AllCampaignsDashboard() {
   }, []); // Empty dependency array means this runs once
 
   // --- NEW Handlers for Dropdown ---
-  const handleActionClick = (e,campaignId) => {
+  const handleActionClick = (e, campaignId) => {
     const rect = e.currentTarget.getBoundingClientRect();
     console.log(rect);
-    
+
     setDropdownPos({
       top: rect.bottom + 2, // below button
-      left: rect.right -150, // align right (w-48 = 192px)
+      left: rect.right - 150, // align right (w-48 = 192px)
     });
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
@@ -162,7 +162,7 @@ function AllCampaignsDashboard() {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
       case "edit":
-        // alert(`Editing campaign ID: ${campaignId}`);
+         showInfoToast(`Editing campaign ID: ${campaignId}`);
         navigate("/Dashboard/create-campaign", {
           state: {
             mode: "edit",
@@ -210,8 +210,6 @@ function AllCampaignsDashboard() {
 
   const handleStatusTabChange = (tab) => setActiveStatusTab(tab);
   const handleAddNewCampaign = () => {
-
-
     showInfoToast("Redirecting to Creating New Campaign");
     navigate("/Dashboard/create-campaign");
   };
@@ -224,10 +222,11 @@ function AllCampaignsDashboard() {
         <button
           key={tab.name}
           onClick={() => handleStatusTabChange(tab.name)}
-          className={`font-medium py-1 transition duration-150 ${activeStatusTab === tab.name
+          className={`font-medium py-1 transition duration-150 ${
+            activeStatusTab === tab.name
               ? "text-blue-500 border-b-2 border-blue-500"
               : "text-gray-400 hover:text-gray-300"
-            }`}
+          }`}
         >
           {tab.name} ({tab.count})
         </button>
@@ -235,15 +234,17 @@ function AllCampaignsDashboard() {
     </div>
   );
 
-
   // ⭐ NEW Render Function: Action Dropdown Menu
   const renderActionDropdown = (campaignId, row) => (
     // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-    <div className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20" style={{
-      zIndex: 9999999, // over ALL elements
-      left: dropdownPos.left,
-      top: dropdownPos.top, // adjust dynamically if needed
-    }}>
+    <div
+      className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20"
+      style={{
+        zIndex: 9999999, // over ALL elements
+        left: dropdownPos.left,
+        top: dropdownPos.top, // adjust dynamically if needed
+      }}
+    >
       <div className="py-1">
         <button
           onClick={() => handleActionSelect("edit", campaignId, row)}
@@ -316,18 +317,56 @@ function AllCampaignsDashboard() {
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-24">
                 {item.campaign_info?.trafficSource || "Not Provided"}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-24">
-                <span
-                  className={`font-semibold ${item.status === "Active"
-                      ? "text-green-500"
-                      : item.status === "Block"
-                        ? "text-red-500"
-                        : "text-yellow-500"
-                    }`}
-                >
-                  {item.status || "Active"}
-                </span>
-              </td>
+             <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-28">
+  <div className="flex items-center">
+
+    {/* ▶ Play / Activate */}
+    <button
+      onClick={() => handleStatusChange(item.uid, "Active")}
+      className={`p-1 rounded transition-all duration-300 transform hover:scale-110 cursor-pointer
+        ${item.status === "Active"
+          ? "text-green-500 drop-shadow-[0_0_6px_rgba(16,185,129,.8)]"
+          : "text-gray-500 hover:text-gray-300"
+        }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+        <path d="M7 4v16l13-8L7 4z"/>
+      </svg>
+    </button>
+
+    {/* ⚡ Boost */}
+    <button
+      onClick={() => handleStatusChange(item.uid, "Allow All")}
+      className={`p-1 rounded transition-all duration-300 transform hover:scale-110 cursor-pointer
+        ${item.status === "Boost"
+          ? "text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,.8)]"
+          : "text-gray-500 hover:text-gray-300"
+        }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+        <path d="M13 2L3 14h7v8l10-12h-7z"/>
+      </svg>
+    </button>
+
+    {/* 🚫 Block */}
+    <button
+      onClick={() => handleStatusChange(item.uid, "Block All")}
+      className={`p-1 rounded transition-all duration-300 transform hover:scale-110 cursor-pointer
+        ${item.status === "Block"
+          ? "text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,.8)]"
+          : "text-gray-500 hover:text-gray-300"
+        }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="5" y1="19" x2="19" y2="5"/>
+      </svg>
+    </button>
+
+  </div>
+</td>
+
+
               <td className="px-3 py-3 whitespace-nowrap text-sm text-center w-32">
                 {item.integration ? (
                   <div className="relative group flex justify-center">
@@ -351,19 +390,21 @@ function AllCampaignsDashboard() {
                     </div>
                   </div>
                 ) : (
-                  <svg
-                    className="h-5 w-5 text-red-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <div className="flex justify-center items-center w-full">
+                    <svg
+                      className="h-5 w-5 text-red-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </div>
                 )}
               </td>
 
@@ -446,11 +487,12 @@ function AllCampaignsDashboard() {
                 className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 text-left relative"
               >
                 <button
-                  onClick={(e) => handleActionClick(e,item?.uid)}
-                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${isDropdownOpen
+                  onClick={(e) => handleActionClick(e, item?.uid)}
+                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
+                    isDropdownOpen
                       ? "bg-gray-600 text-white"
                       : "hover:bg-gray-700"
-                    }`}
+                  }`}
                 >
                   ⋯ {/* Vertical three dots */}
                 </button>
@@ -462,9 +504,6 @@ function AllCampaignsDashboard() {
       </tbody>
     );
   };
-
-
-
 
   return (
     <div className="min-h-screen bg-[#0b0d14] text-white p-6">
@@ -564,7 +603,6 @@ function AllCampaignsDashboard() {
 
       {/* Campaign Table Container (Unchanged) */}
       <div className="mt-4 border border-gray-700 rounded-lg overflow-hidden">
-
         {/* TABLE SCROLL AREA */}
         <div className="overflow-y-auto max-h-[70vh]">
           <table className="min-w-full divide-y divide-gray-700 table-fixed">

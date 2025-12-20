@@ -6,6 +6,7 @@ import { saveAs } from "file-saver";
 import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
 import IntegrationTable from '../components/IntegrationPage/IntegrationTable'
+import axios from "axios";
 
 // Assuming the Tab component is defined or imported here
 
@@ -235,7 +236,7 @@ if ($data && isset($data['action'])) {
 
   return (
     // Outer padding and dark background for the main content area
-    false ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
+    true ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
       {/* Max width container for clean layout */}
       <div className="max-w-7xl mx-auto">
         {/* === 1. Component Header (Unchanged) === */}
@@ -280,7 +281,6 @@ if ($data && isset($data['action'])) {
       </div>
     </div>) : 
     <div className="bg-gray-900 min-h-full">
-
       <IntegrationTable/>
     </div>
   );
@@ -336,9 +336,35 @@ const generateZip = async () => {
   }
 
 
+  const javascriptIntegration = async (camp,url) => {
+    console.log("ghfdu",camp);
+    const data ={
+      url: url,        // client site URL
+      campId: camp?.cid           // expected camp id
+    }
+  const res = await apiFunction(
+    "post",
+    "http://localhost:2000/api/v2/trafficfilter/check",null,data   
+  );
+  console.log(res);
+
+  if (res.data.success) {
+    const data = {
+    integration:true,
+    integrationUrl:url,
+    integrationType:"javascript"
+   }
+   const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
+    alert("✅ Integration Successful");
+  } else {
+    alert("❌ Integration Failed");
+  }
+};
+
   async function checkIntegration(camp,url) {
     
-   const res = await fetch(`${url}/?TS-BHDNR-84848=1`);
+   const res = await axios.get(`${url}/?TS-BHDNR-84848=1`);
+
    const text = await res.text();
    console.log("result",camp,"text",text);
    
@@ -353,7 +379,8 @@ const generateZip = async () => {
    }
    const data = {
     integration:true,
-    integrationUrl:url
+    integrationUrl:url,
+    integrationType:"Php paste"
    }
    const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
    if(integrate.status === 200) return alert("Integration Status: " + status);
@@ -790,7 +817,7 @@ const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
 
       {/* Test URL Button */}
       <button
-        // onClick={handleTestUrl}
+        onClick={()=>javascriptIntegration(camp,pastedUrl)}
         className="flex items-center px-6 py-3 bg-green-600 text-white text-base font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md"
       >
         <svg

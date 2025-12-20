@@ -43,7 +43,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
     },
 
     {
-      label: "IP Listing",
+      label: "Blacklisted IP",
       icon: <FontAwesomeIcon icon={faBan} size='lg' />,
       route: "/Dashboard/IpListings",
     },
@@ -236,7 +236,7 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
         <div
           className={`h-[100vh] mt-[-8vh] bg-white shadow-md ${
             collapsed && !hovered ? "w-16" : "w-60"
-          } transition-[width] duration-500 ease-in-out`}
+          } transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] `}
         >
           <div className="h-full flex mt-[8vh] flex-col justify-end">
             <SidebarContent

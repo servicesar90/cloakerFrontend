@@ -356,19 +356,54 @@ const Dashboard = () => {
               <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-left w-24">
                 {item.campaign_info?.trafficSource || "Not Provided"}
               </td>
-              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-24">
-                <span
-                  className={`font-semibold ${
-                    item.status === "Active"
-                      ? "text-green-500"
-                      : item.status === "Block"
-                      ? "text-red-500"
-                      : "text-yellow-500"
-                  }`}
-                >
-                  {item.status || "Active"}
-                </span>
-              </td>
+              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-28">
+  <div className="flex items-center">
+
+    {/* ▶ Play / Activate */}
+    <button
+      onClick={() => handleStatusChange(item.uid, "Active")}
+      className={`p-1 rounded transition-all duration-300 transform hover:scale-110 cursor-pointer
+        ${item.status === "Active"
+          ? "text-green-500 drop-shadow-[0_0_6px_rgba(16,185,129,.8)]"
+          : "text-gray-500 hover:text-gray-300"
+        }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+        <path d="M7 4v16l13-8L7 4z"/>
+      </svg>
+    </button>
+
+    {/* ⚡ Boost */}
+    <button
+      onClick={() => handleStatusChange(item.uid, "Allow All")}
+      className={`p-1 rounded transition-all duration-300 transform hover:scale-110 cursor-pointer
+        ${item.status === "Boost"
+          ? "text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,.8)]"
+          : "text-gray-500 hover:text-gray-300"
+        }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+        <path d="M13 2L3 14h7v8l10-12h-7z"/>
+      </svg>
+    </button>
+
+    {/* 🚫 Block */}
+    <button
+      onClick={() => handleStatusChange(item.uid, "Block All")}
+      className={`p-1 rounded transition-all duration-300 transform hover:scale-110 cursor-pointer
+        ${item.status === "Block"
+          ? "text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,.8)]"
+          : "text-gray-500 hover:text-gray-300"
+        }`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="5" y1="19" x2="19" y2="5"/>
+      </svg>
+    </button>
+
+  </div>
+</td>
               <td className="px-3 py-3 whitespace-nowrap text-sm text-center w-32">
                 {item.integration ? (
                   <div className="relative group flex justify-center">
@@ -392,19 +427,21 @@ const Dashboard = () => {
                     </div>
                   </div>
                 ) : (
-                  <svg
-                    className="h-5 w-5 text-red-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <div className="flex justify-center items-center w-full">
+                    <svg
+                      className="h-5 w-5 text-red-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </div>
                 )}
               </td>
 

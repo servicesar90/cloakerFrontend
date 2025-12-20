@@ -36,6 +36,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [totalItems, setTotalItems] = useState(0);
   const [openDropdownId, setOpenDropdownId] = useState(null);
+   const [dropdownPos, setDropdownPos] = useState(null);
   const [clickSummary, setClickSummary] = useState({
     totalClicks: 0,
     safeClicks: 0,
@@ -166,8 +167,13 @@ const Dashboard = () => {
     task.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleActionClick = (campaignId) => {
-    // ड्रॉपडाउन को टॉगल (toggle) करता है
+  const handleActionClick = (e,campaignId) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    setDropdownPos({
+      top: rect.bottom + 2, // below button
+      left: rect.right -150, // align right (w-48 = 192px)
+    });
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
 
@@ -175,7 +181,7 @@ const Dashboard = () => {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
       case "edit":
-        showInfoToast(`Editing campaign ID: ${campaignId}`);
+        // alert(`Editing campaign ID: ${campaignId}`);
         navigate("/Dashboard/create-campaign", {
           state: {
             mode: "edit",
@@ -185,7 +191,7 @@ const Dashboard = () => {
         // TODO: Navigate to Edit screen or open a modal
         break;
       case "duplicate":
-        alert(`Duplicating campaign ID: ${campaignId}`);
+        // alert(`Duplicating campaign ID: ${campaignId}`);
         // TODO: Call API to duplicate campaign
         break;
       case "delete":
@@ -320,7 +326,13 @@ const Dashboard = () => {
 
   const renderActionDropdown = (campaignId, row) => (
     // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-    <div className="absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20">
+    <div className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20"
+    style={{
+      zIndex: 9999999, // over ALL elements
+      left: dropdownPos.left,
+      top: dropdownPos.top, // adjust dynamically if needed
+    }}
+    >
       <div className="py-1">
         <button
           onClick={() => handleActionSelect("edit", campaignId, row)}
@@ -575,7 +587,7 @@ const Dashboard = () => {
                 className="px-3 py-3 whitespace-nowrap text-sm text-gray-400 w-20 text-left relative"
               >
                 <button
-                  onClick={() => handleActionClick(item?.uid)}
+                  onClick={(e) => handleActionClick(e,item?.uid)}
                   className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
                     isDropdownOpen
                       ? "bg-gray-600 text-white"

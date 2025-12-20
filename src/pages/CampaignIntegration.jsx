@@ -1,4 +1,4 @@
- import React, { useEffect, useState, } from "react";
+import React, { useEffect, useState, } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ZipGeneratorButton from "../utils/zipgenerator";
 import JSZip from "jszip";
@@ -7,6 +7,7 @@ import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
 import IntegrationTable from '../components/IntegrationPage/IntegrationTable'
 import axios from "axios";
+import { phpZipCode, wordpressPluginCode } from "../data/cloakingData";
 
 // Assuming the Tab component is defined or imported here
 
@@ -17,8 +18,8 @@ const CloakingIntegration = () => {
   const [tab, setTab] = useState("php-paste");
   const location = useLocation();
   const camp = location?.state?.data;
-  const navigate = useNavigate();  
-    
+  const navigate = useNavigate();
+
 
   const tabs = [
     {
@@ -114,10 +115,7 @@ const CloakingIntegration = () => {
   useEffect(() => {
   }, [tab]);
 
-  const handleTestUrl = () => {
-    // Logic to test the provided URL
-    console.log("Testing URL:", pastedUrl);
-  };
+  
 
   const phpCode = `
 <?php
@@ -222,7 +220,7 @@ if ($data && isset($data['action'])) {
   const renderSection = (camp) => {
     switch (tab) {
       case "php-upload":
-        return <Phpupload camp={camp} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
+        return <Phpupload camp={camp} phpCode={phpCode} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "php-paste":
         return <PhpPaste camp={camp} phpCode={phpCode} pastedUrl={pastedUrl} setPastedUrl={setPastedUrl} />;
       case "wordpress":
@@ -252,13 +250,13 @@ if ($data && isset($data['action'])) {
               Create/Edit/Delete Campaigns
             </p>
           </div>
-          <button onClick={()=>{
-             navigate("/Dashboard/create-campaign", {
-          state: {
-            mode: "edit",
-            data: camp, // campaign data from db
-          },
-        });
+          <button onClick={() => {
+            navigate("/Dashboard/create-campaign", {
+              state: {
+                mode: "edit",
+                data: camp, // campaign data from db
+              },
+            });
           }} className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150">
             Edit Campaign
           </button>
@@ -272,17 +270,17 @@ if ($data && isset($data['action'])) {
           {tabs?.map((t) => {
             return <Tab t={t} tab={tab} setTab={(id) => setTab(id)} />;
           })}
-  
+
         </div>
 
         <div>{renderSection(camp)}</div>
 
         {/* --- Separator Line (Optional, for visual clarity) --- */}
       </div>
-    </div>) : 
-    <div className="bg-gray-900 min-h-full">
-      <IntegrationTable/>
-    </div>
+    </div>) :
+      <div className="bg-gray-900 min-h-full">
+        <IntegrationTable />
+      </div>
   );
 };
 
@@ -291,11 +289,10 @@ const Tab = ({ t, tab, setTab }) => (
   <button
     className={`
           flex-1 text-sm font-medium py-2 px-3 rounded-lg flex items-center justify-center transition duration-200
-          ${
-            tab === t.id
-              ? "bg-blue-600 text-white shadow-md" // Adjusted active color for better consistency
-              : "text-gray-400 hover:bg-gray-700/50"
-          }
+          ${tab === t.id
+        ? "bg-blue-600 text-white shadow-md" // Adjusted active color for better consistency
+        : "text-gray-400 hover:bg-gray-700/50"
+      }
         `}
     onClick={() => {
       setTab(t.id);
@@ -310,7 +307,7 @@ const Tab = ({ t, tab, setTab }) => (
 const handleCopy = (text) => {
   const formatted = typeof data === "object"
     ? JSON.stringify(text, null, 2)   // pretty JSON
-    : String(text);  
+    : String(text);
   navigator.clipboard.writeText(formatted)
     .then(() => {
       alert("Copied to clipboard!");
@@ -322,73 +319,82 @@ const handleCopy = (text) => {
 
 
 const generateZip = async () => {
-    const zip = new JSZip();
-    // ADD FILES TO ZIP
-    zip.file("readme.txt",`
-      `);
-    
 
-    // GENERATE ZIP (async)
-    const zipBlob = await zip.generateAsync({ type: "blob" });
+  const zip = new JSZip();
+  // ADD FILES TO ZIP
+  const folder = zip.folder("SecurityShield");
 
-    // DOWNLOAD ZIP
-    saveAs(zipBlob, "myGeneratedZip.zip");
+  folder.file("index.php", wordpressPluginCode);
+
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+
+  saveAs(zipBlob, "SecurityShield.zip");
+}
+
+const generatePhpZip = async (phpCode) => {
+
+  const zip = new JSZip();
+  zip.file('index.php',`${phpCode} \n ${phpZipCode}`)
+
+  const zipBlob = await zip.generateAsync({type:'blob'});
+
+  saveAs(zipBlob,"index.zip");
+}
+
+
+const javascriptIntegration = async (camp, url) => {
+  console.log("ghfdu", camp);
+  const data = {
+    url: url,        // client site URL
+    campId: camp?.cid           // expected camp id
   }
-
-
-  const javascriptIntegration = async (camp,url) => {
-    console.log("ghfdu",camp);
-    const data ={
-      url: url,        // client site URL
-      campId: camp?.cid           // expected camp id
-    }
   const res = await apiFunction(
     "post",
-    "http://localhost:2000/api/v2/trafficfilter/check",null,data   
+    "http://localhost:2000/api/v2/trafficfilter/check", null, data
   );
   console.log(res);
 
   if (res.data.success) {
     const data = {
-    integration:true,
-    integrationUrl:url,
-    integrationType:"javascript"
-   }
-   const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
+      integration: true,
+      integrationUrl: url,
+      integrationType: "javascript"
+    }
+    const integrate = await apiFunction("patch", createCampaignApi, camp?.uid, data)
     alert("✅ Integration Successful");
   } else {
     alert("❌ Integration Failed");
   }
 };
 
-  async function checkIntegration(camp,url) {
-    
-   const res = await axios.get(`${url}/?TS-BHDNR-84848=1`);
+async function checkIntegration(camp, url) {
 
-   const text = await res.text();
-   console.log("result",camp,"text",text);
-   
-   let status = "failed"; 
-    if (text.trim() != camp?.cid) {
-      status = "false";
-       alert("Integration Error try again "+status);
-      return
-   }
-   if (text.trim() === camp?.cid) {
-      status = "success";
-   }
-   const data = {
-    integration:true,
-    integrationUrl:url,
-    integrationType:"Php paste"
-   }
-   const integrate = await apiFunction("patch",createCampaignApi,camp?.uid,data)
-   if(integrate.status === 200) return alert("Integration Status: " + status);
-   alert("Integration Error try again"+status);
+  const res = await axios.get(`${url}/?TS-BHDNR-84848=1`);
+
+  const text = await res.text();
+  console.log("result", camp, "text", text);
+
+  let status = "failed";
+  if (text.trim() != camp?.cid) {
+    status = "false";
+    alert("Integration Error try again " + status);
+    return
+  }
+  if (text.trim() === camp?.cid) {
+    status = "success";
+  }
+  const data = {
+    integration: true,
+    integrationUrl: url,
+    integrationType: "Php paste"
+  }
+  const integrate = await apiFunction("patch", createCampaignApi, camp?.uid, data)
+  if (integrate.status === 200) return alert("Integration Status: " + status);
+  alert("Integration Error try again" + status);
 }
 
 
-const Phpupload = ({ camp,pastedUrl, setPastedUrl }) => (
+const Phpupload = ({ camp,phpCode, pastedUrl, setPastedUrl }) => (
   <div>
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
       <p className="text-blue-200 text-sm">
@@ -409,7 +415,7 @@ const Phpupload = ({ camp,pastedUrl, setPastedUrl }) => (
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
     <button
-      //   onClick={handleCopy}
+        onClick={()=>{generatePhpZip(phpCode)}}
       className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     >
       <svg
@@ -471,7 +477,7 @@ const Phpupload = ({ camp,pastedUrl, setPastedUrl }) => (
 
       {/* Test URL Button */}
       <button
-        onClick={()=>checkIntegration(camp?.uid,pastedUrl)}
+        onClick={() => checkIntegration(camp?.uid, pastedUrl)}
         className="flex items-center px-6 py-3 bg-green-600 text-white text-base font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md"
       >
         <svg
@@ -491,7 +497,7 @@ const Phpupload = ({ camp,pastedUrl, setPastedUrl }) => (
   </div>
 );
 
-const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
+const PhpPaste = ({ camp, phpCode, pastedUrl, setPastedUrl }) => (
   <div>
     {/* === 3. Guidance/Warning Banner (Unchanged) === */}
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
@@ -528,7 +534,7 @@ const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
     <button
-      onClick={()=> handleCopy(phpCode)}
+      onClick={() => handleCopy(phpCode)}
       className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     >
       <svg
@@ -586,7 +592,7 @@ const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
 
       {/* Test URL Button */}
       <button
-        onClick={()=>checkIntegration(camp,pastedUrl)}
+        onClick={() => checkIntegration(camp, pastedUrl)}
         className="flex items-center px-6 py-3 bg-green-600 text-white text-base font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md"
       >
         <svg
@@ -606,7 +612,7 @@ const PhpPaste = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
   </div>
 );
 
-const Wordpress = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
+const Wordpress = ({ camp, phpCode, pastedUrl, setPastedUrl }) => (
   <div>
     {/* <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
       <p className="text-blue-200 text-sm">
@@ -623,7 +629,7 @@ const Wordpress = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
       </p>
 
       <button
-          onClick={generateZip}
+        onClick={generateZip}
         className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
       >
         <svg
@@ -741,7 +747,7 @@ const Wordpress = ({camp,phpCode, pastedUrl, setPastedUrl }) => (
   </div>
 );
 
-const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
+const Javascript = ({ camp, pastedUrl, setPastedUrl }) => (
   <div>
     <div className="mb-4">
       <p className="text-sm text-left text-white-400 mb-2">
@@ -756,30 +762,30 @@ const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
       </p>
     </div>
 
-     {/* URL Input Field */}
-      <input
-        id="pastedUrl"
-        type="url"
-        disabled
-        value={`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`}
-        // onChange={(e) => setPastedUrl(e.target.value)}
-        placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
-        className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
-      />
+    {/* URL Input Field */}
+    <input
+      id="pastedUrl"
+      type="url"
+      disabled
+      value={`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`}
+      // onChange={(e) => setPastedUrl(e.target.value)}
+      placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
+      className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
+    />
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
     <button
-        onClick={()=>handleCopy(`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`)}
+      onClick={() => handleCopy(`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`)}
       className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     > <svg
         /* ... (Copy Icon) */ className="h-5 w-5 mr-2"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
       </svg>
@@ -817,7 +823,7 @@ const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
 
       {/* Test URL Button */}
       <button
-        onClick={()=>javascriptIntegration(camp,pastedUrl)}
+        onClick={() => javascriptIntegration(camp, pastedUrl)}
         className="flex items-center px-6 py-3 bg-green-600 text-white text-base font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md"
       >
         <svg
@@ -885,11 +891,11 @@ const Javascript = ({camp, pastedUrl, setPastedUrl }) => (
 //                   <tbody>
 //                     <tr>
 //                       <td>
-  //                         <input
-  //                           type="checkbox"
-  //                           className="form-check-input"
-  //                           value={campaignId}
-  //                         />
+//                         <input
+//                           type="checkbox"
+//                           className="form-check-input"
+//                           value={campaignId}
+//                         />
 //                         <input type="hidden" value={url} />
 //                       </td>
 

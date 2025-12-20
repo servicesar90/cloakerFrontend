@@ -2092,9 +2092,8 @@ const InputField = ({
         placeholder={placeholder}
         defaultValue={defaultValue}
         step={step}
-        className={`w-full bg-slate-800 border text-sm rounded-lg py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-          icon ? "pl-10" : "px-4"
-        } ${error ? "border-red-500" : "border-slate-700"}`}
+        className={`w-full bg-slate-800 border text-sm rounded-lg py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${icon ? "pl-10" : "px-4"
+          } ${error ? "border-red-500" : "border-slate-700"}`}
         {...register(name, {
           required: required ? `${label} is required.` : false,
           pattern: pattern || undefined,
@@ -2129,9 +2128,8 @@ const SelectField = ({
     </label>
     <div className="relative">
       <select
-        className={`w-full appearance-none bg-slate-800 border rounded-lg py-2 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-          error ? "border-red-500" : "border-slate-700"
-        }`}
+        className={`w-full appearance-none bg-slate-800 border rounded-lg py-2 px-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${error ? "border-red-500" : "border-slate-700"
+          }`}
         {...register(name, { required: required && `${label} is required.` })}
       >
         {options.map((opt, i) => (
@@ -2151,19 +2149,17 @@ const StatusButton = ({ label, Icon, isActive, onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 h-20 w-full ${
-      isActive
+    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 h-20 w-full ${isActive
         ? "border-blue-500 bg-blue-500/10"
         : "border-slate-700 bg-slate-800 hover:bg-slate-700/50"
-    }`}
+      }`}
   >
     <Icon
       className={`w-5 h-5 ${isActive ? "text-blue-400" : "text-slate-400"}`}
     />
     <span
-      className={`text-sm font-medium mt-2 ${
-        isActive ? "text-white" : "text-slate-300"
-      }`}
+      className={`text-sm font-medium mt-2 ${isActive ? "text-white" : "text-slate-300"
+        }`}
     >
       {label}
     </span>
@@ -2579,28 +2575,24 @@ export default function CampaignBuilder() {
                 <li key={s.name} className="flex items-center">
                   <div
                     onClick={() => setStep(idx + 1)}
-                    className={`flex items-center justify-center h-10 w-10 rounded-full ${
-                      active ? "bg-blue-600" : "bg-slate-800"
-                    }`}
+                    className={`flex items-center justify-center h-10 w-10 rounded-full ${active ? "bg-blue-600" : "bg-slate-800"
+                      }`}
                   >
                     <s.icon
-                      className={`w-5 h-5 ${
-                        active ? "text-white" : "text-slate-400"
-                      }`}
+                      className={`w-5 h-5 ${active ? "text-white" : "text-slate-400"
+                        }`}
                     />
                   </div>
                   <div
-                    className={`ml-2 text-sm ${
-                      active ? "text-white font-medium" : "text-slate-500"
-                    }`}
+                    className={`ml-2 text-sm ${active ? "text-white font-medium" : "text-slate-500"
+                      }`}
                   >
                     {s.name}
                   </div>
                   {idx !== steps.length - 1 && (
                     <div
-                      className={`mx-4 h-[2px] w-14 ${
-                        idx + 1 < step ? "bg-blue-600" : "bg-slate-800"
-                      }`}
+                      className={`mx-4 h-[2px] w-14 ${idx + 1 < step ? "bg-blue-600" : "bg-slate-800"
+                        }`}
                     />
                   )}
                 </li>
@@ -2699,7 +2691,25 @@ export default function CampaignBuilder() {
                 </div>
               </div>
 
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-between mt-6">
+                <div></div>
+                {location?.state?.mode === "edit" ? (
+                    <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md"
+                    >
+                      <svg class="svg-inline--fa fa-floppy-disk me-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="floppy-disk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z"></path></svg>
+                      <span>
+                        Save Changes
+                      </span>
+                    </button>
+                  ) : null}
                 <button
                   type="button"
                   onClick={handleNext}
@@ -2881,6 +2891,23 @@ export default function CampaignBuilder() {
                   >
                     ‹ Previous
                   </button>
+                  {location?.state?.mode === "edit" ? (
+                    <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md"
+                    >
+                      <svg class="svg-inline--fa fa-floppy-disk me-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="floppy-disk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z"></path></svg>
+                      <span>
+                        Save Changes
+                      </span>
+                    </button>
+                  ) : null}
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -2889,20 +2916,7 @@ export default function CampaignBuilder() {
                     >
                       Next ›
                     </button>
-                    {location?.state?.mode === "edit" ? (
-                      <button
-                        type="button"
-                        // onClick={() => {
-                        //   showCustomAlert(
-                        //     "You can preview changes before creating campaign"
-                        //   );
-                        // }}
-                        onClick={handleSubmit(onSubmit)}
-                        className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
-                      >
-                        Save
-                      </button>
-                    ) : null}
+
                   </div>
                 </div>
               </div>
@@ -2998,6 +3012,23 @@ export default function CampaignBuilder() {
                   >
                     ‹ Previous
                   </button>
+                  {location?.state?.mode === "edit" ? (
+                    <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md"
+                    >
+                      <svg class="svg-inline--fa fa-floppy-disk me-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="floppy-disk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z"></path></svg>
+                      <span>
+                        Save Changes
+                      </span>
+                    </button>
+                  ) : null}
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -3006,20 +3037,7 @@ export default function CampaignBuilder() {
                     >
                       Next ›
                     </button>
-                    {location?.state?.mode === "edit" ? (
-                      <button
-                        type="button"
-                        // onClick={() => {
-                        //   showCustomAlert(
-                        //     "You can preview changes before creating campaign"
-                        //   );
-                        // }}
-                        onClick={handleSubmit(onSubmit)}
-                        className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
-                      >
-                        Save
-                      </button>
-                    ) : null}
+                    
                   </div>
                 </div>
               </div>
@@ -3101,13 +3119,12 @@ export default function CampaignBuilder() {
                                   key={mode}
                                   type="button"
                                   onClick={() => field.onChange(mode)}
-                                  className={`px-3 py-1.5 text-sm rounded-md border ${
-                                    field.value === mode
+                                  className={`px-3 py-1.5 text-sm rounded-md border ${field.value === mode
                                       ? mode === "allow"
                                         ? "bg-blue-600 text-white border-blue-600"
                                         : "bg-red-600 text-white border-red-600"
                                       : "bg-slate-700 text-slate-300 border-slate-700 hover:bg-slate-700/50"
-                                  }`}
+                                    }`}
                                 >
                                   {mode.charAt(0).toUpperCase() + mode.slice(1)}
                                 </button>
@@ -3217,6 +3234,23 @@ export default function CampaignBuilder() {
                   >
                     ‹ Previous
                   </button>
+                  {location?.state?.mode === "edit" ? (
+                    <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md"
+                    >
+                      <svg class="svg-inline--fa fa-floppy-disk me-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="floppy-disk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z"></path></svg>
+                      <span>
+                        Save Changes
+                      </span>
+                    </button>
+                  ) : null}
                   <div className="flex gap-3">
                     {fields.length > 0 && (
                       <button
@@ -3227,20 +3261,6 @@ export default function CampaignBuilder() {
                         Next ›
                       </button>
                     )}
-                    {location?.state?.mode === "edit" ? (
-                      <button
-                        type="button"
-                        // onClick={() => {
-                        //   showCustomAlert(
-                        //     "You can preview changes before creating campaign"
-                        //   );
-                        // }}
-                        onClick={handleSubmit(onSubmit)}
-                        className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
-                      >
-                        Save
-                      </button>
-                    ) : null}
                   </div>
                 </div>
               </div>
@@ -3323,7 +3343,7 @@ export default function CampaignBuilder() {
 
                       return (
                         <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-10"
->
+                        >
                           {/* LEFT COLUMN */}
                           <div
                             style={{
@@ -3371,17 +3391,17 @@ export default function CampaignBuilder() {
 
                           {/* CENTER BUTTONS */}
                           <div
-  className="
+                            className="
     flex flex-row md:flex-col 
     items-center justify-center 
     gap-3 
     mt-4 md:mt-10
   "
->
-  <button
-    type="button"
-    onClick={moveRight}
-    className="
+                          >
+                            <button
+                              type="button"
+                              onClick={moveRight}
+                              className="
       w-7     h-7 flex items-center justify-center text-lg
       rounded-md border border-slate-600 
       bg-slate-800 hover:bg-slate-700 
@@ -3389,15 +3409,15 @@ export default function CampaignBuilder() {
       active:scale-95 transition-all duration-200
       text-slate-200  cursor-pointer
     "
-    title="Move selected to right"
-  >
-    ›
-  </button>
+                              title="Move selected to right"
+                            >
+                              ›
+                            </button>
 
-  <button
-    type="button"
-    onClick={moveLeft}
-    className="
+                            <button
+                              type="button"
+                              onClick={moveLeft}
+                              className="
       w-7 h-7 flex items-center justify-center text-lg
       rounded-md border border-slate-600 
       bg-slate-800 hover:bg-slate-700 
@@ -3405,15 +3425,15 @@ export default function CampaignBuilder() {
       active:scale-95 transition-all duration-200
       text-slate-200  cursor-pointer
     "
-    title="Move selected to left"
-  >
-    ‹
-  </button>
+                              title="Move selected to left"
+                            >
+                              ‹
+                            </button>
 
-  <button
-    type="button"
-    onClick={moveAllRight}
-    className="
+                            <button
+                              type="button"
+                              onClick={moveAllRight}
+                              className="
       w-7 h-7 flex items-center justify-center text-lg
       rounded-md border border-slate-600 
       bg-slate-800 hover:bg-slate-700 
@@ -3421,15 +3441,15 @@ export default function CampaignBuilder() {
       active:scale-95 transition-all duration-200
       text-slate-200  cursor-pointer
     "
-    title="Move all right"
-  >
-    »
-  </button>
+                              title="Move all right"
+                            >
+                              »
+                            </button>
 
-  <button
-    type="button"
-    onClick={moveAllLeft}
-    className="
+                            <button
+                              type="button"
+                              onClick={moveAllLeft}
+                              className="
       w-7 h-7 flex items-center justify-center text-lg
       rounded-md border border-slate-600 
       bg-slate-800 hover:bg-slate-700 
@@ -3437,11 +3457,11 @@ export default function CampaignBuilder() {
       active:scale-95 transition-all duration-200
       text-slate-200  cursor-pointer
     "
-    title="Move all left"
-  >
-    «
-  </button>
-</div>
+                              title="Move all left"
+                            >
+                              «
+                            </button>
+                          </div>
 
 
                           {/* RIGHT COLUMN */}
@@ -3502,6 +3522,23 @@ export default function CampaignBuilder() {
                   >
                     ‹ Previous
                   </button>
+                  {location?.state?.mode === "edit" ? (
+                    <button
+                      type="button"
+                      // onClick={() => {
+                      //   showCustomAlert(
+                      //     "You can preview changes before creating campaign"
+                      //   );
+                      // }}
+                      onClick={handleSubmit(onSubmit)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md"
+                    >
+                      <svg class="svg-inline--fa fa-floppy-disk me-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="floppy-disk" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z"></path></svg>
+                      <span>
+                        Save Changes
+                      </span>
+                    </button>
+                  ) : null}
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -3510,20 +3547,7 @@ export default function CampaignBuilder() {
                     >
                       Next ›
                     </button>
-                    {location?.state?.mode === "edit" ? (
-                      <button
-                        type="button"
-                        // onClick={() => {
-                        //   showCustomAlert(
-                        //     "You can preview changes before creating campaign"
-                        //   );
-                        // }}
-                        onClick={handleSubmit(onSubmit)}
-                        className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md"
-                      >
-                        Save
-                      </button>
-                    ) : null}
+                    
                   </div>
                 </div>
               </div>

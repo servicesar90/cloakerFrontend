@@ -124,3 +124,102 @@ export const phpZipCode = `
 
 </html>
 `
+
+export const phpcode = `<?php
+error_reporting(0);
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+// integration check
+function _check() { 
+      if(isset($_GET['TS-BHDNR-84848'])){ 
+        echo "${camp?.cid}"; 
+        die(); 
+      } 
+    }
+
+_check();
+
+$cloakerApiUrl = "${import.meta.env.VITE_SERVER_URL}/api/v2/trafficfilter/${camp?.cid}/${camp?.user_id}";
+
+// Get real headers safely
+function getHeadersSafe() {
+    if (function_exists('getallheaders')) {
+        return getallheaders();
+    }
+    $headers = [];
+    foreach ($_SERVER as $name => $value) {
+        if (substr($name, 0, 5) == 'HTTP_') {
+            $headers[str_replace('_', '-', substr($name, 5))] = $value;
+        }
+    }
+    return $headers;
+}
+
+// Get visitor IP
+function getUserIP() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+    return $_SERVER['REMOTE_ADDR'];
+}
+
+// Detect protocol
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+
+// Collect visitor data
+$visitorData = [
+  "ip" => getUserIP(),
+  "userAgent" => $_SERVER['HTTP_USER_AGENT'] ?? '',
+  "referer" => $_SERVER['HTTP_REFERER'] ?? '',
+  "acceptLanguage" => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+  "url" => $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+  "timestamp" => gmdate("c"),
+  "headers" => getHeadersSafe()
+];
+
+
+// log visitors data
+echo "<pre>";
+print_r($visitorData);
+echo "</pre>";
+
+
+// Send to API
+$ch = curl_init($cloakerApiUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($visitorData));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+$response = curl_exec($ch);
+$curlError = curl_error($ch);
+curl_close($ch);
+
+
+// If CURL failed → allow visitor normally
+if (!$response || $curlError) {
+    return;
+}
+
+$data = json_decode($response, true);
+
+
+// Cloaker rules
+if ($data && isset($data['action'])) {
+
+   // Redirect to target if safe
+    if ($data['action'] === true && !empty($data['target'])) {
+        header("Location: " . $data['target'], true, 302);
+        exit;
+    }
+
+    // Block visitor
+    if ($data['action'] === false) {
+        http_response_code(403);
+        exit("Access Denied");
+    }
+}
+
+// If action = allow → load your page normally
+?>`

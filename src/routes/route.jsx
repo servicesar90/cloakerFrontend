@@ -33,7 +33,7 @@ const ResetPassword = lazy(()=> import("../auth/ResetPassword"));
 const RealtimeAnalytics = lazy(()=> import("../pages/RealtimeAnalytics"))
 
 const Layout = () => (
-  <div className="w-[100vw] h-[100vh]">
+  <div className="w-[100vw] h-[100vh] bg-[#0b0d14]">
     <Outlet />
   </div>
 );

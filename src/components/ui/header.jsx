@@ -45,14 +45,14 @@ const Header = ({ onMenuClick }) => {
   };
 
   return (
-    <header className="w-full flex items-center justify-between bg-white px-6 py-3 shadow-sm border-b border-gray-200">
+    <header className="w-full flex items-center justify-between bg-[#1e2939] px-6 py-3 shadow-sm  border-gray-200 text-white ">
       {/* Left: Logo + Menu */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text-white">
         <Menu
-          className="w-6 h-6 text-gray-600 cursor-pointer"
+          className="w-6 h-6 text-white cursor-pointer"
           onClick={onMenuClick}
         />
-        <span className="text-gray-700 font-semibold text-xl">CloakShield</span>
+        <span className="text-white font-semibold text-xl">CloakShield</span>
       </div>
 
       {/* Right: Plan Info + Avatar */}
@@ -60,11 +60,11 @@ const Header = ({ onMenuClick }) => {
         {/* Plan Info (side by side with labels) */}
         <div className="flex items-center gap-4 text-sm font-medium text-gray-700">
           <span>
-            <span className="text-gray-500 mr-1 font-normal">Plan Name:</span>
-            {planDetails.name}
-          </span>
+            <span className="text-white mr-1 font-normal">Plan Name:</span>
+            <span className="text-white">{planDetails.name}
+          </span></span>
           <span>
-            <span className="text-gray-500 mr-1 font-normal">Status:</span>
+            <span className="text-white mr-1 font-normal">Status:</span>
             <span
               className={`font-semibold ${
                 planDetails.status === "Active"

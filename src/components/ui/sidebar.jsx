@@ -111,13 +111,13 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
 
   return (
     <div
-      className={`h-full flex flex-col py-4 px-2 bg-white border-t-1 border-gray-300 ${
+      className={`h-full flex flex-col py-4 px-2 bg-[#1e2939] border-gray-300 ${
         isCollapsed ? "w-16" : "w-60"
       } transition-all duration-500 ease-in-out`}
     >
       {/* Logo & Avatar */}
       <div
-        className={`px-2 mb-4 flex items-center ${
+        className={`px-2 mb-4 flex items-center text-white ${
           showFull ? "gap-3" : "justify-center"
         }`}
       >
@@ -128,15 +128,15 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
             className="w-8 h-8 rounded-[8px] object-cover"
           />
         ) : (
-          <div className="w-8 h-8 rounded-[8px] bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
+          <div className="w-8 h-8 text-white rounded-[8px] bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
             {user?.name.charAt(0).toUpperCase()}
           </div>
         )}
-        {showFull && <p className="text-xl text-gray-600 ">{user?.name}</p>}
+        {showFull && <p className="text-xl text-white text-gray-600 ">{user?.name}</p>}
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-1 ">
+      <nav className="flex flex-col gap-1 text-white ">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.route;
           const isDatabase = item.label === "Report";
@@ -153,16 +153,16 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
                     handleNavigate(item.route);
                   }
                 }}
-                className={`flex items-center justify-between px-3 py-2  rounded-md cursor-pointer transition-colors   ${
+                className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition-colors   ${
                   isItemActive
                     ? "bg-[#ECF3FF] text-[#465FFF] "
-                    : "text-gray-600 hover:bg-gray-100 text- "
+                    : "text-white                                                                                                                                                                                                                hover:bg-gray-100 hover:text-[#465FFF]"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 hover:text-[465FFF ]">
                   <span
                     className={`${
-                      isItemActive ? "text-[#465FFF]" : "text-gray-600"
+                      isItemActive ? "text-[#465FFF]" : " "
                     }`}
                   >
                     {item.icon}
@@ -172,11 +172,11 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
                   )}
                 </div>
                 {isDatabase && showFull && (
-                  <span className="text-gray-600">
+                  <span className="text-gray-600 hover:text-[#465FFF]">
                     {databaseOpen ? (
-                      <ChevronUp size={16} />
+                      <ChevronUp size={16} className="text-[#465FFF]" />
                     ) : (
-                      <ChevronDown size={16} />
+                      <ChevronDown size={16} className="text-white" />
                     )}
                   </span>
                 )}
@@ -199,7 +199,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
                           className={`flex items-center gap-2 px-2 py-1 rounded-md text-sm cursor-pointer transition-colors ${
                             isSubActive
                               ? "bg-[#ECF3FF] text-[#465FFF]"
-                              : "text-gray-600 hover:bg-gray-100"
+                              : "text-white hover:bg-gray-100 hover:text-[#465FFF]"
                           }`}
                         >
                           {sub.icon}
@@ -229,14 +229,14 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
     <>
       {/* Desktop Sidebar */}
       <div
-        className="hidden md:block"
+        className="hidden md:block "
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         <div
-          className={`h-[100vh] mt-[-8vh] bg-white shadow-md ${
+          className={`h-[100vh] mt-[-8vh]   shadow-md ${
             collapsed && !hovered ? "w-16" : "w-60"
-          } transition-all duration-[900ms] ease-[cubic-bezier(.22,.61,.36,1)] `}
+          } transition-all duration-[600ms] ease-[cubic-bezier(.22,.61,.36,1)] `}
         >
           <div className="h-full flex mt-[8vh] flex-col justify-end">
             <SidebarContent

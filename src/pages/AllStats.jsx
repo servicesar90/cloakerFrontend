@@ -407,9 +407,9 @@ const Dashboard = () => {
                 {item.campaign_info?.trafficSource || "Not Provided"}
               </td>
              <td className="px-3 py-3 whitespace-nowrap text-sm text-left w-32">
-  <div className="flex items-center ">
-
-    {/* ▶ Play / Activate */}
+  <div className="flex items-center text-left ">
+    <div>
+        {/* ▶ Play / Activate */}
     <button
       disabled={item.statusLoading}
       onClick={() => handleStatusChange(item.uid, "Active")}
@@ -464,6 +464,11 @@ const Dashboard = () => {
         <line x1="5" y1="19" x2="19" y2="5"/>
       </svg>
     </button>
+
+
+    </div>
+
+  
 
   </div>
 </td>

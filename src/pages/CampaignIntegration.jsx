@@ -174,9 +174,9 @@ $visitorData = [
 
 
 // log visitors data
-echo "<pre>";
-print_r($visitorData);
-echo "</pre>";
+// echo "<pre>";
+// print_r($visitorData);
+// echo "</pre>";
 
 
 // Send to API

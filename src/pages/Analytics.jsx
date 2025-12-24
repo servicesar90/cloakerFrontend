@@ -453,7 +453,7 @@
 
 import React, { useEffect, useCallback, useState } from "react";
 
-import { getAllCampaign } from "../api/Apis";
+import { addUrlCampData, getAllCampaign } from "../api/Apis";
 import { apiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
 
@@ -556,6 +556,10 @@ const WebAnalyticsPage = ({
   const [open1, setOpen1] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [urlName, setUrlName] = useState("");
+const [urlValue, setUrlValue] = useState("");
+const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
@@ -572,6 +576,50 @@ const WebAnalyticsPage = ({
       setIsLoading(false); // Stop loading
     }
   }, []);
+
+const addUrlCamp = async () => {
+  // basic validation
+  if (!urlName.trim() || !urlValue.trim()) {
+    alert("Name and URL are required");
+    return;
+  }
+
+  try {
+    setIsSubmitting(true);
+
+    const payload = {
+      name: urlName,
+      integrationUrl: urlValue,
+    };
+
+    const res = await apiFunction(
+      "post",
+      addUrlCampData,
+      null,
+      payload
+    );
+
+    if (res?.data?.success) {
+      // reset fields
+      setUrlName("");
+      setUrlValue("");
+
+      // close modal
+      setOpen1(false);
+
+      // refresh list
+      fetchCampaigns();
+      showSuccessToast('Campaign Created Successfully..!!')
+    }
+  } catch (error) {
+    console.error("Add URL Error:", error);
+    alert("Failed to add URL");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
 
   useEffect(() => {
     fetchCampaigns();
@@ -834,9 +882,12 @@ const WebAnalyticsPage = ({
                 Name
               </label>
               <input
-                placeholder="eg: PPC Offer"
-                className="w-full bg-transparent border border-slate-700 rounded-lg px-4 py-2 text-white outline-none"
-              />
+  value={urlName}
+  onChange={(e) => setUrlName(e.target.value)}
+  placeholder="eg: PPC Offer"
+  className="w-full bg-transparent border border-slate-700 rounded-lg px-4 py-2 text-white outline-none"
+/>
+
             </div>
 
             {/* URL FIELD */}
@@ -844,10 +895,13 @@ const WebAnalyticsPage = ({
               <label className="text-gray-400 text-xs block mb-2 uppercase  text-left">
                 Url
               </label>
-              <input
-                placeholder="eg: https://www.google.com/"
-                className="w-full bg-transparent border border-slate-700 rounded-lg px-4 py-2 text-white outline-none"
-              />
+            <input
+  value={urlValue}
+  onChange={(e) => setUrlValue(e.target.value)}
+  placeholder="eg: https://www.google.com/"
+  className="w-full bg-transparent border border-slate-700 rounded-lg px-4 py-2 text-white outline-none"
+/>
+
             </div>
 
             {/* FOOTER BUTTONS */}
@@ -859,9 +913,15 @@ const WebAnalyticsPage = ({
                 ✕ Cancel
               </button>
 
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg  cursor-pointer">
-                + Add
-              </button>
+             <button
+  onClick={addUrlCamp}
+  disabled={isSubmitting}
+  className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer
+    ${isSubmitting ? "opacity-60 cursor-not-allowed" : ""}`}
+>
+  {isSubmitting ? "Adding..." : "+ Add"}
+</button>
+
             </div>
           </div>
         </div>

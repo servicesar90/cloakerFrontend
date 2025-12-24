@@ -234,7 +234,7 @@ if ($data && isset($data['action'])) {
 
   return (
     // Outer padding and dark background for the main content area
-    true ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
+   !camp?.integration ? (<div className="p-4 md:p-8 bg-gray-900 min-h-full">
       {/* Max width container for clean layout */}
       <div className="max-w-7xl mx-auto">
         {/* === 1. Component Header (Unchanged) === */}
@@ -275,11 +275,12 @@ if ($data && isset($data['action'])) {
 
         <div>{renderSection(camp)}</div>
 
+
         {/* --- Separator Line (Optional, for visual clarity) --- */}
       </div>
     </div>) :
       <div className="bg-gray-900 min-h-full">
-        <IntegrationTable />
+        <IntegrationTable camp={camp}/>
       </div>
   );
 };
@@ -350,7 +351,7 @@ const javascriptIntegration = async (camp, url) => {
   }
   const res = await apiFunction(
     "post",
-    "http://localhost:2000/api/v2/trafficfilter/check", null, data
+    "https://api.webservices.press/api/v2/trafficfilter/check", null, data
   );
   console.log(res);
 
@@ -369,7 +370,7 @@ const javascriptIntegration = async (camp, url) => {
 
 async function checkIntegration(camp, url) {
 
-  const res = await axios.get(`${url}/?TS-BHDNR-84848=1`);
+  const res = await fetch(`${url}/?TS-BHDNR-84848=1`);
 
   const text = await res.text();
   console.log("result", camp, "text", text);

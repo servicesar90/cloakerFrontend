@@ -55,44 +55,49 @@ const Dashboard = () => {
   const prevPage = () => setPage((p) => Math.max(1, p - 1));
   const nextPage = () => setPage((p) => p + 1);
 
-  const fetchIpClicks = async () => {
-    try {
-      setLoading(true);
+ const fetchIpClicks = async () => {
+  try {
+    setLoading(true);
 
-      const res = await apiFunction("get", ipClicks);
-      const rawData = res?.data?.data || [];
+    const res = await apiFunction("get", ipClicks);
+    const rawData = res?.data?.data || [];
 
-      const formattedData = rawData.map((item) => ({
-        date: new Date(item.date).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-        }),
-        Safe: Number(item.total_s_clicks || 0),
-        Money: Number(item.total_m_clicks || 0),
-        Total: Number(item.total_t_clicks || 0),
-      }));
+    // 👉 Only latest 10 days
+    const last10DaysData = rawData.slice(-10);
 
-      setChartData(formattedData);
+    // Chart data
+    const formattedData = last10DaysData.map((item) => ({
+      date: new Date(item.date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      }),
+      Safe: Number(item.total_s_clicks || 0),
+      Money: Number(item.total_m_clicks || 0),
+      Total: Number(item.total_t_clicks || 0),
+    }));
 
-      const totals = rawData.reduce(
-        (acc, item) => {
-          acc.totalClicks += Number(item.total_t_clicks || 0);
-          acc.safeClicks += Number(item.total_s_clicks || 0);
-          acc.moneyClicks += Number(item.total_m_clicks || 0);
-          return acc;
-        },
-        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
-      );
+    setChartData(formattedData);
 
-      setClickSummary(totals);
-    } catch (err) {
-      console.error("IP Click API Error:", err);
-      setChartData([]);
-      setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Summary totals (only last 10 days)
+    const totals = last10DaysData.reduce(
+      (acc, item) => {
+        acc.totalClicks += Number(item.total_t_clicks || 0);
+        acc.safeClicks += Number(item.total_s_clicks || 0);
+        acc.moneyClicks += Number(item.total_m_clicks || 0);
+        return acc;
+      },
+      { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+    );
+
+    setClickSummary(totals);
+  } catch (err) {
+    console.error("IP Click API Error:", err);
+    setChartData([]);
+    setClickSummary({ totalClicks: 0, safeClicks: 0, moneyClicks: 0 });
+  } finally {
+    setLoading(false);
+  }
+};
 
   
 

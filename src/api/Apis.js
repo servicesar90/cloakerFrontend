@@ -1,10 +1,10 @@
 // const base_url = 'http://localhost:2000';
 // const base_url="http://192.168.1.64:2000";
- const base_url="https://api.webservices.press";
+
+const base_url="https://api.webservices.press";
+
 // const base_url="http://192.168.1.3:2000";
-
 // const base_url = "https://app.clockerly.io"
-
 // const base_url= "https://app.clockerly.io";
 
 
@@ -33,4 +33,7 @@ export const forgotPassword = `${base_url}/auth/forgot-password`;
 export const updatePassword = `${base_url}/auth/reset-password`;
 
 export const updateCampaignStatus = `${base_url}/api/v2/campaign`
+
+
+export const addUrlCampData = `${base_url}/api/v2/analyticsCamp`
 

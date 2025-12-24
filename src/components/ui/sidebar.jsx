@@ -251,7 +251,7 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
       {/* Mobile Sidebar */}
       {mobileVisible && (
         <div className="absolute inset-0 z-50 flex md:hidden">
-          <div className="w-60 bg-white shadow-lg h-[95vh] py-1.75 overflow-hidden">
+          <div className="w-60 bg-[#1e2939] shadow-lg h-[100vh] py-1.75 overflow-hidden">
             {/* <div className="flex justify-end pr-4">
               <X
                 className="cursor-pointer text-gray-600"
